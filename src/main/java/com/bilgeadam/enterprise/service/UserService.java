@@ -47,4 +47,18 @@ public class UserService {
         //TODO: Mail service araciliyla kullaniciya onay maili yolla!
         return true;
     }
+
+    public Boolean authUser(String authCode) {
+        Optional<Long> userIdByAuthCode = userAuthVerifyCodeService.findUserIdByAuthCode(authCode);
+        if (userIdByAuthCode.isEmpty()) {
+            throw new EnterpriseException(ErrorType.NOTFOUND_USER_AUTH);
+        }
+        Optional<User> userOptional = userRepository.findById(userIdByAuthCode.get());
+        if (userOptional.isEmpty()) {
+            throw new EnterpriseException(ErrorType.NOTFOUND_USER);
+        }
+        User user = userOptional.get();
+        user.setUserState(EUserState.ACTIVE);
+        return true;
+    }
 }

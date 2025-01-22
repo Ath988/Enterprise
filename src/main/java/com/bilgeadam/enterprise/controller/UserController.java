@@ -7,8 +7,13 @@ import com.bilgeadam.enterprise.entity.User;
 import com.bilgeadam.enterprise.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.net.URI;
+import java.util.Optional;
 
 import static com.bilgeadam.enterprise.constant.RestApis.*;
 
@@ -40,4 +45,11 @@ public class UserController {
                 .build());
     }
 
+    @GetMapping(AUTHMAIL)
+    public ResponseEntity<BaseResponse<Boolean>> authUser(@RequestParam(name = "auth") String authCode) {
+        userService.authUser(authCode);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setLocation(URI.create("http://localhost:3000"));
+        return new ResponseEntity<BaseResponse<Boolean>>(headers, HttpStatus.FOUND);
+    }
 }

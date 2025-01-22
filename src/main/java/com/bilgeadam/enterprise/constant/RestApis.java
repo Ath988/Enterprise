@@ -17,4 +17,5 @@ public class RestApis {
 
     public static final String DOLOGIN = "/do-login";
     public static final String DOREGISTER = "/do-register";
+    public static final String AUTHMAIL = "/auth-mail";
 }

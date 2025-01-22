@@ -1,6 +1,7 @@
 package com.bilgeadam.enterprise.service;
 
 import com.bilgeadam.enterprise.dto.request.LoginRequestDto;
+import com.bilgeadam.enterprise.dto.request.NewPasswordRequestDto;
 import com.bilgeadam.enterprise.dto.request.RegisterRequestDto;
 import com.bilgeadam.enterprise.entity.User;
 import com.bilgeadam.enterprise.exception.EnterpriseException;
@@ -48,7 +49,14 @@ public class UserService {
         return true;
     }
 
-    public Boolean authUser(String authCode) {
+    public Boolean authUserRegister(String authCode) {
+        Optional<User> userOptional = checkAuthUser(authCode);
+        User user = userOptional.get();
+        user.setUserState(EUserState.ACTIVE);
+        return true;
+    }
+
+    public Optional<User> checkAuthUser(String authCode) {
         Optional<Long> userIdByAuthCode = userAuthVerifyCodeService.findUserIdByAuthCode(authCode);
         if (userIdByAuthCode.isEmpty()) {
             throw new EnterpriseException(ErrorType.NOTFOUND_USER_AUTH);
@@ -57,8 +65,33 @@ public class UserService {
         if (userOptional.isEmpty()) {
             throw new EnterpriseException(ErrorType.NOTFOUND_USER);
         }
+        return userOptional;
+    }
+
+    public Boolean forgotPasswordMail(String email) {
+        Optional<User> userOptional = userRepository.findOptionalByEmail(email);
+        if (userOptional.isEmpty()) {
+            throw new EnterpriseException(ErrorType.NOTFOUND_USER);
+        }
         User user = userOptional.get();
-        user.setUserState(EUserState.ACTIVE);
+        String authCode = userAuthVerifyCodeService.generateAuthCode(user.getId());
+        //TODO: maile link gonderme islemi yapilacak
+
+        return true;
+    }
+
+    public Boolean updateUserForgotPassword(NewPasswordRequestDto dto) {
+        Optional<Long> userIdByAuthCode = userAuthVerifyCodeService.findUserIdByAuthCode(dto.authCode());
+        if(userIdByAuthCode.isEmpty()) {
+            throw new EnterpriseException(ErrorType.NOTFOUND_USER_AUTH);
+        }
+        Optional<User> userOptional = userRepository.findById(userIdByAuthCode.get());
+        if (userOptional.isEmpty()) {
+            throw new EnterpriseException(ErrorType.NOTFOUND_USER);
+        }
+        User user = userOptional.get();
+        user.setPassword(passwordEncoder.encode(dto.password()));
+        userRepository.save(user);
         return true;
     }
 }

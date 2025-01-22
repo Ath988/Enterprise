@@ -1,9 +1,12 @@
 package com.bilgeadam.enterprise.controller;
 
+import com.bilgeadam.enterprise.dto.request.ForgotPasswordRequestDto;
 import com.bilgeadam.enterprise.dto.request.LoginRequestDto;
+import com.bilgeadam.enterprise.dto.request.NewPasswordRequestDto;
 import com.bilgeadam.enterprise.dto.request.RegisterRequestDto;
 import com.bilgeadam.enterprise.dto.response.BaseResponse;
-import com.bilgeadam.enterprise.entity.User;
+import com.bilgeadam.enterprise.exception.EnterpriseException;
+import com.bilgeadam.enterprise.exception.ErrorType;
 import com.bilgeadam.enterprise.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -11,9 +14,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.view.RedirectView;
 
 import java.net.URI;
-import java.util.Optional;
 
 import static com.bilgeadam.enterprise.constant.RestApis.*;
 
@@ -47,9 +50,40 @@ public class UserController {
 
     @GetMapping(AUTHMAIL)
     public ResponseEntity<BaseResponse<Boolean>> authUser(@RequestParam(name = "auth") String authCode) {
-        userService.authUser(authCode);
+        userService.authUserRegister(authCode);
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(URI.create("http://localhost:3000"));
         return new ResponseEntity<BaseResponse<Boolean>>(headers, HttpStatus.FOUND);
+    }
+
+    @PostMapping(FORGOT_PASSWORD_MAIL)
+    public ResponseEntity<BaseResponse<Boolean>> forgotPasswordMail(@RequestBody ForgotPasswordRequestDto dto) {
+        return ResponseEntity.ok(BaseResponse.<Boolean>builder().success(true)
+                .message("Yeni sifre olusturma linki mail adresine gonderilmistir!")
+                .data(userService.forgotPasswordMail(dto.email()))
+                .code(200)
+                .build());
+    }
+
+    @GetMapping(NEW_PASSWORD)
+    public RedirectView setNewPassword(@RequestParam(name = "auth") String authCode) {
+        userService.checkAuthUser(authCode);
+
+        return new RedirectView("http://localhost:3000/set-new-password" + "?code=" + authCode);
+
+    }
+
+    @PostMapping(NEW_PASSWORD)
+    public ResponseEntity<BaseResponse<Boolean>> setNewPassword(@RequestBody @Valid NewPasswordRequestDto dto) {
+        if (!dto.password().equals(dto.rePassword())) {
+            throw new EnterpriseException(ErrorType.INVALID_PASSWORD);
+        }
+
+        return ResponseEntity.ok(BaseResponse.<Boolean>builder()
+                .success(true)
+                .message("Yeni sifre basiriyla olsuturuldu!")
+                .data(userService.updateUserForgotPassword(dto))
+                .code(200)
+                .build());
     }
 }

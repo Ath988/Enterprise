@@ -18,6 +18,7 @@ import java.util.Optional;
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final UserAuthVerifyCodeService userAuthVerifyCodeService;
 
     public String doLogin(LoginRequestDto dto) {
         Optional<User> userOptional = userRepository.findByEmail(dto.email());
@@ -41,7 +42,8 @@ public class UserService {
                 .password(passwordEncoder.encode(dto.password()))
                 .userState(EUserState.PENDING)
                 .build();
-        userRepository.save(user);
+        user = userRepository.save(user);
+        String authCode = userAuthVerifyCodeService.generateAuthCode(user.getId());
         //TODO: Mail service araciliyla kullaniciya onay maili yolla!
         return true;
     }

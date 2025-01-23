@@ -1,1 +1,3 @@
 rootProject.name = 'enterprise'
+include 'OrganisationManagementService'
+

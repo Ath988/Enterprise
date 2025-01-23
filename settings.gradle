@@ -1,1 +1,4 @@
 rootProject.name = 'enterprise'
+include 'AuthService'
+include 'AuthService'
+

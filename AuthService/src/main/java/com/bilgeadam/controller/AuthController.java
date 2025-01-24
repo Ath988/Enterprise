@@ -7,7 +7,7 @@ import com.bilgeadam.dto.request.NewPasswordRequestDto;
 import com.bilgeadam.dto.response.BaseResponse;
 import com.bilgeadam.exception.EnterpriseException;
 import com.bilgeadam.exception.ErrorType;
-import com.bilgeadam.service.UserService;
+import com.bilgeadam.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -22,10 +22,10 @@ import static com.bilgeadam.constant.RestApis.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(USER)
+@RequestMapping(AUTH)
 @CrossOrigin("*")
-public class UserController {
-    private final UserService userService;
+public class AuthController {
+    private final AuthService userService;
 
 
     @PostMapping(DOLOGIN)

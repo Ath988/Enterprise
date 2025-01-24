@@ -1,5 +1,5 @@
 package com.bilgeadam.util.enums;
 
-public enum EUserState {
+public enum EAuthState {
     PENDING, ACTIVE, INACTIVE
 }

@@ -12,7 +12,7 @@ public class RestApis {
 
     private static final String ROOT = VERSION + DEVELOPER;
 
-    public static final String USER = ROOT+ "/user";
+    public static final String AUTH = ROOT+ "/auth";
 
 
     public static final String DOLOGIN = "/do-login";

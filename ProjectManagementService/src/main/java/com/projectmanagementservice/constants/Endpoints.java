@@ -24,6 +24,7 @@ public class Endpoints
     public static final String DELETE = "/delete";
     public static final String UPDATE = "/update";
     public static final String FIND_ALL = "/find-all";
+    public static final String FIND_BY_ID = "/find-by-id";
 
 
 }

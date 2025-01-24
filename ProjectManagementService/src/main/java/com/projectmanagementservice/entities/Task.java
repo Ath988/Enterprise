@@ -18,6 +18,7 @@ public class Task extends BaseEntity
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
+    Long authId; //Daha sonra giriş yapan kullanıcıdan bilgiler alınarak kaydedilecek.
     String name;
     String description;
     @ManyToOne

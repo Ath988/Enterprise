@@ -37,5 +37,4 @@ public class Chat {
 	@Builder.Default
 	private boolean isDeleted=false;
 	
-	
 }

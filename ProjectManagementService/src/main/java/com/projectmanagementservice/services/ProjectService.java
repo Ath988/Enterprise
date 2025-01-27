@@ -27,6 +27,7 @@ public class ProjectService
                 .builder()
                 .name(dto.name())
                 .description(dto.description())
+                        .authId(1L)
                 .startDate(dto.startDate())
                 .endDate(dto.endDate())
                 .build());
@@ -35,7 +36,7 @@ public class ProjectService
 
     public Boolean delete(Long id)
     {
-        Project project = projectRepository.findById(id).orElseThrow(() -> new ProjectManagementException(ErrorType.PROJECT_NOT_FOUND));
+        Project project = projectRepository.findByIdAndAuthId(id,1L).orElseThrow(() -> new ProjectManagementException(ErrorType.PROJECT_NOT_FOUND));
         project.setStatus(EStatus.DELETED);
         projectRepository.save(project);
         return true;
@@ -43,7 +44,7 @@ public class ProjectService
 
     public Boolean update(ProjectUpdateRequestDTO dto)
     {
-        Project project = projectRepository.findById(dto.id()).orElseThrow(() -> new ProjectManagementException(ErrorType.PROJECT_NOT_FOUND));
+        Project project = projectRepository.findByIdAndAuthId(dto.id(),1L).orElseThrow(() -> new ProjectManagementException(ErrorType.PROJECT_NOT_FOUND));
         project.setName(dto.name());
         project.setDescription(dto.description());
         project.setStartDate(dto.startDate());

@@ -16,6 +16,7 @@ public class Endpoints
     //controllers
 
     public static final String PROJECT = "/project";
+    public static final String TASK = "/task";
 
 
     //methods
@@ -27,4 +28,5 @@ public class Endpoints
     public static final String FIND_BY_ID = "/find-by-id";
 
 
+    public static final String ADD_USER_TO_TASK = "/add-user-to-task";
 }

@@ -2,4 +2,4 @@ rootProject.name = 'enterprise'
 include 'AuthService'
 include 'OrganisationManagementService'
 include 'MailService'
-
+include 'ProjectManagementService'

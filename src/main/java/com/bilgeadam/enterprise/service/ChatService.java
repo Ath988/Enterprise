@@ -19,6 +19,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +35,16 @@ public class ChatService {
 	private final UserRepository userRepository;
 	private final MessageRepository messageRepository;
 	
+	
+	public String login(LoginRqDto dto){
+		Optional<String> optId =
+				userRepository.findIdByUsernameAndPassword(dto.mail(), dto.password());
+		if(optId.isEmpty())
+			throw new EnterpriseException(ErrorType.USER_NOT_FOUND);
+		return jwtManager.createToken(optId.get());
+	}
+	
+	@Transactional
 	public GroupChatCreateResponseDto createNewGroupChat(CreateGroupChatRqDto dto, String token){
 		String userId = getIdFromTokenValidation(token);
 		Set<User> users = userRepository.findUserByIdIn(dto.users());
@@ -49,6 +60,7 @@ public class ChatService {
 		return new GroupChatCreateResponseDto(chat.getId(), chat.getName(), chat.getDescription(), chat.getCreateDate());
 	}
 	
+	@Transactional
 	public PrivateChatResponseDto createPrivateChat(CreatePrivateChatRqDto dto, String token) {
 		String userId = getIdFromTokenValidation(token);
 		
@@ -59,8 +71,6 @@ public class ChatService {
 		if (!dto.users().contains(userId))
 			throw new EnterpriseException(ErrorType.USER_NOT_PARTICIPANT);
 		Set<User> users = userRepository.findUserByIdIn(dto.users());
-		if (users.size() != dto.users().size())
-			throw new EnterpriseException(ErrorType.USER_NOT_FOUND);
 		
 		String recipientName = users.stream()
 		                            .filter(user -> !user.getId().equals(userId))
@@ -90,12 +100,13 @@ public class ChatService {
 		);
 	}
 	
+	@Transactional
 	public NewMessageResponseDto sendNewMessage(NewMessageDto newMessageDto, String token){
 		String userId = getIdFromTokenValidation(token);
 		Optional<User> userById = userRepository.findUserById(userId);
 		if(userById.isEmpty())
 			throw new EnterpriseException(ErrorType.USER_NOT_FOUND);
-		Optional<Chat> chatById = chatRepository.findChatById(newMessageDto.chatId());
+		Optional<Chat> chatById = chatRepository.findChatWithUsersById(newMessageDto.chatId());
 		if(chatById.isEmpty())
 			throw new EnterpriseException(ErrorType.CHAT_NOT_FOUND);
 		if (!chatById.get().getUsers().contains(userById.get()))
@@ -123,7 +134,7 @@ public class ChatService {
 		if (optionalId.isEmpty()) {
 			throw new EnterpriseException(ErrorType.USER_NOT_AUTHORIZED);
 		}
-		Optional<Chat> chatById = chatRepository.findChatById(addUserToChatDto.chatId());
+		Optional<Chat> chatById = chatRepository.findChatWithUsersById(addUserToChatDto.chatId());
 		if (chatById.isEmpty()) {
 			throw new EnterpriseException(ErrorType.CHAT_NOT_FOUND);
 		}
@@ -164,7 +175,7 @@ public class ChatService {
 	public void deleteChat(String chatId, String token) {
 		String userId = getIdFromTokenValidation(token);
 		
-		Optional<Chat> chatById = chatRepository.findChatById(chatId);
+		Optional<Chat> chatById = chatRepository.findChatWithUsersById(chatId);
 		if (chatById.isEmpty()) {
 			throw new EnterpriseException(ErrorType.CHAT_NOT_FOUND);
 		}
@@ -197,7 +208,7 @@ public class ChatService {
 	public Set<User> getUsersInChat(String chatId, String token) {
 		String userId = getIdFromTokenValidation(token);
 		
-		Optional<Chat> chatById = chatRepository.findChatById(chatId);
+		Optional<Chat> chatById = chatRepository.findChatWithUsersById(chatId);
 		if (chatById.isEmpty()) {
 			throw new EnterpriseException(ErrorType.CHAT_NOT_FOUND);
 		}
@@ -214,7 +225,7 @@ public class ChatService {
 		//SADECE GROUP CHAT'I ICIN GECERLI HALE GETIR
 		String userId = getIdFromTokenValidation(token);
 		
-		Optional<Chat> chatById = chatRepository.findChatById(dto.chatId());
+		Optional<Chat> chatById = chatRepository.findChatWithUsersById(dto.chatId());
 		if (chatById.isEmpty()) {
 			throw new EnterpriseException(ErrorType.CHAT_NOT_FOUND);
 		}
@@ -265,6 +276,15 @@ public class ChatService {
 			throw new EnterpriseException(ErrorType.USER_NOT_AUTHORIZED);
 		return optionalId.get();
 	}
+	
+	private Set<User> validateAndFetchUsers(Set<String> userIds) {
+		Set<User> users = userRepository.findUserByIdIn(userIds);
+		if (users.size() != userIds.size()) {
+			throw new EnterpriseException(ErrorType.USER_NOT_FOUND, "Invalid users: " + userIds);
+		}
+		return users;
+	}
+	
 	
 	public boolean isUserInChat(String chatId,String userId){
 		return chatRepository.isUserInChat(chatId,userId);

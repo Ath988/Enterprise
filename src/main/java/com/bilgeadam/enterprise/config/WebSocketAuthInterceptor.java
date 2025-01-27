@@ -12,6 +12,7 @@ import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.HandshakeInterceptor;
@@ -33,15 +34,25 @@ public class WebSocketAuthInterceptor implements ChannelInterceptor {
 		StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
 		
 		if (StompCommand.CONNECT.equals(accessor.getCommand())) {
-			String token = accessor.getFirstNativeHeader("Authorization");
+			String token = (String) accessor.getSessionAttributes().get("Authorization");
+			
 			if (token == null || !token.startsWith("Bearer ")) {
 				throw new EnterpriseException(ErrorType.USER_NOT_AUTHORIZED, "Authorization header is missing or invalid!");
 			}
+			
 			String userId = jwtManager.validateToken(token.replace("Bearer ", ""))
 			                          .orElseThrow(() -> new EnterpriseException(ErrorType.USER_NOT_AUTHORIZED));
-			accessor.setUser(new UsernamePasswordAuthenticationToken(userId, null, List.of()));
+			
+			UsernamePasswordAuthenticationToken authentication =
+					new UsernamePasswordAuthenticationToken(userId, null, List.of());
+			
+			accessor.setUser(authentication);
+			
+			// Kullanıcıyı SecurityContext'e ekle
+			SecurityContextHolder.getContext().setAuthentication(authentication);
 		}
 		
 		return message;
 	}
+	
 }

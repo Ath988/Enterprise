@@ -9,5 +9,12 @@ spring:
     password: root
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     show-sql: true
+logging:
+  level:
+    org.springframework: INFO
+    org.springframework.web: INFO
+    org.springframework.messaging: INFO
+    org.springframework.web.socket: INFO
+    org.springframework.simp: INFO

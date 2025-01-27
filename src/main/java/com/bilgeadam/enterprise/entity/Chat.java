@@ -23,7 +23,7 @@ public class Chat {
 	private String description;
 	@OneToMany(mappedBy = "chat", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	private List<Message> messages = new ArrayList<>();
-	@ManyToMany
+	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(
 			name = "tblchat_users",
 			joinColumns = @JoinColumn(name = "chat_id"),

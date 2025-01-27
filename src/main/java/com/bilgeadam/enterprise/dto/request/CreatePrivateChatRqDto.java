@@ -6,6 +6,6 @@ import java.util.List;
 import java.util.Set;
 
 public record CreatePrivateChatRqDto(
-		@NotBlank Set<String> users
+		Set<String> users
 ) {
 }

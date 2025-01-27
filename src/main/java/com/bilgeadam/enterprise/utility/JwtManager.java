@@ -19,7 +19,7 @@ public class JwtManager {
 	private String issuer;
 	private final Long exDate=1000000L*60;
 	
-	public String createToken(String authId, String userType){
+	public String createToken(String authId){
 		Date createdDate=new Date(System.currentTimeMillis());
 		Date expirationDate=new Date(System.currentTimeMillis()+exDate);
 		Algorithm algorithm= Algorithm.HMAC512(secretKey);
@@ -30,7 +30,6 @@ public class JwtManager {
 		                  .withExpiresAt(expirationDate)
 		                  .withClaim("authId", authId)
 		                  .withClaim("key","JX_15_TJJJ")
-		                  .withClaim("role",userType)
 		                  .sign(algorithm);
 		return token;
 	}

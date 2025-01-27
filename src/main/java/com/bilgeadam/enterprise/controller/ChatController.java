@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.*;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -25,6 +26,16 @@ import java.util.Set;
 public class ChatController {
 	private final ChatService chatService;
 	private final SimpMessagingTemplate messagingTemplate;
+	
+	@PostMapping("/login")
+	public ResponseEntity<BaseResponse<String>> login(@RequestBody LoginRqDto dto){
+		return ResponseEntity.ok(BaseResponse.<String>builder()
+		                                     .code(200)
+		                                     .message("Message sent successfully!")
+		                                     .success(true)
+		                                     .data(chatService.login(dto))
+		                                     .build());
+	}
 	
 	@PostMapping("/create-group-chat")
 	public ResponseEntity<BaseResponse<GroupChatCreateResponseDto>> createNewGroupChat( @RequestBody @Valid CreateGroupChatRqDto chatDto,
@@ -44,18 +55,25 @@ public class ChatController {
 	
 	@MessageMapping("/private/{chatId}/sendMessage")
 	public void sendPrivateMessage(@DestinationVariable String chatId,
-	                               @Payload @Valid NewMessageDto newMessageDto,
-	                               Principal principal) {
-		String userId = principal.getName();
-		
-		if (!chatService.isUserInChat(chatId, userId)) {
-			throw new EnterpriseException(ErrorType.USER_NOT_PARTICIPANT, "User not part of this chat!");
-		}
-		
-		NewMessageResponseDto savedMessage = chatService.sendNewMessage(newMessageDto, userId);
-		messagingTemplate.convertAndSend("/topic/private/" + chatId, savedMessage);
+	                               @Payload NewMessageDto newMessageDto,
+	                               @Header("Authorization") String token) {
+		System.out.println("Received message -> chatId: " + chatId + ", content: " + newMessageDto.content());
+		String actualToken = getTokenFromHeader(token);
+		System.out.println("actual token: "+actualToken);
+		chatService.sendNewMessage(newMessageDto,actualToken);
+		messagingTemplate.convertAndSend("/topic/private/" + chatId, newMessageDto);
 	}
 	
+	@MessageMapping("/group/{chatId}/sendMessage")
+	public void sendGroupMessage(@DestinationVariable String chatId,
+	                               @Payload NewMessageDto newMessageDto,
+	                               @Header("Authorization") String token) {
+		System.out.println("Received message -> chatId: " + chatId + ", content: " + newMessageDto.content());
+		String actualToken = getTokenFromHeader(token);
+		System.out.println("actual token: "+actualToken);
+		chatService.sendNewMessage(newMessageDto,actualToken);
+		messagingTemplate.convertAndSend("/topic/group/" + chatId, newMessageDto);
+	}
 	
 	
 	

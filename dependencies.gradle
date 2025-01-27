@@ -1,4 +1,9 @@
 ext{
+    versions = [
+            jwt           : "4.4.0",
+            openApi       : '2.5.0'
+
+    ]
     libs = [
             springBootStarterAmqp : "org.springframework.boot:spring-boot-starter-amqp",
             springBootStarterDataJpa : "org.springframework.boot:spring-boot-starter-data-jpa",
@@ -7,12 +12,14 @@ ext{
             springBootStarterWeb : 'org.springframework.boot:spring-boot-starter-web',
             springBootStarterWebsocket : 'org.springframework.boot:spring-boot-starter-websocket',
             springCloudStarterGatewayMvc : 'org.springframework.cloud:spring-cloud-starter-gateway-mvc',
+            openApi                      : "org.springdoc:springdoc-openapi-starter-webmvc-ui:${versions.openApi}",
             lombok : 'org.projectlombok:lombok',
             springBootDevtools : 'org.springframework.boot:spring-boot-devtools',
             postgresql : 'org.postgresql:postgresql',
             springBootStarterTest : 'org.springframework.boot:spring-boot-starter-test',
             springRabbitTest :  'org.springframework.amqp:spring-rabbit-test',
             springSecurityTest :  'org.springframework.security:spring-security-test',
-            junitPlatformLauncher : 'org.junit.platform:junit-platform-launcher'
+            junitPlatformLauncher : 'org.junit.platform:junit-platform-launcher',
+            jwt: "com.auth0:java-jwt:$versions.jwt"
     ]
 }

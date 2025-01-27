@@ -12,7 +12,8 @@ public enum ErrorType {
     REGISTER_ERROR(1001, "e-posta adresi sisteme kayitlidir! Lutfen bir baska e-posta adresi yada giris yapmayi deniyiniz!", HttpStatus.CONFLICT),
     INVALID_PASSWORD(1002, "sifreler uyusmuyor!", HttpStatus.BAD_REQUEST),
     NOTFOUND_USER(1003, "Kullanici Bulunamadi", HttpStatus.NOT_FOUND),
-    NOTFOUND_USER_AUTH(1004, "Kullanici onay kodu gecersiz!", HttpStatus.NOT_FOUND);
+    NOTFOUND_USER_AUTH(1004, "Kullanici onay kodu gecersiz!", HttpStatus.NOT_FOUND),
+    INVALID_TOKEN(1005,"Girdiğiniz token hatalıdır. Lütfen değiştirerek tekrar deneyiniz.",HttpStatus.UNAUTHORIZED);
 
     int code;
     String message;

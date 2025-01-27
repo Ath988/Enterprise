@@ -11,6 +11,7 @@ public enum ErrorType {
     VALIDATION_ERROR(400,"Girilen parametreler hatalıdır. Lütfen kontrol ederek tekrar deneyiniz.", HttpStatus.BAD_REQUEST),
     DEPARTMENT_NOT_FOUND(1001,"Departman bulunamadı",HttpStatus.BAD_REQUEST),
     EMPLOYEE_NOT_FOUND(2001,"Çalışan bulunamadı",HttpStatus.BAD_REQUEST),
+    INVALID_TOKEN(1005,"Girdiğiniz token hatalıdır. Lütfen değiştirerek tekrar deneyiniz.",HttpStatus.UNAUTHORIZED);
     ;
 
     int code;

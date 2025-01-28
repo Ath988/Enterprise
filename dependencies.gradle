@@ -13,6 +13,8 @@ ext{
             springBootStarterTest : 'org.springframework.boot:spring-boot-starter-test',
             springRabbitTest :  'org.springframework.amqp:spring-rabbit-test',
             springSecurityTest :  'org.springframework.security:spring-security-test',
-            junitPlatformLauncher : 'org.junit.platform:junit-platform-launcher'
+            junitPlatformLauncher : 'org.junit.platform:junit-platform-launcher',
+            mailSender: 'org.springframework.boot:spring-boot-starter-mail',
+            swagger: 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.3'
     ]
 }

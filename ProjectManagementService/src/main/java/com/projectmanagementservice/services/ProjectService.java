@@ -1,9 +1,11 @@
 package com.projectmanagementservice.services;
 
+import com.projectmanagementservice.dto.request.AddTaskToProjectDTO;
 import com.projectmanagementservice.dto.request.PageRequestDTO;
 import com.projectmanagementservice.dto.request.ProjectSaveRequestDTO;
 import com.projectmanagementservice.dto.request.ProjectUpdateRequestDTO;
 import com.projectmanagementservice.entities.Project;
+import com.projectmanagementservice.entities.Task;
 import com.projectmanagementservice.entities.enums.EStatus;
 import com.projectmanagementservice.exceptions.ErrorType;
 import com.projectmanagementservice.exceptions.ProjectManagementException;
@@ -19,6 +21,7 @@ import java.util.List;
 public class ProjectService
 {
     private final ProjectRepository projectRepository;
+    private final TaskService taskService;
 
     //TODO Gelen istekten hangi kullanıcının olduğu bilgisi gelince metodlardaki sabit "1L" değerleri değiştirilecek.
     public Boolean save(ProjectSaveRequestDTO dto)
@@ -62,6 +65,15 @@ public class ProjectService
     public Project findByIdAndAuthId(Long id)
     {
        return  projectRepository.findByIdAndAuthId(id,1L).orElseThrow(() -> new ProjectManagementException(ErrorType.PROJECT_NOT_FOUND));
+    }
+
+    public Boolean addTaskToProject(AddTaskToProjectDTO dto)
+    {
+        Project project = findByIdAndAuthId(dto.projectId());
+        Task task = taskService.findByIdAndAuthId(dto.taskId());
+        project.getTasks().add(task);
+        projectRepository.save(project);
+        return true;
     }
 }
 

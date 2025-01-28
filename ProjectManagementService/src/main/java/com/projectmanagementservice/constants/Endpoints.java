@@ -17,6 +17,7 @@ public class Endpoints
 
     public static final String PROJECT = "/project";
     public static final String TASK = "/task";
+    public static final String USER = "/user";
 
 
     //methods
@@ -29,4 +30,5 @@ public class Endpoints
 
 
     public static final String ADD_USER_TO_TASK = "/add-user-to-task";
+    public static final String ADD_TASK_TO_PROJECT = "/add-task-to-project";
 }

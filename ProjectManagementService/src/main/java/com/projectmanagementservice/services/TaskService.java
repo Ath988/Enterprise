@@ -3,6 +3,7 @@ package com.projectmanagementservice.services;
 import com.projectmanagementservice.dto.request.*;
 import com.projectmanagementservice.entities.Project;
 import com.projectmanagementservice.entities.Task;
+import com.projectmanagementservice.entities.User;
 import com.projectmanagementservice.entities.enums.EStatus;
 import com.projectmanagementservice.exceptions.ErrorType;
 import com.projectmanagementservice.exceptions.ProjectManagementException;
@@ -19,6 +20,7 @@ import java.util.List;
 public class TaskService
 {
     private final TaskRepository taskRepository;
+    private final UserService userService;
 
     //TODO Gelen istekten hangi kullanıcının olduğu bilgisi gelince metodlardaki sabit "1L" değerleri değiştirilecek.
     public Boolean save(TaskSaveRequestDTO dto)
@@ -63,8 +65,9 @@ public class TaskService
     public Boolean addUserToTask(AddUserToTaskDTO dto)
     {
         Task task = taskRepository.findByIdAndAuthId(dto.taskId(), 1L).orElseThrow(() -> new ProjectManagementException(ErrorType.TASK_NOT_FOUND));
-        //USER CONTROLLER LAZIM
-        return null;
+        User user = userService.findByIdAndAuthId(dto.userId());
+        task.setUser(user);
+        return true;
     }
 }
 

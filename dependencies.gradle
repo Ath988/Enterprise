@@ -1,9 +1,4 @@
 ext{
-    versions = [
-            jwt           : "4.4.0",
-            openApi       : '2.5.0'
-
-    ]
     libs = [
             springBootStarterAmqp : "org.springframework.boot:spring-boot-starter-amqp",
             springBootStarterDataJpa : "org.springframework.boot:spring-boot-starter-data-jpa",
@@ -20,6 +15,11 @@ ext{
             springRabbitTest :  'org.springframework.amqp:spring-rabbit-test',
             springSecurityTest :  'org.springframework.security:spring-security-test',
             junitPlatformLauncher : 'org.junit.platform:junit-platform-launcher',
-            jwt: "com.auth0:java-jwt:$versions.jwt"
+            mailSender: 'org.springframework.boot:spring-boot-starter-mail',
+            swagger: 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.3',
+            junitPlatformLauncher : 'org.junit.platform:junit-platform-launcher',
+            jwt: 'com.auth0:java-jwt:4.4.0',
+            openapi: 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0'
+
     ]
 }

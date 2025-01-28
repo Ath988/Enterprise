@@ -52,8 +52,8 @@ public class AuthController {
     public ResponseEntity<BaseResponse<Boolean>> authUser(@RequestParam(name = "auth") String authCode) {
         userService.authUserRegister(authCode);
         HttpHeaders headers = new HttpHeaders();
-        headers.setLocation(URI.create("http://localhost:3000"));
-        return new ResponseEntity<BaseResponse<Boolean>>(headers, HttpStatus.FOUND);
+        headers.setLocation(URI.create("http://localhost:5173"));
+        return new ResponseEntity<>(headers, HttpStatus.FOUND);
     }
 
     @PostMapping(FORGOT_PASSWORD_MAIL)
@@ -69,7 +69,7 @@ public class AuthController {
     public RedirectView setNewPassword(@RequestParam(name = "auth") String authCode) {
         userService.checkAuthUser(authCode);
 
-        return new RedirectView("http://localhost:3000/set-new-password" + "?code=" + authCode);
+        return new RedirectView("http://localhost:5173/set-new-password" + "?code=" + authCode);
 
     }
 

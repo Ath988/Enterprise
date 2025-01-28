@@ -20,7 +20,7 @@ import java.util.Optional;
 
 @Slf4j
 @AllArgsConstructor
-public class JwtAuthFilter extends OncePerRequestFilter {
+public class JwtOrganisationManagementFilter extends OncePerRequestFilter {
     private JwtManager jwtManager;
     private JwtUserDetail userDetail;
     @Override

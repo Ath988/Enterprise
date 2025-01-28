@@ -27,5 +27,5 @@ public class Project extends BaseEntity
     LocalDate startDate;
     LocalDate endDate;
     @OneToMany
-    List<User> users;
+    List<Task> tasks;
 }

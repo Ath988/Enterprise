@@ -53,6 +53,7 @@ allprojects{
 		implementation libs.springBootStarterWeb
 		implementation libs.springBootStarterWebsocket
 		implementation libs.springCloudStarterGatewayMvc
+		implementation libs.swagger
 		compileOnly libs.lombok
 		developmentOnly libs.springBootDevtools
 		runtimeOnly libs.postgresql

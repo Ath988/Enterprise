@@ -25,75 +25,89 @@ public class DepartmentController {
 
     //Yeni departman oluşturur.
     @PostMapping
-    public ResponseEntity<BaseResponse<Boolean>> addDepartment(@RequestBody AddNewDepartmentRequest dto) {
+    public ResponseEntity<BaseResponse<Boolean>> addDepartment(
+            @RequestHeader(value = "Authorization", required = false) String token,
+            @RequestBody AddNewDepartmentRequest dto) {
         return ResponseEntity.ok(BaseResponse.<Boolean>builder()
-                .success(departmentService.addDepartment(dto))
+                .success(departmentService.addDepartment(token, dto))
                 .message("Yeni departman eklendi.")
                 .build());
     }
 
     //Departman bilgilerini günceller.
     @PutMapping
-    public ResponseEntity<BaseResponse<Boolean>> updateDepartment(@RequestBody UpdateDepartmentRequest dto) {
+    public ResponseEntity<BaseResponse<Boolean>> updateDepartment(
+            @RequestHeader(value = "Authorization", required = false) String token,
+            @RequestBody UpdateDepartmentRequest dto) {
         return ResponseEntity.ok(BaseResponse.<Boolean>builder()
-                .success(departmentService.updateDepartment(dto))
+                .success(departmentService.updateDepartment(token,dto))
                 .message("Departman bilgileri güncellendi.")
                 .build());
     }
 
     //Soft delete.
     @DeleteMapping("{departmentId}")
-    public ResponseEntity<BaseResponse<Boolean>> deleteDepartment(@PathVariable Long departmentId) {
+    public ResponseEntity<BaseResponse<Boolean>> deleteDepartment(
+            @RequestHeader(value = "Authorization", required = false) String token,
+            @PathVariable Long departmentId) {
         return ResponseEntity.ok(BaseResponse.<Boolean>builder()
-                .success(departmentService.deleteDepartment(departmentId))
+                .success(departmentService.deleteDepartment(token, departmentId))
                 .message("Departman silindi.")
                 .build());
     }
 
     @GetMapping("{departmentId}")
-    public ResponseEntity<BaseResponse<DepartmentDetailResponse>> getDepartment(@PathVariable Long departmentId) {
+    public ResponseEntity<BaseResponse<DepartmentDetailResponse>> getDepartment(
+            @RequestHeader(value = "Authorization", required = false) String token,
+            @PathVariable Long departmentId) {
         return ResponseEntity.ok(BaseResponse.<DepartmentDetailResponse>builder()
-                .data(departmentService.findDepartmentDetail(departmentId))
+                .data(departmentService.findDepartmentDetail(token,departmentId))
                 .message("Departman detayı getirildi.")
                 .build());
     }
 
-    //Todo: Firmaya ait departmanlar listelenicek. Company ile ilgili nesnelere şu an ulaşılamadığından geçici olarak Optional parametre kullanıldı.
+    //Firmanın tüm departmanlarını listeler.
     @GetMapping
-    public ResponseEntity<BaseResponse<List<AllDepartmentResponse>>> getAllDepartment(@RequestParam Optional<Long> companyId) {
+    public ResponseEntity<BaseResponse<List<AllDepartmentResponse>>> getAllDepartment(
+            @RequestHeader(value = "Authorization", required = false) String token) {
         return ResponseEntity.ok(BaseResponse.<List<AllDepartmentResponse>>builder()
-                .data(departmentService.findAllDepartments(companyId))
+                .data(departmentService.findAllDepartments(token))
                 .message("Tüm departmanlar listesi.")
                 .build());
     }
 
     @GetMapping("{departmentId}/subdepartments")
-    public ResponseEntity<BaseResponse<List<AllDepartmentResponse>>> getAllSubDepartments(@PathVariable Long departmentId){
+    public ResponseEntity<BaseResponse<List<AllDepartmentResponse>>> getAllSubDepartments(
+            @RequestHeader(value = "Authorization", required = false) String token,
+            @PathVariable Long departmentId) {
         return ResponseEntity.ok(BaseResponse.<List<AllDepartmentResponse>>builder()
-                        .data(departmentService.findAllSubDepartments(departmentId))
-                        .message("Alt departmanlar getirildi.")
+                .data(departmentService.findAllSubDepartments(token,departmentId))
+                .message("Alt departmanlar getirildi.")
                 .build());
     }
 
     @GetMapping("{managerId}/manager_departments")
-    public ResponseEntity<BaseResponse<List<AllDepartmentResponse>>> getDepartmentsOfManager(@PathVariable Long managerId){
+    public ResponseEntity<BaseResponse<List<AllDepartmentResponse>>> getDepartmentsOfManager(
+            @RequestHeader(value = "Authorization", required = false) String token,
+            @PathVariable Long managerId) {
         return ResponseEntity.ok(BaseResponse.<List<AllDepartmentResponse>>builder()
-                .data(departmentService.findAllDepartmentsOfManager(managerId))
+                .data(departmentService.findAllDepartmentsOfManager(token,managerId))
                 .message("Menajerin yönettiği departmanların listesi.")
                 .build());
     }
 
     //Departmanın bağlı olduğu üst birimleri getirir.
     @GetMapping("{departmentId}/hierarchy")
-    public ResponseEntity<BaseResponse<List<AllDepartmentResponse>>> getDepartmentHierarchy(@PathVariable Long departmentId){
+    public ResponseEntity<BaseResponse<List<AllDepartmentResponse>>> getDepartmentHierarchy(
+            @RequestHeader(value = "Authorization", required = false) String token,
+            @PathVariable Long departmentId) {
         return ResponseEntity.ok(BaseResponse.<List<AllDepartmentResponse>>builder()
-                        .data(departmentService.findDepartmentHierarchy(departmentId))
-                        .message("Departman üst birimleri getirildi.")
+                .data(departmentService.findDepartmentHierarchy(token,departmentId))
+                .message("Departman üst birimleri getirildi.")
                 .build());
     }
 
     //Todo: Departman istatistikleri için endpoint, frontend ihtiyaçlarına göre oluşturulcak.
-
 
 
 }

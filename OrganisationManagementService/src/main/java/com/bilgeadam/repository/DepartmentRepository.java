@@ -16,13 +16,16 @@ public interface DepartmentRepository extends JpaRepository<Department,Long> {
     @Query("SELECT NEW com.bilgeadam.dto.response.DepartmentDetailResponse(d.id,d.name,d.description,CONCAT(e.firstName , '' , e.lastName)) FROM Department d JOIN Employee e ON e.id=d.managerId WHERE d.id = ?1")
     DepartmentDetailResponse findDepartmentDetailByDepartmentId(Long departmentId);
 
-    @Query("SELECT NEW com.bilgeadam.dto.response.AllDepartmentResponse(d.id,d.name,CONCAT(e.firstName,' ',e.lastName)) FROM Department D JOIN Employee e ON d.managerId=e.id")
-    List<AllDepartmentResponse> findAllDepartments();
+    @Query("SELECT NEW com.bilgeadam.dto.response.AllDepartmentResponse(d.id,d.name,CONCAT(e.firstName,' ',e.lastName)) FROM Department d JOIN Employee e ON d.managerId=e.id WHERE d.companyId = ?1")
+    List<AllDepartmentResponse> findAllDepartments(Long companyId);
 
-    @Query("SELECT NEW com.bilgeadam.dto.response.AllDepartmentResponse(d.id,d.name,CONCAT(e.firstName,' ',e.lastName)) FROM Department D JOIN Employee e ON d.managerId=e.id WHERE d.parentDepartmentId = ?1")
+    @Query("SELECT NEW com.bilgeadam.dto.response.AllDepartmentResponse(d.id,d.name,CONCAT(e.firstName,' ',e.lastName)) FROM Department d JOIN Employee e ON d.managerId=e.id WHERE d.parentDepartmentId = ?1")
     List<AllDepartmentResponse> findAllSubDepartments(Long departmentId);
 
-    //Todo: Dönen nesne için yeni View yazılabilir.
-    @Query("SELECT NEW com.bilgeadam.dto.response.AllDepartmentResponse(d.id,d.name,CONCAT(e.firstName,' ',e.lastName)) FROM Department D JOIN Employee e ON d.managerId=e.id WHERE d.managerId = ?1")
+
+    @Query("SELECT NEW com.bilgeadam.dto.response.AllDepartmentResponse(d.id,d.name,CONCAT(e.firstName,' ',e.lastName)) FROM Department d JOIN Employee e ON d.managerId=e.id WHERE d.managerId = ?1")
     List<AllDepartmentResponse> findAllDepartmentsOfManagerByManagerId(Long managerId);
+
+    @Query("SELECT d.companyId FROM Department d WHERE d.id = ?1")
+    Optional<Long> findCompanyIdByDepartmentId(Long departmentId);
 }

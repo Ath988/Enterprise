@@ -21,7 +21,7 @@ public class Employee extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
     Long companyId; //çalıştığı şirket Idsi
-    Long userId; //userServiceteki bu çalışanın userIdsi ?
+    Long authId;
     Long managerEmployeeId;//yöneticisinin Idsi, hiyerarşik düzen için
     String firstName;
     String lastName;

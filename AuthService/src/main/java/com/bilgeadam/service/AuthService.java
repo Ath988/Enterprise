@@ -30,6 +30,9 @@ public class AuthService {
             throw new EnterpriseException(ErrorType.LOGIN_ERROR);
         }
         Auth user = userOptional.get();
+        if (user.getAuthState().equals(EAuthState.PENDING)) {
+            throw new EnterpriseException(ErrorType.LOGIN_ERROR_EMAIL_VALIDATION);
+        }
         return "dummy_token"; //TODO: user Token donmeli!
     }
 

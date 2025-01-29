@@ -1,11 +1,13 @@
 package com.bilgeadam.service;
 
+import com.bilgeadam.dto.request.EmailDto;
 import com.bilgeadam.dto.request.LoginRequestDto;
 import com.bilgeadam.dto.request.NewPasswordRequestDto;
 import com.bilgeadam.dto.request.RegisterRequestDto;
 import com.bilgeadam.entity.Auth;
 import com.bilgeadam.exception.EnterpriseException;
 import com.bilgeadam.exception.ErrorType;
+import com.bilgeadam.manager.MailManager;
 import com.bilgeadam.repository.AuthRepository;
 import com.bilgeadam.util.enums.EAuthState;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +22,7 @@ public class AuthService {
     private final AuthRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserAuthVerifyCodeService userAuthVerifyCodeService;
+    private final MailManager mailManager;
 
     public String doLogin(LoginRequestDto dto) {
         Optional<Auth> userOptional = userRepository.findByEmail(dto.email());
@@ -27,6 +30,9 @@ public class AuthService {
             throw new EnterpriseException(ErrorType.LOGIN_ERROR);
         }
         Auth user = userOptional.get();
+        if (user.getAuthState().equals(EAuthState.PENDING)) {
+            throw new EnterpriseException(ErrorType.LOGIN_ERROR_EMAIL_VALIDATION);
+        }
         return "dummy_token"; //TODO: user Token donmeli!
     }
 
@@ -45,7 +51,9 @@ public class AuthService {
                 .build();
         user = userRepository.save(user);
         String authCode = userAuthVerifyCodeService.generateAuthCode(user.getId());
-        //TODO: Mail service araciliyla kullaniciya onay maili yolla!
+        mailManager.sendEmail(new EmailDto("enterprice@gmail.com", "enterprice@auth.com", user.getEmail(),
+                "E-posta Adresini Onayla",
+                "email adresini onaylamak icin linke tiklayiniz : http://localhost:9091/v1/dev/auth/auth-mail?auth=" + authCode));
         return true;
     }
 
@@ -75,7 +83,9 @@ public class AuthService {
         }
         Auth user = userOptional.get();
         String authCode = userAuthVerifyCodeService.generateAuthCode(user.getId());
-        //TODO: maile link gonderme islemi yapilacak
+        mailManager.sendEmail(new EmailDto("enterprice@gmail.com", "enterprice@forgotpassword.com", user.getEmail(),
+                "Sifre Sifirlama",
+                "Sifre sifirlama linki : http://localhost:9091/v1/dev/auth/new-password?auth=" + authCode));
 
         return true;
     }
@@ -94,4 +104,6 @@ public class AuthService {
         userRepository.save(user);
         return true;
     }
+
+
 }

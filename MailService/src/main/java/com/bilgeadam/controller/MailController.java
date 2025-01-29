@@ -21,10 +21,10 @@ public class MailController {
     private final MailService mailService;
 
     @PostMapping(SEND_MAIL)
-    public ResponseEntity<Mail> sendEmail(@RequestBody @Valid EmailDto emailDto) {
+    public ResponseEntity<Boolean> sendEmail(@RequestBody @Valid EmailDto emailDto) {
         Mail email = mailService.createEmail(emailDto);
         mailService.sendEmail(email);
 
-        return new ResponseEntity<>(email, HttpStatus.CREATED);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 }

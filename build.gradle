@@ -49,10 +49,13 @@ allprojects{
 		implementation libs.springBootStarterAmqp
 		implementation libs.springBootStarterDataJpa
 		implementation libs.springBootStarterSecurity
+		implementation libs.jwt
 		implementation libs.springBootStarterValidation
 		implementation libs.springBootStarterWeb
 		implementation libs.springBootStarterWebsocket
 		implementation libs.springCloudStarterGatewayMvc
+		implementation libs.swagger
+		implementation libs.openapi
 		compileOnly libs.lombok
 		developmentOnly libs.springBootDevtools
 		runtimeOnly libs.postgresql

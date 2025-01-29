@@ -1,5 +1,6 @@
 package com.projectmanagementservice.controllers;
 
+import com.projectmanagementservice.dto.request.AddTaskToProjectDTO;
 import com.projectmanagementservice.dto.request.PageRequestDTO;
 import com.projectmanagementservice.dto.request.ProjectSaveRequestDTO;
 import com.projectmanagementservice.dto.request.ProjectUpdateRequestDTO;
@@ -50,6 +51,12 @@ public class ProjectController
     public ResponseEntity<Project> findByIdAndAuthId(Long id){
 
         return ResponseEntity.ok(projectService.findByIdAndAuthId(id));
+    }
+
+    @PostMapping(ADD_TASK_TO_PROJECT)
+    public ResponseEntity<Boolean> addTaskToProject(AddTaskToProjectDTO dto){
+
+        return ResponseEntity.ok(projectService.addTaskToProject(dto));
     }
 
 }

@@ -19,7 +19,8 @@ public enum ErrorType
     NOTFOUND_USER(1003, "Kullanici Bulunamadi", HttpStatus.NOT_FOUND),
     NOTFOUND_USER_AUTH(1004, "Kullanici onay kodu gecersiz!", HttpStatus.NOT_FOUND),
     TASK_NOT_FOUND(1005, "Task Bulunamadi", HttpStatus.BAD_REQUEST),
-    EMAIL_ALREADY_TAKEN(1006, "E-posta adresi sistemde kayitli!", HttpStatus.BAD_REQUEST );
+    EMAIL_ALREADY_TAKEN(1006, "E-posta adresi sistemde kayitli!", HttpStatus.BAD_REQUEST ),
+    INVALID_TOKEN(1007,"Girdiğiniz token hatalıdır. Lütfen değiştirerek tekrar deneyiniz.",HttpStatus.UNAUTHORIZED);;
 
     int code;
     String message;

@@ -28,4 +28,6 @@ public interface EmployeeRepository extends JpaRepository<Employee,Long> {
     @Query("SELECT e.companyId FROM Employee e WHERE e.id = ?1")
     Optional<Long> findCompanyIdByEmployeeId(Long employeeId);
 
+    Optional<Employee> findOptionalById(Long id);
+
 }

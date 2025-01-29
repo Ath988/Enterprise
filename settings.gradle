@@ -4,4 +4,14 @@ include 'OrganisationManagementService'
 include 'MailService'
 include 'ProjectManagementService'
 include 'FileService'
+include 'OrganisationManagementService'
+include 'MailService'
+include 'ProjectManagementService'
+include 'FileService'
+include 'AuthService'
+include 'NotificationService'
+
+
+include 'AuthService'
+
 include 'LogService'

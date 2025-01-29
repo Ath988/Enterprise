@@ -8,12 +8,18 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
+import java.util.UUID;
+
 @Data
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 @MappedSuperclass
 public abstract class BaseEntity {
+	@Id
+	@Column(length = 36, unique = true, nullable = false)
+	String id;
+	
 	Long createAt;
 	
 	Long updateAt;
@@ -27,10 +33,15 @@ public abstract class BaseEntity {
 		long now = System.currentTimeMillis();
 		this.createAt = now;
 		this.updateAt = now;
+		if (id==null){
+			id = UUID.randomUUID().toString();
+		}
 	}
 	
 	@PreUpdate
 	protected void onUpdate() {
 		this.updateAt = System.currentTimeMillis();
 	}
+	
+	
 }

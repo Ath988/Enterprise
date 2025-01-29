@@ -9,7 +9,8 @@ import org.springframework.http.HttpStatus;
 public enum ErrorType {
     INTERNAL_SERVER_ERROR(500,"Sunucuda beklenmeyen bir hata oldu. Lütfen tekrar deneyiniz",HttpStatus.INTERNAL_SERVER_ERROR),
     VALIDATION_ERROR(400,"Girilen parametreler hatalıdır. Lütfen kontrol ederek tekrar deneyiniz.", HttpStatus.BAD_REQUEST),
-    FILE_NOT_FOUND(101,"Dosya bulunamadı. Lütfen başka bir dosya ismi giriniz.",HttpStatus.NOT_FOUND);
+    FILE_NOT_FOUND(101,"Dosya bulunamadı. Lütfen başka bir dosya ismi giriniz.",HttpStatus.NOT_FOUND),
+    FILE_ALREADY_EXIST(102,"Bu isimde bir dosya zaten var. Lütfen başka bir dosya ismi giriniz.",HttpStatus.BAD_REQUEST);
 
 
     int code;

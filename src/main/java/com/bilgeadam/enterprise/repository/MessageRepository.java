@@ -13,7 +13,7 @@ public interface MessageRepository extends JpaRepository<Message,String> {
 	
 	
 	@Query("SELECT m FROM Message m " +
-			"WHERE m.chat.id = :chatId " +
+			"WHERE m.chat.id = :chatId AND m.isDeleted=false " +
 			"ORDER BY m.timeStamp DESC")
 	Page<Message> findLastMessagesByChatId(@Param("chatId") String chatId, Pageable pageable);
 

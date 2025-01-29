@@ -21,10 +21,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -45,24 +42,31 @@ public class ChatService {
 	}
 	
 	@Transactional
-	public GroupChatCreateResponseDto createNewGroupChat(CreateGroupChatRqDto dto, String token){
-		String userId = getIdFromTokenValidation(token);
-		Set<User> users = userRepository.findUserByIdIn(dto.users());
-		dto.users().add(userId);
-		if (users.size() != dto.users().size())
+	public GroupChatCreateResponseDto createNewGroupChat(CreateGroupChatRqDto dto, String userId) {
+		Set<User> users = userRepository.findUserByIdIn(dto.users()); // Kullanıcıları al
+		
+		Set<String> userIds = new HashSet<>(dto.users());
+		userIds.add(userId);
+		
+		// Kullanıcı sayısı uyuşmuyorsa hata fırlat
+		if (users.size() != userIds.size())
 			throw new EnterpriseException(ErrorType.USER_NOT_FOUND);
-		Chat chat = Chat.builder().name(dto.name().isBlank() ? "New Group Chat" : dto.name())
-		    .description(dto.description())
-		    .eChatType(EChatType.GROUP)
-		    .users(userRepository.findUserByIdIn(dto.users()))
-		    .build();
+		
+		// Kullanıcıları tekrar çağırmak yerine `users` değişkenini kullan!
+		Chat chat = Chat.builder()
+		                .name(dto.name().isBlank() ? "New Group Chat" : dto.name())
+		                .description(dto.description())
+		                .eChatType(EChatType.GROUP)
+		                .users(users)  // Tekrar çağırma, doğrudan `users` değişkenini kullan
+		                .build();
+		
 		chatRepository.save(chat);
 		return new GroupChatCreateResponseDto(chat.getId(), chat.getName(), chat.getDescription(), chat.getCreateDate());
 	}
 	
+	
 	@Transactional
-	public PrivateChatResponseDto createPrivateChat(CreatePrivateChatRqDto dto, String token) {
-		String userId = getIdFromTokenValidation(token);
+	public PrivateChatResponseDto createPrivateChat(CreatePrivateChatRqDto dto, String userId) {
 		
 		dto.users().add(userId);
 		if (dto.users().size() != 2)
@@ -120,8 +124,7 @@ public class ChatService {
 		return new NewMessageResponseDto(message.getId(), message.getContent(), message.getSender(), message.getTimeStamp(), message.getMessageStatus());
 	}
 	
-	public List<ChatListView> getUsersChats(String token){
-		String userId = getIdFromTokenValidation(token);
+	public List<ChatListView> getUsersChats(String userId){
 		Optional<User> userById = userRepository.findUserById(userId);
 		if(userById.isEmpty())
 			throw new EnterpriseException(ErrorType.USER_NOT_FOUND);
@@ -129,11 +132,7 @@ public class ChatService {
 	}
 	
 	
-	public Set<User> addUsersToChat(String token, AddUserToChatDto addUserToChatDto) {
-		Optional<String> optionalId = jwtManager.validateToken(token);
-		if (optionalId.isEmpty()) {
-			throw new EnterpriseException(ErrorType.USER_NOT_AUTHORIZED);
-		}
+	public Set<User> addUsersToChat(String userId, AddUserToChatDto addUserToChatDto) {
 		Optional<Chat> chatById = chatRepository.findChatWithUsersById(addUserToChatDto.chatId());
 		if (chatById.isEmpty()) {
 			throw new EnterpriseException(ErrorType.CHAT_NOT_FOUND);
@@ -150,7 +149,7 @@ public class ChatService {
 			                                   .collect(Collectors.toSet());
 			
 			Set<String> missingUserIds = addUserToChatDto.users().stream()
-			                                             .filter(userId -> !foundUserIds.contains(userId))
+			                                             .filter(userIdx -> !foundUserIds.contains(userId))
 			                                             .collect(Collectors.toSet());
 			
 			throw new EnterpriseException(ErrorType.USER_NOT_FOUND, "Missing users: " + missingUserIds);
@@ -172,9 +171,7 @@ public class ChatService {
 		return newUsers;
 	}
 	
-	public void deleteChat(String chatId, String token) {
-		String userId = getIdFromTokenValidation(token);
-		
+	public void deleteChat(String chatId, String userId) {
 		Optional<Chat> chatById = chatRepository.findChatWithUsersById(chatId);
 		if (chatById.isEmpty()) {
 			throw new EnterpriseException(ErrorType.CHAT_NOT_FOUND);
@@ -189,9 +186,7 @@ public class ChatService {
 		chatRepository.save(chat);
 	}
 	
-	public void deleteMessage(String messageId, String token) {
-		String userId = getIdFromTokenValidation(token);
-		
+	public void deleteMessage(String messageId, String userId) {
 		Optional<Message> messageById = messageRepository.findById(messageId);
 		if (messageById.isEmpty()) {
 			throw new EnterpriseException(ErrorType.MESSAGE_NOT_FOUND);
@@ -205,9 +200,7 @@ public class ChatService {
 		messageRepository.delete(message);
 	}
 	
-	public Set<User> getUsersInChat(String chatId, String token) {
-		String userId = getIdFromTokenValidation(token);
-		
+	public Set<User> getUsersInChat(String chatId, String userId) {
 		Optional<Chat> chatById = chatRepository.findChatWithUsersById(chatId);
 		if (chatById.isEmpty()) {
 			throw new EnterpriseException(ErrorType.CHAT_NOT_FOUND);
@@ -221,9 +214,8 @@ public class ChatService {
 		return chat.getUsers();
 	}
 	
-	public void updateChatDetails(UpdateChatDetailsDto dto, String token) {
+	public void updateChatDetails(UpdateChatDetailsDto dto, String userId) {
 		//SADECE GROUP CHAT'I ICIN GECERLI HALE GETIR
-		String userId = getIdFromTokenValidation(token);
 		
 		Optional<Chat> chatById = chatRepository.findChatWithUsersById(dto.chatId());
 		if (chatById.isEmpty()) {
@@ -240,9 +232,7 @@ public class ChatService {
 		chatRepository.save(chat);
 	}
 	
-	public ChatDetailResponseDto getChatDetails(int page, int size, String chatId, String token) {
-		String userId = getIdFromTokenValidation(token);
-		
+	public ChatDetailResponseDto getChatDetails(int page, int size, String chatId, String userId) {
 		Optional<Chat> chatById = chatRepository.findChatById(chatId);
 		if (chatById.isEmpty()) {
 			throw new EnterpriseException(ErrorType.CHAT_NOT_FOUND);

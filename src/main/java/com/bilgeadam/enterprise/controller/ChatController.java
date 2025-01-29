@@ -6,7 +6,9 @@ import com.bilgeadam.enterprise.entity.User;
 import com.bilgeadam.enterprise.exception.EnterpriseException;
 import com.bilgeadam.enterprise.exception.ErrorType;
 import com.bilgeadam.enterprise.service.ChatService;
+import com.bilgeadam.enterprise.utility.MessageProducer;
 import com.bilgeadam.enterprise.view.ChatListView;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
@@ -14,18 +16,20 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.*;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
 import java.util.List;
 import java.util.Set;
 
-@RestController("/chat")
+import static com.bilgeadam.enterprise.constant.RestApis.*;
+
+@RestController
+@RequestMapping(CHAT)
 @RequiredArgsConstructor
 public class ChatController {
 	private final ChatService chatService;
 	private final SimpMessagingTemplate messagingTemplate;
+	private final MessageProducer messageProducer;
 	
 	@PostMapping("/login")
 	public ResponseEntity<BaseResponse<String>> login(@RequestBody LoginRqDto dto){
@@ -37,29 +41,32 @@ public class ChatController {
 		                                     .build());
 	}
 	
-	@PostMapping("/create-group-chat")
+	@PostMapping(CREATE_GROUP_CHAT)
 	public ResponseEntity<BaseResponse<GroupChatCreateResponseDto>> createNewGroupChat( @RequestBody @Valid CreateGroupChatRqDto chatDto,
-	                                                                                    @RequestHeader("Authorization") String token){
+	                                                                                    HttpServletRequest request){
+		String userId = (String) request.getAttribute("userId");
 		return ResponseEntity.status(HttpStatus.CREATED).body(BaseResponse.<GroupChatCreateResponseDto>builder().code(200).success(true).message("Group chat created " +
 				                                                                                         "successfully!")
-		                                                             .data(chatService.createNewGroupChat(chatDto, getTokenFromHeader(token))).build());
+		                                                             .data(chatService.createNewGroupChat(chatDto, userId)).build());
 	}
 	
-	@PostMapping("/create-private-chat")
+	@PostMapping(CREATE_PRIVATE_CHAT)
 	public ResponseEntity<BaseResponse<PrivateChatResponseDto>> createOrGetPrivateChat(@RequestBody @Valid CreatePrivateChatRqDto chatDto,
-	                                                                                   @RequestHeader("Authorization") String token){
+	                                                                                   HttpServletRequest request){
+		String userId = (String) request.getAttribute("userId");
+		System.out.println("Private chat request userId: " + userId);
 		return ResponseEntity.status(HttpStatus.CREATED).body(BaseResponse.<PrivateChatResponseDto>builder().code(200).success(true)
 		                                                                  .message("Private chat created or retrieved successfully!")
-		                                                                  .data(chatService.createPrivateChat(chatDto, getTokenFromHeader(token))).build());
+		                                                                  .data(chatService.createPrivateChat(chatDto
+				                                                                  , userId)).build());
 	}
 	
 	@MessageMapping("/private/{chatId}/sendMessage")
 	public void sendPrivateMessage(@DestinationVariable String chatId,
 	                               @Payload NewMessageDto newMessageDto,
 	                               @Header("Authorization") String token) {
-		System.out.println("Received message -> chatId: " + chatId + ", content: " + newMessageDto.content());
+		messageProducer.sendMessage(newMessageDto.content());
 		String actualToken = getTokenFromHeader(token);
-		System.out.println("actual token: "+actualToken);
 		chatService.sendNewMessage(newMessageDto,actualToken);
 		messagingTemplate.convertAndSend("/topic/private/" + chatId, newMessageDto);
 	}
@@ -77,33 +84,36 @@ public class ChatController {
 	
 	
 	
-	@GetMapping("/get-chat-list")
+	@GetMapping(GET_CHAT_LIST)
 	public ResponseEntity<BaseResponse<List<ChatListView>>> getUsersChats(@RequestParam int page,
 	                                                                      @RequestParam int size,
-	                                                                      @RequestHeader("Authorization") String token){
+	                                                                      HttpServletRequest request){
+		String userId = (String) request.getAttribute("userId");
 		return ResponseEntity.ok(BaseResponse.<List<ChatListView>>builder()
 		                                     .code(200)
 		                                     .message("Message sent successfully!")
 		                                     .success(true)
-		                                     .data(chatService.getUsersChats(getTokenFromHeader(token)))
+		                                     .data(chatService.getUsersChats(userId))
 		                                     .build());
 	}
 	
-	@PostMapping("/add-user-chat")
-	public ResponseEntity<BaseResponse<Set<User>>> addUsersToChat(@RequestHeader("Authorization") String token ,
+	@PostMapping(ADD_USER_CHAT)
+	public ResponseEntity<BaseResponse<Set<User>>> addUsersToChat(HttpServletRequest request ,
 	                                                            @RequestBody @Valid AddUserToChatDto addUserToChatDto){
+		String userId = (String) request.getAttribute("userId");
 		return ResponseEntity.ok(BaseResponse.<Set<User>>builder()
 		                                     .code(200)
 		                                     .message("Users successfully added to chat!")
 		                                     .success(true)
-		                                     .data(chatService.addUsersToChat(getTokenFromHeader(token),addUserToChatDto))
+		                                     .data(chatService.addUsersToChat(userId,addUserToChatDto))
 		                                     .build());
 		
 	}
 	
-	@PutMapping("/delete-group-chat")
-	public ResponseEntity<BaseResponse<Boolean>> deleteGroupChat(@RequestBody @NotBlank String chatId, @RequestHeader("Authorization") String token){
-		chatService.deleteChat(chatId,getTokenFromHeader(token));
+	@PutMapping(DELETE_GROUP_CHAT)
+	public ResponseEntity<BaseResponse<Boolean>> deleteGroupChat(@RequestBody @NotBlank String chatId, HttpServletRequest request){
+		String userId = (String) request.getAttribute("userId");
+		chatService.deleteChat(chatId,userId);
 		return ResponseEntity.ok(BaseResponse.<Boolean>builder()
 		                                     .code(200)
 		                                     .message("Group chat deleted successfully!")
@@ -112,9 +122,10 @@ public class ChatController {
 		                                     .build());
 	}
 	
-	@PutMapping("/delete-message")
-	public ResponseEntity<BaseResponse<Boolean>> deleteMessage(@RequestBody @NotBlank String messageId, @RequestHeader("Authorization") String token ){
-		chatService.deleteMessage(messageId,getTokenFromHeader(token));
+	@PutMapping(DELETE_MESSAGE)
+	public ResponseEntity<BaseResponse<Boolean>> deleteMessage(@RequestBody @NotBlank String messageId, HttpServletRequest request ){
+		String userId = (String) request.getAttribute("userId");
+		chatService.deleteMessage(messageId,userId);
 		return ResponseEntity.ok(BaseResponse.<Boolean>builder()
 		                                     .code(200)
 		                                     .message("Message deleted successfully!")
@@ -123,20 +134,21 @@ public class ChatController {
 		                                     .build());
 	}
 	
-	@GetMapping("/get-users-in-chat")
-	public ResponseEntity<BaseResponse<Set<User>>> getUsersInChat(@RequestParam @NotBlank String chatId, @RequestHeader(
-			"Authorization") String token){
+	@GetMapping(GET_USERS_IN_CHAT)
+	public ResponseEntity<BaseResponse<Set<User>>> getUsersInChat(@RequestParam @NotBlank String chatId, HttpServletRequest request){
+		String userId = (String) request.getAttribute("userId");
 		return ResponseEntity.ok(BaseResponse.<Set<User>>builder()
 		                                     .code(200)
 		                                     .message("Users in chat retrieved successfully!")
 		                                     .success(true)
-		                                     .data(chatService.getUsersInChat(chatId,getTokenFromHeader(token)))
+		                                     .data(chatService.getUsersInChat(chatId,userId))
 		                                     .build());
 	}
 	
-	@PutMapping("/update-chat-details")
-	public ResponseEntity<BaseResponse<Boolean>> updateChatDetails(@RequestBody @Valid UpdateChatDetailsDto detailsDto, @RequestHeader("Authorization") String token){
-		chatService.updateChatDetails(detailsDto,getTokenFromHeader(token));
+	@PutMapping(UPDATE_CHAT_DETAILS)
+	public ResponseEntity<BaseResponse<Boolean>> updateChatDetails(@RequestBody @Valid UpdateChatDetailsDto detailsDto, HttpServletRequest request){
+		String userId = (String) request.getAttribute("userId");
+		chatService.updateChatDetails(detailsDto,userId);
 		return ResponseEntity.ok(BaseResponse.<Boolean>builder()
 		                                     .code(200)
 		                                     .message("Chat details updated successfully!")
@@ -145,17 +157,18 @@ public class ChatController {
 		                                     .build());
 	}
 	
-	@GetMapping("/get-chat-details")
+	@GetMapping(GET_CHAT_DETAILS)
 	public ResponseEntity<BaseResponse<ChatDetailResponseDto>> getChatDetails(@RequestParam @NotBlank String chatId,
 	                                                                          @RequestParam int page,
 	                                                                          @RequestParam int size,
-	                                                                          @RequestHeader("Authorization") String token){
+	                                                                          HttpServletRequest request){
+		String userId = (String) request.getAttribute("userId");
 		return ResponseEntity.ok(BaseResponse.<ChatDetailResponseDto>builder()
 		                                     .code(200)
 		                                     .message("Chat details updated successfully!")
 		                                     .success(true)
 		                                     .data(chatService.getChatDetails(page,size,chatId,
-		                                                                      getTokenFromHeader(token)))
+		                                                                      userId))
 		                                     .build());
 	}
 	

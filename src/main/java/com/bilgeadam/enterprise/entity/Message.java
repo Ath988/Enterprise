@@ -35,4 +35,6 @@ public class Message {
 	private LocalDateTime timeStamp=LocalDateTime.now();
 	@Enumerated(EnumType.STRING)
 	private EMessageStatus messageStatus;
+	@Builder.Default
+	boolean isDeleted = false;
 }

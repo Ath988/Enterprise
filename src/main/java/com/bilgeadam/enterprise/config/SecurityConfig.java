@@ -15,13 +15,15 @@ public class SecurityConfig {
 		http
 				.csrf(csrf -> csrf.disable())
 				.authorizeHttpRequests(auth -> auth
-						.requestMatchers("/ws/**", "/app/**").permitAll() // WebSocket ve STOMP endpoint'lerine izin ver
+						.requestMatchers("/ws/**", "/app/**").permitAll() // WebSocket izin ver
+						.requestMatchers("/**").permitAll() // Login ve Register'a izin ver
 						.anyRequest().authenticated()
 				)
-				.formLogin(form -> form.disable()) // Default login sayfasını devre dışı bırak
-				.httpBasic(httpBasic -> httpBasic.disable()); // Basic Auth'u devre dışı bırak
+				.formLogin(form -> form.disable())
+				.httpBasic(httpBasic -> httpBasic.disable());
 		
 		return http.build();
 	}
-
+	
+	
 }

@@ -10,4 +10,8 @@ public class EnterpriseException extends RuntimeException{
         super(errorType.getMessage());
         this.errorType = errorType;
     }
+    public EnterpriseException(ErrorType errorType, String message){
+        super(message);
+        this.errorType = errorType;
+    }
 }

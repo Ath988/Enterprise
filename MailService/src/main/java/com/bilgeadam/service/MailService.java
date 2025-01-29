@@ -17,13 +17,16 @@ public class MailService {
     private final MailSender mailSender;
     private final MailRepository mailRepository;
 
-    public Mail createEmail(EmailDto emailDto) {
-        Mail email = new Mail();
+    public Mail createEmail(EmailDto dto) {
 
-        email.setSendDateEmail(LocalDateTime.now());
-
-
-        return email;
+        return Mail.builder()
+                .emailFrom(dto.emailFrom())
+                .emailTo(dto.emailTo())
+                .ownerRef(dto.ownerRef())
+                .sendDateEmail(LocalDateTime.now())
+                .subject(dto.subject())
+                .text(dto.text())
+                .build();
     }
 
     public void sendEmail(Mail email) {

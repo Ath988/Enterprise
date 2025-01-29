@@ -52,6 +52,7 @@ allprojects{
 		implementation libs.jwt
 		implementation libs.springBootStarterValidation
 		implementation libs.springBootStarterWeb
+		implementation libs.springCloudStarterOpenFeign
 		implementation libs.springBootStarterWebsocket
 		implementation libs.springCloudStarterGatewayMvc
 		implementation libs.swagger

@@ -18,7 +18,7 @@ public class RestApis {
 	public static final String CREATE_PRIVATE_CHAT = "/create-private-chat";
 	public static final String SEND_PRIVATE_MESSAGE = "private/{chatId}/sendMessage";
 	public static final String SEND_GROUP_MESSAGE = "/group/{chatId}/sendMessage";
-	public static final String GET_CHAT_LIST = "/get-chat-list";
+	public static final String GET_USERS_CHAT = "/get-chat-list";
 	public static final String ADD_USER_CHAT = "/add-user-chat";
 	public static final String DELETE_GROUP_CHAT = "/delete-group-chat";
 	public static final String DELETE_MESSAGE = "/delete-message";

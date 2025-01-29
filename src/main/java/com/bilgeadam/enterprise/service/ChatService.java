@@ -1,10 +1,7 @@
 package com.bilgeadam.enterprise.service;
 
 import com.bilgeadam.enterprise.dto.request.*;
-import com.bilgeadam.enterprise.dto.response.ChatDetailResponseDto;
-import com.bilgeadam.enterprise.dto.response.GroupChatCreateResponseDto;
-import com.bilgeadam.enterprise.dto.response.NewMessageResponseDto;
-import com.bilgeadam.enterprise.dto.response.PrivateChatResponseDto;
+import com.bilgeadam.enterprise.dto.response.*;
 import com.bilgeadam.enterprise.entity.*;
 import com.bilgeadam.enterprise.exception.EnterpriseException;
 import com.bilgeadam.enterprise.exception.ErrorType;
@@ -12,9 +9,10 @@ import com.bilgeadam.enterprise.repository.ChatRepository;
 import com.bilgeadam.enterprise.repository.MessageRepository;
 import com.bilgeadam.enterprise.repository.UserRepository;
 import com.bilgeadam.enterprise.utility.JwtManager;
-import com.bilgeadam.enterprise.view.ChatListView;
+import com.bilgeadam.enterprise.view.MessageView;
 import com.bilgeadam.enterprise.view.UserView;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -43,21 +41,19 @@ public class ChatService {
 	
 	@Transactional
 	public GroupChatCreateResponseDto createNewGroupChat(CreateGroupChatRqDto dto, String userId) {
-		Set<User> users = userRepository.findUserByIdIn(dto.users()); // Kullanıcıları al
+		Set<User> users = userRepository.findUserByIdIn(dto.users());
 		
 		Set<String> userIds = new HashSet<>(dto.users());
 		userIds.add(userId);
 		
-		// Kullanıcı sayısı uyuşmuyorsa hata fırlat
 		if (users.size() != userIds.size())
 			throw new EnterpriseException(ErrorType.USER_NOT_FOUND);
 		
-		// Kullanıcıları tekrar çağırmak yerine `users` değişkenini kullan!
 		Chat chat = Chat.builder()
 		                .name(dto.name().isBlank() ? "New Group Chat" : dto.name())
 		                .description(dto.description())
 		                .eChatType(EChatType.GROUP)
-		                .users(users)  // Tekrar çağırma, doğrudan `users` değişkenini kullan
+		                .users(users)
 		                .build();
 		
 		chatRepository.save(chat);
@@ -68,12 +64,12 @@ public class ChatService {
 	@Transactional
 	public PrivateChatResponseDto createPrivateChat(CreatePrivateChatRqDto dto, String userId) {
 		
-		dto.users().add(userId);
 		if (dto.users().size() != 2)
 			throw new EnterpriseException(ErrorType.INVALID_CHAT_PARTICIPANTS);
 		
 		if (!dto.users().contains(userId))
 			throw new EnterpriseException(ErrorType.USER_NOT_PARTICIPANT);
+		
 		Set<User> users = userRepository.findUserByIdIn(dto.users());
 		
 		String recipientName = users.stream()
@@ -82,11 +78,16 @@ public class ChatService {
 		                            .findFirst()
 		                            .orElse("Unknown");
 		
-		Optional<Chat> existingChat = chatRepository.findPrivateChatByUsers(users, users.size());
+		Optional<Chat> existingChat = chatRepository.findPrivateChatByUsers(users, users.size(), EChatType.PRIVATE);
+		
 		if (existingChat.isPresent()) {
 			Chat chat = existingChat.get();
-			Pageable pageable = PageRequest.of(0, 10);
-			List<Message> lastTenMessages = messageRepository.findLastMessagesByChatId(chat.getId(), pageable).getContent();
+			
+			List<MessageView> lastTenMessages = messageRepository.findLastMessagesByChatId(chat.getId())
+			                                                     .stream()
+			                                                     .limit(10)
+			                                                     .map(MessageView::fromEntity)
+			                                                     .toList();
 			
 			return new PrivateChatResponseDto(chat.getId(), recipientName, lastTenMessages);
 		}
@@ -95,6 +96,7 @@ public class ChatService {
 		                   .eChatType(EChatType.PRIVATE)
 		                   .users(users)
 		                   .build();
+		
 		chatRepository.save(newChat);
 		
 		return new PrivateChatResponseDto(
@@ -103,6 +105,8 @@ public class ChatService {
 				new ArrayList<>()
 		);
 	}
+	
+	
 	
 	@Transactional
 	public NewMessageResponseDto sendNewMessage(NewMessageDto newMessageDto, String token){
@@ -124,12 +128,16 @@ public class ChatService {
 		return new NewMessageResponseDto(message.getId(), message.getContent(), message.getSender(), message.getTimeStamp(), message.getMessageStatus());
 	}
 	
-	public List<ChatListView> getUsersChats(String userId){
+	public List<ChatListViewDto> getUsersChats(String userId, int limit) {
 		Optional<User> userById = userRepository.findUserById(userId);
-		if(userById.isEmpty())
+		if (userById.isEmpty())
 			throw new EnterpriseException(ErrorType.USER_NOT_FOUND);
-		return chatRepository.findChatListViewByUserOrderByCreateDateDesc(userById.get());
+		
+		return chatRepository.findTopChatsByUser(userId, limit);
 	}
+	
+	
+	
 	
 	
 	public Set<User> addUsersToChat(String userId, AddUserToChatDto addUserToChatDto) {
@@ -171,8 +179,8 @@ public class ChatService {
 		return newUsers;
 	}
 	
-	public void deleteChat(String chatId, String userId) {
-		Optional<Chat> chatById = chatRepository.findChatWithUsersById(chatId);
+	public void deleteChat(DeleteChatRqDto dto, String userId) {
+		Optional<Chat> chatById = chatRepository.findChatWithUsersById(dto.chatId());
 		if (chatById.isEmpty()) {
 			throw new EnterpriseException(ErrorType.CHAT_NOT_FOUND);
 		}
@@ -186,8 +194,9 @@ public class ChatService {
 		chatRepository.save(chat);
 	}
 	
-	public void deleteMessage(String messageId, String userId) {
-		Optional<Message> messageById = messageRepository.findById(messageId);
+	
+	public void deleteMessage(DeleteMessageRqDto dto, String userId) {
+		Optional<Message> messageById = messageRepository.findMessageById(dto.messageId());
 		if (messageById.isEmpty()) {
 			throw new EnterpriseException(ErrorType.MESSAGE_NOT_FOUND);
 		}
@@ -232,20 +241,26 @@ public class ChatService {
 		chatRepository.save(chat);
 	}
 	
-	public ChatDetailResponseDto getChatDetails(int page, int size, String chatId, String userId) {
-		Optional<Chat> chatById = chatRepository.findChatById(chatId);
+	public ChatDetailResponseDto getChatDetails(int size, String chatId, String userId) {
+		Optional<Chat> chatById = chatRepository.findChatWithUsersById(chatId);
 		if (chatById.isEmpty()) {
 			throw new EnterpriseException(ErrorType.CHAT_NOT_FOUND);
 		}
 		
 		Chat chat = chatById.get();
 		
-		if (!chat.getUsers().stream().anyMatch(user -> user.getId().equals(userId))) {
+		if (chat.getUsers().stream().noneMatch(user -> user.getId().equals(userId))) {
 			throw new EnterpriseException(ErrorType.USER_NOT_PARTICIPANT);
 		}
 		
-		Pageable pageable = PageRequest.of(page, size, Sort.by("timeStamp").descending());
-		List<Message> messages = messageRepository.findLastMessagesByChatId(chat.getId(), pageable).getContent();
+		List<Message> messages = messageRepository.findLastMessagesByChatId(chat.getId())
+		                                          .stream()
+		                                          .limit(size)
+		                                          .toList();
+		
+		List<MessageView> messageViews = messages.stream()
+		                                         .map(MessageView::fromEntity)
+		                                         .toList();
 		
 		List<UserView> participants = chat.getUsers().stream()
 		                                  .map(user -> new UserView(user.getId(), user.getName(), user.getSurname()))
@@ -256,9 +271,12 @@ public class ChatService {
 				chat.getName(),
 				chat.getDescription(),
 				participants,
-				messages
+				messageViews
 		);
 	}
+	
+	
+	
 	
 	public String getIdFromTokenValidation(String token){
 		Optional<String> optionalId = jwtManager.validateToken(token);

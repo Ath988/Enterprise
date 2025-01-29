@@ -8,7 +8,7 @@ import java.util.Set;
 public record CreateGroupChatRqDto(
 		String name,
 		String description,
-		@NotBlank Set<String> users
+		Set<String> users
 		
 ) {
 }

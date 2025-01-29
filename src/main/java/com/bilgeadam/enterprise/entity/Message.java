@@ -36,5 +36,5 @@ public class Message {
 	@Enumerated(EnumType.STRING)
 	private EMessageStatus messageStatus;
 	@Builder.Default
-	boolean isDeleted = false;
+	private boolean isDeleted = false;
 }

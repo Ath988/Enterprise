@@ -20,9 +20,10 @@ ext{
             springSecurityTest :  'org.springframework.security:spring-security-test',
             junitPlatformLauncher : 'org.junit.platform:junit-platform-launcher',
             mailSender: 'org.springframework.boot:spring-boot-starter-mail',
-            swagger: 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.3',
+            openapi: 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.4',
+            openapiTest: 'org.springdoc:springdoc-openapi-starter-webmvc-api:2.8.4',
+            openapiCommon: 'org.springdoc:springdoc-openapi-starter-common:2.8.4',
             junitPlatformLauncher : 'org.junit.platform:junit-platform-launcher',
             jwt: "com.auth0:java-jwt:$versions.jwt",
-            openapi: "org.springdoc:springdoc-openapi-starter-webmvc-ui:$versions.openapi"
     ]
 }

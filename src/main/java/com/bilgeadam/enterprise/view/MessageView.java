@@ -9,13 +9,4 @@ public record MessageView(
 		String senderName,
 		String senderSurname
 ) {
-	public static MessageView fromEntity(Message message) {
-		return new MessageView(
-				message.getId(),
-				message.getContent(),
-				message.getSender().getId(),
-				message.getSender().getName(),
-				message.getSender().getSurname()
-		);
-	}
 }

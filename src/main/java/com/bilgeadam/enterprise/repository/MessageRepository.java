@@ -16,11 +16,13 @@ public interface MessageRepository extends JpaRepository<Message,String> {
 	
 	@Query("""
     SELECT m FROM Message m
-    WHERE m.chat.id = :chatId
+    WHERE m.chatId = :chatId
     AND m.isDeleted = false
     ORDER BY m.timeStamp DESC
+    LIMIT :size
 """)
-	List<Message> findLastMessagesByChatId(@Param("chatId") String chatId);
+	List<Message> findLastMessagesByChatId(@Param("chatId") String chatId, @Param("size") int size);
+
 
 	
 	@Query("SELECT m FROM Message AS m WHERE m.id = :messageId AND m.isDeleted = false")

@@ -82,25 +82,36 @@ public class ChatService {
 		if (!dto.userIds().contains(userId))
 			throw new EnterpriseException(ErrorType.USER_NOT_PARTICIPANT);
 		
-		Set<User> users = userRepository.findUserByIdIn(dto.userIds());
+		Set<String> userIds = new HashSet<>(dto.userIds());
+
+		List<Object[]> userResults = userRepository.findUserNamesByIds(userIds);
+		Map<String, String[]> userMap = userResults.stream()
+		                                           .collect(Collectors.toMap(
+				                                           row -> (String) row[0],
+				                                           row -> new String[]{(String) row[1], (String) row[2]}
+		                                           ));
 		
-		String recipientName = users.stream()
-		                            .filter(user -> !user.getId().equals(userId))
-		                            .map(user -> user.getName() + " " + user.getSurname())
-		                            .findFirst()
-		                            .orElse("Unknown");
+		String recipientName = userMap.entrySet().stream()
+		                              .filter(entry -> !entry.getKey().equals(userId))
+		                              .map(entry -> entry.getValue()[0] + " " + entry.getValue()[1])
+		                              .findFirst()
+		                              .orElse("Unknown");
 		
-		Optional<Chat> existingChat = chatRepository.findPrivateChatByUsers(
-				dto.userIds(), dto.userIds().size(), EChatType.PRIVATE
-		);
+		Optional<Chat> existingChat = chatRepository.findPrivateChatByUsers(userIds, userIds.size(), EChatType.PRIVATE);
 		
 		if (existingChat.isPresent()) {
 			Chat chat = existingChat.get();
 			
-			List<MessageView> lastTenMessages = messageRepository.findLastMessagesByChatId(chat.getId())
+			List<MessageView> lastTenMessages = messageRepository.findLastMessagesByChatId(chat.getId(),10)
 			                                                     .stream()
 			                                                     .limit(10)
-			                                                     .map(MessageView::fromEntity)
+			                                                     .map(message -> new MessageView(
+					                                                     message.getId(),
+					                                                     message.getContent(),
+					                                                     message.getSenderId(),
+					                                                     userMap.getOrDefault(message.getSenderId(), new String[]{"Unknown", "Unknown"})[0], // senderName
+					                                                     userMap.getOrDefault(message.getSenderId(), new String[]{"Unknown", "Unknown"})[1]  // senderSurname
+			                                                     ))
 			                                                     .toList();
 			
 			return new PrivateChatResponseDto(chat.getId(), recipientName, lastTenMessages);
@@ -111,12 +122,12 @@ public class ChatService {
 		                   .build();
 		chatRepository.save(newChat);
 		
-		List<ChatUser> chatUsers = dto.userIds().stream()
-		                              .map(userIdVal -> ChatUser.builder()
-		                                                        .chatId(newChat.getId())
-		                                                        .userId(userIdVal)
-		                                                        .build())
-		                              .toList();
+		List<ChatUser> chatUsers = userIds.stream()
+		                                  .map(userIdVal -> ChatUser.builder()
+		                                                            .chatId(newChat.getId())
+		                                                            .userId(userIdVal)
+		                                                            .build())
+		                                  .toList();
 		chatUserRepository.saveAll(chatUsers);
 		
 		return new PrivateChatResponseDto(
@@ -125,6 +136,7 @@ public class ChatService {
 				new ArrayList<>()
 		);
 	}
+	
 	
 	
 	
@@ -300,34 +312,42 @@ public class ChatService {
 	
 	@Transactional
 	public ChatDetailResponseDto getChatDetails(int size, String chatId, String userId) {
-		Optional<Chat> chatById = chatRepository.findChatById(chatId);
-		if (chatById.isEmpty()) {
-			throw new EnterpriseException(ErrorType.CHAT_NOT_FOUND);
-		}
+		Chat chat = chatRepository.findChatById(chatId)
+		                          .orElseThrow(() -> new EnterpriseException(ErrorType.CHAT_NOT_FOUND));
 		
-		Chat chat = chatById.get();
-		
-		boolean isParticipant = chatUserRepository.existsByChatIdAndUserId(chat.getId(), userId);
-		if (!isParticipant) {
+		if (!chatUserRepository.existsByChatIdAndUserId(chat.getId(), userId)) {
 			throw new EnterpriseException(ErrorType.USER_NOT_PARTICIPANT);
 		}
 		
-		List<Message> messages = messageRepository.findLastMessagesByChatId(chat.getId())
-		                                          .stream()
-		                                          .limit(size)
-		                                          .toList();
-		
-		List<MessageView> messageViews = messages.stream()
-		                                         .map(MessageView::fromEntity)
-		                                         .toList();
+		List<Message> messages = messageRepository.findLastMessagesByChatId(chat.getId(), size);
 		
 		List<String> userIds = chatUserRepository.findUserIdsByChatId(chat.getId());
 		
-		List<User> users = userRepository.findUsersByIds(userIds);
+		Map<String, String[]> userMap = userRepository.findUserNamesByIds(new HashSet<>(userIds))
+		                                              .stream()
+		                                              .collect(Collectors.toMap(
+				                                              row -> (String) row[0],
+				                                              row -> new String[]{(String) row[1], (String) row[2]}
+		                                              ));
 		
-		List<UserView> participants = users.stream()
-		                                   .map(user -> new UserView(user.getId(), user.getName(), user.getSurname(), user.getIsOnline()))
-		                                   .toList();
+		List<MessageView> messageViews = messages.stream()
+		                                         .map(message -> new MessageView(
+				                                         message.getId(),
+				                                         message.getContent(),
+				                                         message.getSenderId(),
+				                                         userMap.getOrDefault(message.getSenderId(), new String[]{"Unknown", "Unknown"})[0], // adı çektk
+				                                         userMap.getOrDefault(message.getSenderId(), new String[]{"Unknown", "Unknown"})[1]  // soyadı çektik
+		                                         ))
+		                                         .toList();
+		
+		List<UserView> participants = userIds.stream()
+		                                     .map(uid -> new UserView(
+				                                     uid,
+				                                     userMap.getOrDefault(uid, new String[]{"Unknown", "Unknown"})[0],
+				                                     userMap.getOrDefault(uid, new String[]{"Unknown", "Unknown"})[1],
+				                                     false
+		                                     ))
+		                                     .toList();
 		
 		return new ChatDetailResponseDto(
 				chat.getId(),
@@ -337,6 +357,8 @@ public class ChatService {
 				messageViews
 		);
 	}
+
+
 	
 	public String getIdFromTokenValidation(String token){
 		Optional<String> optionalId = jwtManager.validateToken(token);

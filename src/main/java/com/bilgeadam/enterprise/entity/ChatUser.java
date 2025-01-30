@@ -6,29 +6,18 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Data
 @Entity
-@Table(name = "tblmessage")
-public class Message {
+@Table(name = "tbl_chat_user")
+public class ChatUser {
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)
 	private String id;
 	@Column(nullable = false)
-	private String content;
-	@Column(nullable = false)
-	private String senderId;
-	@Column(nullable = false)
 	private String chatId;
 	@Column(nullable = false)
-	@Builder.Default
-	private LocalDateTime timeStamp=LocalDateTime.now();
-	@Enumerated(EnumType.STRING)
-	private EMessageStatus messageStatus;
-	@Builder.Default
-	private boolean isDeleted = false;
+	private String userId;
 }

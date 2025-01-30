@@ -22,15 +22,6 @@ public class Chat {
 	private String id;
 	private String name;
 	private String description;
-	@OneToMany(mappedBy = "chat", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-	private List<Message> messages = new ArrayList<>();
-	@ManyToMany(fetch = FetchType.LAZY)
-	@JoinTable(
-			name = "tblchat_users",
-			joinColumns = @JoinColumn(name = "chat_id"),
-			inverseJoinColumns = @JoinColumn(name = "user_id")
-	)
-	private Set<User> users = new HashSet<>();
 	@Enumerated(EnumType.STRING)
 	private EChatType eChatType;
 	@Builder.Default

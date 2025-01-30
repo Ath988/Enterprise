@@ -7,11 +7,11 @@ import com.bilgeadam.enterprise.exception.EnterpriseException;
 import com.bilgeadam.enterprise.exception.ErrorType;
 import com.bilgeadam.enterprise.service.ChatService;
 import com.bilgeadam.enterprise.utility.MessageProducer;
+import com.bilgeadam.enterprise.view.UserView;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.*;
@@ -44,10 +44,9 @@ public class ChatController {
 	@PostMapping(CREATE_GROUP_CHAT)
 	public ResponseEntity<BaseResponse<GroupChatCreateResponseDto>> createNewGroupChat( @RequestBody @Valid CreateGroupChatRqDto chatDto,
 	                                                                                    HttpServletRequest request){
-		String userId = (String) request.getAttribute("userId");
 		return ResponseEntity.status(HttpStatus.CREATED).body(BaseResponse.<GroupChatCreateResponseDto>builder().code(200).success(true).message("Group chat created " +
 				                                                                                         "successfully!")
-		                                                             .data(chatService.createNewGroupChat(chatDto, userId)).build());
+		                                                             .data(chatService.createNewGroupChat(chatDto)).build());
 	}
 	
 	@PostMapping(CREATE_PRIVATE_CHAT)
@@ -101,14 +100,14 @@ public class ChatController {
 	
 	
 	@PostMapping(ADD_USER_CHAT)
-	public ResponseEntity<BaseResponse<Set<User>>> addUsersToChat(HttpServletRequest request ,
-	                                                            @RequestBody @Valid AddUserToChatDto addUserToChatDto){
+	public ResponseEntity<BaseResponse<Set<UserView>>> addUsersToChat(HttpServletRequest request ,
+	                                                            @RequestBody @Valid AddUsersToGroupChatDto addUsersToGroupChatDto){
 		String userId = (String) request.getAttribute("userId");
-		return ResponseEntity.ok(BaseResponse.<Set<User>>builder()
+		return ResponseEntity.ok(BaseResponse.<Set<UserView>>builder()
 		                                     .code(200)
 		                                     .message("Users successfully added to chat!")
 		                                     .success(true)
-		                                     .data(chatService.addUsersToChat(userId,addUserToChatDto))
+		                                     .data(chatService.addUsersToChat(userId, addUsersToGroupChatDto))
 		                                     .build());
 		
 	}
@@ -142,9 +141,9 @@ public class ChatController {
 	}
 	
 	@GetMapping(GET_USERS_IN_CHAT)
-	public ResponseEntity<BaseResponse<Set<User>>> getUsersInChat(@RequestParam @NotBlank String chatId, HttpServletRequest request){
+	public ResponseEntity<BaseResponse<Set<UserView>>> getUsersInChat(@RequestParam @NotBlank String chatId, HttpServletRequest request){
 		String userId = (String) request.getAttribute("userId");
-		return ResponseEntity.ok(BaseResponse.<Set<User>>builder()
+		return ResponseEntity.ok(BaseResponse.<Set<UserView>>builder()
 		                                     .code(200)
 		                                     .message("Users in chat retrieved successfully!")
 		                                     .success(true)
@@ -169,7 +168,7 @@ public class ChatController {
 			@RequestParam @NotBlank String chatId,
 			@RequestParam int size,
 			HttpServletRequest request) {
-		
+		//TODO: LIMIT YERINE PAGEABLE KULLAN!!!!
 		String userId = (String) request.getAttribute("userId");
 		return ResponseEntity.ok(BaseResponse.<ChatDetailResponseDto>builder()
 		                                     .code(200)

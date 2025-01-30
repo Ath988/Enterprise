@@ -43,9 +43,9 @@ class ChatServiceTest {
 	@Test
 	void shouldCreateNewGroupChatSuccessfully() {
 		// Arrange: Mock kullanıcı ID'leri ve döndürülecek kullanıcı nesneleri
-		Set<String> userIds = Set.of("user1-id", "user2-id");
-		User user1 = new User("user1-id", "test1@example.com", "test", "User1", "User1", true);
-		User user2 = new User("user2-id", "test2@example.com", "Test", "User2", "User2", true);
+		Set<String> userIds = Set.of("user1-chatId", "user2-chatId");
+		User user1 = new User("user1-chatId", "test1@example.com", "test", "User1", "User1", true);
+		User user2 = new User("user2-chatId", "test2@example.com", "Test", "User2", "User2", true);
 		
 		Mockito.when(userRepository.findUserByIdIn(userIds)).thenReturn(Set.of(user1, user2));
 		
@@ -54,16 +54,16 @@ class ChatServiceTest {
 		// Chat nesnesi oluşturulurken ID'nin null olmamasını sağlıyoruz
 		Mockito.doAnswer(invocation -> {
 			Chat chat = invocation.getArgument(0);
-			chat.setId("chat-id"); // ID manuel olarak set ediliyor
+			chat.setId("chat-chatId"); // ID manuel olarak set ediliyor
 			return chat;
 		}).when(chatRepository).save(ArgumentMatchers.any(Chat.class));
 		
 		// Act: Grup sohbeti oluştur
-		GroupChatCreateResponseDto response = chatService.createNewGroupChat(requestDto, "user1-id");
+		GroupChatCreateResponseDto response = chatService.createNewGroupChat(requestDto, "user1-chatId");
 		
 		// Assert: Doğru sonuç döndüğünden emin ol
 		assertNotNull(response);
-		assertEquals("chat-id", response.id());  // ID’nin gerçekten set edildiğini kontrol et
+		assertEquals("chat-chatId", response.id());  // ID’nin gerçekten set edildiğini kontrol et
 		assertEquals("Test Group", response.name());
 		assertEquals("Description", response.description());
 		
@@ -83,7 +83,7 @@ class ChatServiceTest {
 		
 		// Act & Assert: Exception fırlatıldığını kontrol et
 		EnterpriseException exception = Assertions.assertThrows(EnterpriseException.class,
-		                                                        () -> chatService.createNewGroupChat(requestDto, "admin-id"));
+		                                                        () -> chatService.createNewGroupChat(requestDto, "admin-chatId"));
 		
 		assertEquals(ErrorType.USER_NOT_FOUND, exception.getErrorType());
 		Mockito.verify(userRepository, Mockito.times(1)).findUserByIdIn(invalidUserIds);
@@ -93,9 +93,9 @@ class ChatServiceTest {
 	@Test
 	void shouldThrowExceptionWhenUsersMismatch() {
 		// Arrange: Bir kısım kullanıcı eksik durumda
-		Set<String> userIds = Set.of("user1-id", "user2-id", "user3-id");
-		User user1 = new User("user1-id", "test1@example.com", "Test", "User1","User1", true);
-		User user2 = new User("user2-id", "test2@example.com", "Test", "User2","User2", true);
+		Set<String> userIds = Set.of("user1-chatId", "user2-chatId", "user3-chatId");
+		User user1 = new User("user1-chatId", "test1@example.com", "Test", "User1","User1", true);
+		User user2 = new User("user2-chatId", "test2@example.com", "Test", "User2","User2", true);
 		
 		Mockito.when(userRepository.findUserByIdIn(userIds)).thenReturn(Set.of(user1, user2)); // 3 kullanıcıdan sadece 2'si döner
 		
@@ -103,7 +103,7 @@ class ChatServiceTest {
 
 		// Act & Assert: Exception fırlatıldığını kontrol et
 		EnterpriseException exception = Assertions.assertThrows(EnterpriseException.class,
-		                                                        () -> chatService.createNewGroupChat(requestDto, "admin-id"));
+		                                                        () -> chatService.createNewGroupChat(requestDto, "admin-chatId"));
 		
 		assertEquals(ErrorType.USER_NOT_FOUND, exception.getErrorType());
 		Mockito.verify(userRepository, Mockito.times(1)).findUserByIdIn(userIds);

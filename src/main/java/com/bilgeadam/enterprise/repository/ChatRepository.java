@@ -3,10 +3,6 @@ package com.bilgeadam.enterprise.repository;
 import com.bilgeadam.enterprise.dto.response.ChatListViewDto;
 import com.bilgeadam.enterprise.entity.Chat;
 import com.bilgeadam.enterprise.entity.EChatType;
-import com.bilgeadam.enterprise.entity.User;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -19,17 +15,18 @@ public interface ChatRepository extends JpaRepository<Chat,String> {
 	
 	@Query("""
     SELECT c FROM Chat c
-    JOIN FETCH c.users u
     WHERE c.isDeleted = false
     AND c.id = :chatId
-    """)
-	Optional<Chat> findChatWithUsersById(@Param("chatId") String chatId);
+    AND EXISTS (SELECT 1 FROM ChatUser cu WHERE cu.chatId = c.id)
+""")
+	Optional<Chat> findChatByIdWithAtLeastOneUser(@Param("chatId") String chatId);
+
 
 	
 	
 	@Query("SELECT c FROM Chat AS c WHERE c.id = :chatId AND c.isDeleted = false")
 	Optional<Chat> findChatById(@Param("chatId") String chatId);
-
+	
 	
 	@Query("""
     SELECT new com.bilgeadam.enterprise.dto.response.ChatListViewDto(
@@ -39,16 +36,21 @@ public interface ChatRepository extends JpaRepository<Chat,String> {
             ELSE (
                 SELECT CONCAT(u.name, ' ', u.surname)
                 FROM User u
-                WHERE u.id IN (SELECT cu.id FROM c.users cu WHERE cu.id <> :userId)
-                ORDER BY u.id ASC LIMIT 1
+                WHERE u.id = (
+                    SELECT cu.userId
+                    FROM ChatUser cu
+                    WHERE cu.chatId = c.id AND cu.userId <> :userId
+                    ORDER BY cu.userId ASC
+                    LIMIT 1
+                )
             )
         END,
         c.createDate,
-        (SELECT m.content FROM Message m WHERE m.chat.id = c.id ORDER BY m.timeStamp DESC LIMIT 1)
+        (SELECT m.content FROM Message m WHERE m.chatId = c.id ORDER BY m.timeStamp DESC LIMIT 1)
     )
     FROM Chat c
-    JOIN c.users u
-    WHERE c.isDeleted = false AND u.id = :userId
+    JOIN ChatUser cu ON c.id = cu.chatId
+    WHERE c.isDeleted = false AND cu.userId = :userId
     ORDER BY c.createDate DESC
     LIMIT :limit
 """)
@@ -56,33 +58,26 @@ public interface ChatRepository extends JpaRepository<Chat,String> {
 	
 	
 	
-	
-	
-	
-	
-	
-	
-	
 	Boolean existsChatById(String id);
 	
-	@Query("SELECT CASE WHEN COUNT(c) > 0 THEN true ELSE false END " +
-			"FROM Chat c " +
-			"WHERE c.isDeleted = false AND SIZE(c.users) = :size " +
-			"AND :users MEMBER OF c.users")
-	Boolean existsPrivateChatByUsers(@Param("users") Set<User> users, @Param("size") long size);
 	
-	@Query("SELECT c FROM Chat c " +
-			"JOIN c.users u " +
-			"WHERE c.isDeleted = false " +
-			"AND c.eChatType = :chatType " +
-			"AND SIZE(c.users) = :size " +
-			"AND u IN :users " +
-			"GROUP BY c " +
-			"HAVING COUNT(u) = :size")
-	Optional<Chat> findPrivateChatByUsers(@Param("users") Set<User> users,
-	                                      @Param("size") long size,
-	                                      @Param("chatType") EChatType chatType);
+	@Query("""
+    SELECT c FROM Chat c
+    JOIN ChatUser cu ON cu.chatId = c.id
+    WHERE c.isDeleted = false
+    AND c.eChatType = :chatType
+    AND (SELECT COUNT(DISTINCT cu2.userId) FROM ChatUser cu2 WHERE cu2.chatId = c.id) = :size
+    GROUP BY c.id
+    HAVING COUNT(DISTINCT cu.userId) = :size
+""")
+	Optional<Chat> findPrivateChatByUsers(
+			@Param("userIds") Set<String> userIds,
+			@Param("size") long size,
+			@Param("chatType") EChatType chatType
+	);
 
+	
+	
 	
 	
 	

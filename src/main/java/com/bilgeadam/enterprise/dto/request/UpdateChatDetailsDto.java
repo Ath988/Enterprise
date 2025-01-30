@@ -9,5 +9,6 @@ public record UpdateChatDetailsDto(
 		@NotBlank
         String name,
 		@NotEmpty
-        String description) {
+        String description
+) {
 }

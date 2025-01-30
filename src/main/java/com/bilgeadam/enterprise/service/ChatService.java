@@ -6,19 +6,17 @@ import com.bilgeadam.enterprise.entity.*;
 import com.bilgeadam.enterprise.exception.EnterpriseException;
 import com.bilgeadam.enterprise.exception.ErrorType;
 import com.bilgeadam.enterprise.repository.ChatRepository;
+import com.bilgeadam.enterprise.repository.ChatUserRepository;
 import com.bilgeadam.enterprise.repository.MessageRepository;
 import com.bilgeadam.enterprise.repository.UserRepository;
 import com.bilgeadam.enterprise.utility.JwtManager;
 import com.bilgeadam.enterprise.view.MessageView;
 import com.bilgeadam.enterprise.view.UserView;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -29,6 +27,7 @@ public class ChatService {
 	private final JwtManager jwtManager;
 	private final UserRepository userRepository;
 	private final MessageRepository messageRepository;
+	private final ChatUserRepository chatUserRepository;
 	
 	
 	public String login(LoginRqDto dto){
@@ -40,37 +39,50 @@ public class ChatService {
 	}
 	
 	@Transactional
-	public GroupChatCreateResponseDto createNewGroupChat(CreateGroupChatRqDto dto, String userId) {
-		Set<User> users = userRepository.findUserByIdIn(dto.users());
+	public GroupChatCreateResponseDto createNewGroupChat(CreateGroupChatRqDto dto) {
+		Set<User> users = userRepository.findUserByIdIn(dto.userIds());
 		
-		Set<String> userIds = new HashSet<>(dto.users());
-		userIds.add(userId);
-		
-		if (users.size() != userIds.size())
+		if (users.size() != dto.userIds().size()) {
 			throw new EnterpriseException(ErrorType.USER_NOT_FOUND);
+		}
 		
 		Chat chat = Chat.builder()
 		                .name(dto.name().isBlank() ? "New Group Chat" : dto.name())
 		                .description(dto.description())
 		                .eChatType(EChatType.GROUP)
-		                .users(users)
 		                .build();
 		
 		chatRepository.save(chat);
+
+		Set<String> allUserIds = new HashSet<>(dto.userIds());
+		allUserIds.add(dto.creatorId());
+		
+		List<ChatUser> chatUsers = allUserIds.stream()
+		                                     .map(userId -> ChatUser.builder()
+		                                                            .chatId(chat.getId())
+		                                                            .userId(userId)
+		                                                            .build())
+		                                     .toList();
+		
+		
+		chatUserRepository.saveAll(chatUsers);
+		
 		return new GroupChatCreateResponseDto(chat.getId(), chat.getName(), chat.getDescription(), chat.getCreateDate());
 	}
+	
+	
 	
 	
 	@Transactional
 	public PrivateChatResponseDto createPrivateChat(CreatePrivateChatRqDto dto, String userId) {
 		
-		if (dto.users().size() != 2)
+		if (dto.userIds().size() != 2)
 			throw new EnterpriseException(ErrorType.INVALID_CHAT_PARTICIPANTS);
 		
-		if (!dto.users().contains(userId))
+		if (!dto.userIds().contains(userId))
 			throw new EnterpriseException(ErrorType.USER_NOT_PARTICIPANT);
 		
-		Set<User> users = userRepository.findUserByIdIn(dto.users());
+		Set<User> users = userRepository.findUserByIdIn(dto.userIds());
 		
 		String recipientName = users.stream()
 		                            .filter(user -> !user.getId().equals(userId))
@@ -78,7 +90,9 @@ public class ChatService {
 		                            .findFirst()
 		                            .orElse("Unknown");
 		
-		Optional<Chat> existingChat = chatRepository.findPrivateChatByUsers(users, users.size(), EChatType.PRIVATE);
+		Optional<Chat> existingChat = chatRepository.findPrivateChatByUsers(
+				dto.userIds(), dto.userIds().size(), EChatType.PRIVATE
+		);
 		
 		if (existingChat.isPresent()) {
 			Chat chat = existingChat.get();
@@ -94,10 +108,16 @@ public class ChatService {
 		
 		Chat newChat = Chat.builder()
 		                   .eChatType(EChatType.PRIVATE)
-		                   .users(users)
 		                   .build();
-		
 		chatRepository.save(newChat);
+		
+		List<ChatUser> chatUsers = dto.userIds().stream()
+		                              .map(userIdVal -> ChatUser.builder()
+		                                                        .chatId(newChat.getId())
+		                                                        .userId(userIdVal)
+		                                                        .build())
+		                              .toList();
+		chatUserRepository.saveAll(chatUsers);
 		
 		return new PrivateChatResponseDto(
 				newChat.getId(),
@@ -108,24 +128,52 @@ public class ChatService {
 	
 	
 	
+	
+	
 	@Transactional
-	public NewMessageResponseDto sendNewMessage(NewMessageDto newMessageDto, String token){
+	public NewMessageResponseDto sendNewMessage(NewMessageDto newMessageDto, String token) {
 		String userId = getIdFromTokenValidation(token);
+		
 		Optional<User> userById = userRepository.findUserById(userId);
-		if(userById.isEmpty())
+		if (userById.isEmpty()) {
 			throw new EnterpriseException(ErrorType.USER_NOT_FOUND);
-		Optional<Chat> chatById = chatRepository.findChatWithUsersById(newMessageDto.chatId());
-		if(chatById.isEmpty())
+		}
+		
+		Optional<Chat> chatById = chatRepository.findChatByIdWithAtLeastOneUser(newMessageDto.chatId());
+		if (chatById.isEmpty()) {
 			throw new EnterpriseException(ErrorType.CHAT_NOT_FOUND);
-		if (!chatById.get().getUsers().contains(userById.get()))
+		}
+		
+		boolean isParticipant = chatUserRepository.existsByChatIdAndUserId(newMessageDto.chatId(), userId);
+		if (!isParticipant) {
 			throw new EnterpriseException(ErrorType.USER_NOT_PARTICIPANT);
-		Message message = Message.builder().content(newMessageDto.content())
-				.sender(userById.get())
-				.chat(chatById.get())
-				.messageStatus(EMessageStatus.SENT)
-				.build();
+		}
+		
+		Message message = Message.builder()
+		                         .content(newMessageDto.content())
+		                         .senderId(userId)
+		                         .chatId(newMessageDto.chatId())
+		                         .messageStatus(EMessageStatus.SENT)
+		                         .timeStamp(LocalDateTime.now())
+		                         .build();
+		
 		messageRepository.save(message);
-		return new NewMessageResponseDto(message.getId(), message.getContent(), message.getSender(), message.getTimeStamp(), message.getMessageStatus());
+		
+		User sender = userById.get();
+		UserView senderView = new UserView(
+				sender.getId(),
+				sender.getName(),
+				sender.getSurname(),
+				sender.getIsOnline()
+		);
+		
+		return new NewMessageResponseDto(
+				message.getId(),
+				message.getContent(),
+				senderView,
+				message.getTimeStamp(),
+				message.getMessageStatus()
+		);
 	}
 	
 	public List<ChatListViewDto> getUsersChats(String userId, int limit) {
@@ -137,102 +185,110 @@ public class ChatService {
 	}
 	
 	
-	
-	
-	
-	public Set<User> addUsersToChat(String userId, AddUserToChatDto addUserToChatDto) {
-		Optional<Chat> chatById = chatRepository.findChatWithUsersById(addUserToChatDto.chatId());
-		if (chatById.isEmpty()) {
-			throw new EnterpriseException(ErrorType.CHAT_NOT_FOUND);
-		}
-		Chat chat = chatById.get();
-		
-		Set<User> existingUsers = chat.getUsers();
-		
-		Set<User> newUsers = userRepository.findUserByIdIn(addUserToChatDto.users());
-		
-		if (newUsers.size() != addUserToChatDto.users().size()) {
-			Set<String> foundUserIds = newUsers.stream()
-			                                   .map(User::getId)
-			                                   .collect(Collectors.toSet());
-			
-			Set<String> missingUserIds = addUserToChatDto.users().stream()
-			                                             .filter(userIdx -> !foundUserIds.contains(userId))
-			                                             .collect(Collectors.toSet());
-			
-			throw new EnterpriseException(ErrorType.USER_NOT_FOUND, "Missing users: " + missingUserIds);
-		}
-		
-		Set<User> alreadyInChat = newUsers.stream()
-		                                  .filter(existingUsers::contains)
-		                                  .collect(Collectors.toSet());
-		
-		if (!alreadyInChat.isEmpty()) {
-			Set<String> alreadyInChatIds = alreadyInChat.stream()
-			                                            .map(User::getId)
-			                                            .collect(Collectors.toSet());
-			throw new EnterpriseException(ErrorType.USER_ALREADY_IN_CHAT, "Users already in chat: " + alreadyInChatIds);
-		}
-		
-		existingUsers.addAll(newUsers);
-		chatRepository.save(chat);
-		return newUsers;
-	}
-	
-	public void deleteChat(DeleteChatRqDto dto, String userId) {
-		Optional<Chat> chatById = chatRepository.findChatWithUsersById(dto.chatId());
-		if (chatById.isEmpty()) {
-			throw new EnterpriseException(ErrorType.CHAT_NOT_FOUND);
-		}
-		
-		Chat chat = chatById.get();
-		if (!chat.getUsers().stream().anyMatch(user -> user.getId().equals(userId))) {
+	@Transactional
+	public Set<UserView> addUsersToChat(String userId, AddUsersToGroupChatDto addUsersToGroupChatDto) {
+		Chat chat = chatRepository.findChatByIdWithAtLeastOneUser(addUsersToGroupChatDto.chatId())
+		                          .orElseThrow(() -> new EnterpriseException(ErrorType.CHAT_NOT_FOUND));
+
+		if (!chatUserRepository.existsByChatIdAndUserId(chat.getId(), userId)) {
 			throw new EnterpriseException(ErrorType.USER_NOT_PARTICIPANT);
 		}
+
+		Set<String> newUserIds = new HashSet<>(addUsersToGroupChatDto.userIds());
+
+		Set<String> existingUserIds = new HashSet<>(chatUserRepository.findUserIdsByChatId(chat.getId()));
+
+		newUserIds.removeAll(existingUserIds);
+
+		if (newUserIds.isEmpty()) {
+			throw new EnterpriseException(ErrorType.USER_ALREADY_IN_CHAT, "All users are already in the chat.");
+		}
+
+		boolean areUsersValid = userRepository.existsAllUsers(newUserIds, newUserIds.size());
+		if (!areUsersValid) {
+			throw new EnterpriseException(ErrorType.USER_NOT_FOUND, "Some users do not exist in the system.");
+		}
+
+		List<ChatUser> chatUsers = newUserIds.stream()
+		                                     .map(newUserId -> new ChatUser(UUID.randomUUID().toString(), chat.getId(), newUserId))
+		                                     .toList();
 		
+		chatUserRepository.saveAll(chatUsers);
+		Set<User> addedUsers = userRepository.findUserByIdIn(newUserIds);
+		return addedUsers.stream()
+		                 .map(user -> new UserView(user.getId(), user.getName(), user.getSurname(), user.getIsOnline()))
+		                 .collect(Collectors.toSet());
+	}
+	
+	
+	
+	@Transactional
+	public void deleteChat(DeleteChatRqDto dto, String userId) {
+		Chat chat = chatRepository.findChatById(dto.chatId())
+		                          .orElseThrow(() -> new EnterpriseException(ErrorType.CHAT_NOT_FOUND));
+
+		boolean isParticipant = chatUserRepository.existsByChatIdAndUserId(chat.getId(), userId);
+		if (!isParticipant) {
+			throw new EnterpriseException(ErrorType.USER_NOT_PARTICIPANT);
+		}
+
 		chat.setDeleted(true);
 		chatRepository.save(chat);
 	}
 	
 	
+	
+	@Transactional
 	public void deleteMessage(DeleteMessageRqDto dto, String userId) {
-		Optional<Message> messageById = messageRepository.findMessageById(dto.messageId());
-		if (messageById.isEmpty()) {
-			throw new EnterpriseException(ErrorType.MESSAGE_NOT_FOUND);
-		}
-		
-		Message message = messageById.get();
-		if (!message.getSender().getId().equals(userId)) {
+		Message message = messageRepository.findMessageById(dto.messageId())
+		                                   .orElseThrow(() -> new EnterpriseException(ErrorType.MESSAGE_NOT_FOUND));
+
+		if (!message.getSenderId().equals(userId)) {
 			throw new EnterpriseException(ErrorType.USER_NOT_AUTHORIZED);
 		}
-		
-		messageRepository.delete(message);
+
+		message.setDeleted(true);
+		messageRepository.save(message);
 	}
 	
-	public Set<User> getUsersInChat(String chatId, String userId) {
-		Optional<Chat> chatById = chatRepository.findChatWithUsersById(chatId);
-		if (chatById.isEmpty()) {
+	
+	@Transactional
+	public Set<UserView> getUsersInChat(String chatId, String userId) {
+		boolean chatExists = chatRepository.existsById(chatId);
+		if (!chatExists) {
 			throw new EnterpriseException(ErrorType.CHAT_NOT_FOUND);
 		}
 		
-		Chat chat = chatById.get();
-		if (!chat.getUsers().stream().anyMatch(user -> user.getId().equals(userId))) {
+		boolean isParticipant = chatUserRepository.existsByChatIdAndUserId(chatId, userId);
+		if (!isParticipant) {
 			throw new EnterpriseException(ErrorType.USER_NOT_PARTICIPANT);
 		}
-		
-		return chat.getUsers();
+
+		List<String> userIds = chatUserRepository.findUserIdsByChatId(chatId);
+
+		List<User> users = userRepository.findUsersByIds(userIds);
+
+		return users.stream()
+		            .map(user -> new UserView(user.getId(), user.getName(), user.getSurname(), user.getIsOnline()))
+		            .collect(Collectors.toSet());
 	}
 	
+	
+	@Transactional
 	public void updateChatDetails(UpdateChatDetailsDto dto, String userId) {
-		//SADECE GROUP CHAT'I ICIN GECERLI HALE GETIR
-		
-		Optional<Chat> chatById = chatRepository.findChatWithUsersById(dto.chatId());
+		Optional<Chat> chatById = chatRepository.findChatById(dto.chatId());
 		if (chatById.isEmpty()) {
 			throw new EnterpriseException(ErrorType.CHAT_NOT_FOUND);
 		}
 		
 		Chat chat = chatById.get();
-		if (!chat.getUsers().stream().anyMatch(user -> user.getId().equals(userId))) {
+		
+		if (!chat.getEChatType().equals(EChatType.GROUP)) {
+			throw new EnterpriseException(ErrorType.INVALID_CHAT_TYPE);
+		}
+		
+		boolean isParticipant = chatUserRepository.existsByChatIdAndUserId(chat.getId(), userId);
+		if (!isParticipant) {
 			throw new EnterpriseException(ErrorType.USER_NOT_PARTICIPANT);
 		}
 		
@@ -241,15 +297,18 @@ public class ChatService {
 		chatRepository.save(chat);
 	}
 	
+	
+	@Transactional
 	public ChatDetailResponseDto getChatDetails(int size, String chatId, String userId) {
-		Optional<Chat> chatById = chatRepository.findChatWithUsersById(chatId);
+		Optional<Chat> chatById = chatRepository.findChatById(chatId);
 		if (chatById.isEmpty()) {
 			throw new EnterpriseException(ErrorType.CHAT_NOT_FOUND);
 		}
 		
 		Chat chat = chatById.get();
 		
-		if (chat.getUsers().stream().noneMatch(user -> user.getId().equals(userId))) {
+		boolean isParticipant = chatUserRepository.existsByChatIdAndUserId(chat.getId(), userId);
+		if (!isParticipant) {
 			throw new EnterpriseException(ErrorType.USER_NOT_PARTICIPANT);
 		}
 		
@@ -262,9 +321,13 @@ public class ChatService {
 		                                         .map(MessageView::fromEntity)
 		                                         .toList();
 		
-		List<UserView> participants = chat.getUsers().stream()
-		                                  .map(user -> new UserView(user.getId(), user.getName(), user.getSurname()))
-		                                  .toList();
+		List<String> userIds = chatUserRepository.findUserIdsByChatId(chat.getId());
+		
+		List<User> users = userRepository.findUsersByIds(userIds);
+		
+		List<UserView> participants = users.stream()
+		                                   .map(user -> new UserView(user.getId(), user.getName(), user.getSurname(), user.getIsOnline()))
+		                                   .toList();
 		
 		return new ChatDetailResponseDto(
 				chat.getId(),
@@ -275,9 +338,6 @@ public class ChatService {
 		);
 	}
 	
-	
-	
-	
 	public String getIdFromTokenValidation(String token){
 		Optional<String> optionalId = jwtManager.validateToken(token);
 		if(optionalId.isEmpty())
@@ -285,17 +345,5 @@ public class ChatService {
 		return optionalId.get();
 	}
 	
-	private Set<User> validateAndFetchUsers(Set<String> userIds) {
-		Set<User> users = userRepository.findUserByIdIn(userIds);
-		if (users.size() != userIds.size()) {
-			throw new EnterpriseException(ErrorType.USER_NOT_FOUND, "Invalid users: " + userIds);
-		}
-		return users;
-	}
-	
-	
-	public boolean isUserInChat(String chatId,String userId){
-		return chatRepository.isUserInChat(chatId,userId);
-	}
 	
 }

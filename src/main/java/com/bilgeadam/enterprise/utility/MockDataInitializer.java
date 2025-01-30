@@ -2,6 +2,7 @@ package com.bilgeadam.enterprise.utility;
 
 import com.bilgeadam.enterprise.entity.*;
 import com.bilgeadam.enterprise.repository.ChatRepository;
+import com.bilgeadam.enterprise.repository.ChatUserRepository;
 import com.bilgeadam.enterprise.repository.MessageRepository;
 import com.bilgeadam.enterprise.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -10,17 +11,15 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
-//@Component
+@Component
 @RequiredArgsConstructor
 public class MockDataInitializer implements ApplicationRunner {
 	
 	private final UserRepository userRepository;
 	private final ChatRepository chatRepository;
+	private final ChatUserRepository chatUserRepository;
 	private final MessageRepository messageRepository;
 	
 	@Override
@@ -28,10 +27,13 @@ public class MockDataInitializer implements ApplicationRunner {
 		List<User> users = createMockUsers();
 		userRepository.saveAll(users);
 		
-		List<Chat> chats = createMockChats(users);
+		List<Chat> chats = createMockChats();
 		chatRepository.saveAll(chats);
 		
-		List<Message> messages = createMockMessages(chats);
+		List<ChatUser> chatUsers = createMockChatUsers(chats, users);
+		chatUserRepository.saveAll(chatUsers);
+		
+		List<Message> messages = createMockMessages(chats, chatUsers);
 		messageRepository.saveAll(messages);
 		
 		System.out.println("Mock data initialized successfully!");
@@ -39,9 +41,9 @@ public class MockDataInitializer implements ApplicationRunner {
 	
 	private List<User> createMockUsers() {
 		List<User> users = new ArrayList<>();
-		
 		for (int i = 1; i <= 5; i++) {
 			users.add(User.builder()
+			              .id(UUID.randomUUID().toString())
 			              .email("user" + i + "@example.com")
 			              .password("password" + i)
 			              .name("User" + i)
@@ -49,48 +51,62 @@ public class MockDataInitializer implements ApplicationRunner {
 			              .isOnline(i % 2 == 0)
 			              .build());
 		}
-		
 		return users;
 	}
 	
-	private List<Chat> createMockChats(List<User> users) {
+	private List<Chat> createMockChats() {
 		List<Chat> chats = new ArrayList<>();
-		
 		for (int i = 1; i <= 3; i++) {
-			Chat chat = Chat.builder()
-			                .name("Chat " + i)
-			                .description("This is description for Chat " + i)
-			                .eChatType(i % 2 == 0 ? EChatType.PRIVATE : EChatType.GROUP)
-			                .createDate(LocalDateTime.now().minusDays(i))
-			                .isDeleted(false)
-			                .build();
-
-			Set<User> chatUsers = new HashSet<>(users.subList(0, i + 1));
-			chat.setUsers(chatUsers);
-			
-			chats.add(chat);
+			chats.add(Chat.builder()
+			              .id(UUID.randomUUID().toString())
+			              .name("Chat " + i)
+			              .description("This is description for Chat " + i)
+			              .eChatType(i % 2 == 0 ? EChatType.PRIVATE : EChatType.GROUP)
+			              .createDate(LocalDateTime.now().minusDays(i))
+			              .isDeleted(false)
+			              .build());
 		}
-		
 		return chats;
 	}
 	
-	private List<Message> createMockMessages(List<Chat> chats) {
-		List<Message> messages = new ArrayList<>();
-		
+	private List<ChatUser> createMockChatUsers(List<Chat> chats, List<User> users) {
+		List<ChatUser> chatUsers = new ArrayList<>();
 		for (Chat chat : chats) {
-			for (int i = 1; i <= 5; i++) {
-				Message message = Message.builder()
-				                         .content("Message " + i + " in chat " + chat.getName())
-				                         .chat(chat)
-				                         .sender(chat.getUsers().iterator().next())
-				                         .messageStatus(EMessageStatus.SENT)
-				                         .timeStamp(LocalDateTime.now().minusMinutes(i))
-				                         .build();
-				
-				messages.add(message);
+			int numParticipants = chat.getEChatType() == EChatType.GROUP ? 3 : 2;
+			for (int i = 0; i < numParticipants; i++) {
+				chatUsers.add(ChatUser.builder()
+				                      .id(UUID.randomUUID().toString())
+				                      .chatId(chat.getId())
+				                      .userId(users.get(i).getId())
+				                      .build());
 			}
 		}
-		
+		return chatUsers;
+	}
+	
+	private List<Message> createMockMessages(List<Chat> chats, List<ChatUser> chatUsers) {
+		List<Message> messages = new ArrayList<>();
+		for (Chat chat : chats) {
+			for (int i = 1; i <= 5; i++) {
+				String senderId = chatUsers.stream()
+				                           .filter(cu -> cu.getChatId().equals(chat.getId()))
+				                           .findFirst()
+				                           .map(ChatUser::getUserId)
+				                           .orElse(null);
+				
+				if (senderId != null) {
+					messages.add(Message.builder()
+					                    .id(UUID.randomUUID().toString())
+					                    .content("Message " + i + " in chat " + chat.getName())
+					                    .chatId(chat.getId())
+					                    .senderId(senderId)
+					                    .messageStatus(EMessageStatus.SENT)
+					                    .timeStamp(LocalDateTime.now().minusMinutes(i))
+					                    .isDeleted(false)
+					                    .build());
+				}
+			}
+		}
 		return messages;
 	}
 }

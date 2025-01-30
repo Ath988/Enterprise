@@ -4,9 +4,9 @@ import jakarta.validation.constraints.NotBlank;
 
 import java.util.Set;
 
-public record AddUserToChatDto(
+public record AddUsersToGroupChatDto(
 		@NotBlank
 		String chatId,
-		Set<String> users
+		Set<String> userIds
 ) {
 }

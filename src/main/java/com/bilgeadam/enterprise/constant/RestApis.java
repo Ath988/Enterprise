@@ -22,7 +22,7 @@ public class RestApis {
 	public static final String ADD_USER_CHAT = "/add-user-chat";
 	public static final String DELETE_GROUP_CHAT = "/delete-group-chat";
 	public static final String DELETE_MESSAGE = "/delete-message";
-	public static final String GET_USERS_IN_CHAT = "/get-users-in-chat";
+	public static final String GET_USERS_IN_CHAT = "/get-userIds-in-chat";
 	public static final String UPDATE_CHAT_DETAILS = "/update-chat-details";
 	public static final String GET_CHAT_DETAILS = "/get-chat-details";
 	

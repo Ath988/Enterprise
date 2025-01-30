@@ -55,13 +55,14 @@ allprojects{
 		implementation libs.springCloudStarterOpenFeign
 		implementation libs.springBootStarterWebsocket
 		implementation libs.springCloudStarterGatewayMvc
-		implementation libs.swagger
 		implementation libs.openapi
+		implementation libs.openapiCommon
 		compileOnly libs.lombok
 		developmentOnly libs.springBootDevtools
 		runtimeOnly libs.postgresql
 		annotationProcessor libs.lombok
 		testImplementation libs.springBootStarterTest
+		testImplementation libs.openapiTest
 		testImplementation libs.springRabbitTest
 		testImplementation libs.springSecurityTest
 		testRuntimeOnly libs.junitPlatformLauncher

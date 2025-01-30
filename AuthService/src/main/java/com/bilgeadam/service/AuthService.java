@@ -10,6 +10,7 @@ import com.bilgeadam.exception.ErrorType;
 import com.bilgeadam.manager.MailManager;
 import com.bilgeadam.repository.AuthRepository;
 import com.bilgeadam.util.enums.EAuthState;
+import com.bilgeadam.util.enums.JwtManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final UserAuthVerifyCodeService userAuthVerifyCodeService;
     private final MailManager mailManager;
+    private final JwtManager jwtManager;
 
     public String doLogin(LoginRequestDto dto) {
         Optional<Auth> userOptional = userRepository.findByEmail(dto.email());
@@ -33,7 +35,11 @@ public class AuthService {
         if (user.getAuthState().equals(EAuthState.PENDING)) {
             throw new EnterpriseException(ErrorType.LOGIN_ERROR_EMAIL_VALIDATION);
         }
-        return "dummy_token"; //TODO: user Token donmeli!
+        Optional<String> token = jwtManager.createToken(user.getId());
+        if (token.isPresent()) {
+            return token.get();
+        }
+        throw new EnterpriseException(ErrorType.LOGIN_ERROR);
     }
 
     public Boolean doRegister(RegisterRequestDto dto) {

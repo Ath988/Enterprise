@@ -75,15 +75,7 @@ public interface ChatRepository extends JpaRepository<Chat,String> {
 			@Param("size") long size,
 			@Param("chatType") EChatType chatType
 	);
-
 	
-	
-	
-	
-	
-	@Query("SELECT CASE WHEN COUNT(c) > 0 THEN TRUE ELSE FALSE END " +
-			"FROM Chat c JOIN c.users u WHERE c.isDeleted = false AND c.id = :chatId AND u.id = :userId")
-	boolean isUserInChat(@Param("chatId") String chatId, @Param("userId") String userId);
 	
 	
 	

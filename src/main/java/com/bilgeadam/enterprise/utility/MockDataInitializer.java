@@ -43,7 +43,6 @@ public class MockDataInitializer implements ApplicationRunner {
 		List<User> users = new ArrayList<>();
 		for (int i = 1; i <= 5; i++) {
 			users.add(User.builder()
-			              .id(UUID.randomUUID().toString())
 			              .email("user" + i + "@example.com")
 			              .password("password" + i)
 			              .name("User" + i)
@@ -58,7 +57,6 @@ public class MockDataInitializer implements ApplicationRunner {
 		List<Chat> chats = new ArrayList<>();
 		for (int i = 1; i <= 3; i++) {
 			chats.add(Chat.builder()
-			              .id(UUID.randomUUID().toString())
 			              .name("Chat " + i)
 			              .description("This is description for Chat " + i)
 			              .eChatType(i % 2 == 0 ? EChatType.PRIVATE : EChatType.GROUP)
@@ -75,7 +73,6 @@ public class MockDataInitializer implements ApplicationRunner {
 			int numParticipants = chat.getEChatType() == EChatType.GROUP ? 3 : 2;
 			for (int i = 0; i < numParticipants; i++) {
 				chatUsers.add(ChatUser.builder()
-				                      .id(UUID.randomUUID().toString())
 				                      .chatId(chat.getId())
 				                      .userId(users.get(i).getId())
 				                      .build());
@@ -96,7 +93,6 @@ public class MockDataInitializer implements ApplicationRunner {
 				
 				if (senderId != null) {
 					messages.add(Message.builder()
-					                    .id(UUID.randomUUID().toString())
 					                    .content("Message " + i + " in chat " + chat.getName())
 					                    .chatId(chat.getId())
 					                    .senderId(senderId)

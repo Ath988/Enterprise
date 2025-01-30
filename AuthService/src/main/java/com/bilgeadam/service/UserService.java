@@ -3,10 +3,14 @@ package com.bilgeadam.service;
 import com.bilgeadam.entity.User;
 import com.bilgeadam.util.enums.Permission;
 import com.bilgeadam.util.enums.Role;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 import java.util.EnumSet;
 import java.util.Set;
 
+@Service
+@RequiredArgsConstructor
 public class UserService {
     public Set<Permission> getPermissionsForRole(Role role) {
         switch (role) {

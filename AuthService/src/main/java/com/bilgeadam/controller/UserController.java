@@ -3,16 +3,17 @@ package com.bilgeadam.controller;
 import com.bilgeadam.entity.User;
 import com.bilgeadam.service.UserService;
 import com.bilgeadam.util.enums.Role;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/users")
+@RequiredArgsConstructor
 public class UserController {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
     @PostMapping("/{userId}/assign-role")
     public User assignRoleToUser(@PathVariable Long userId, @RequestParam Role role) {

@@ -4,16 +4,16 @@ server:
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/enterprise_filedb
-    username: postgres
-    password: root
+    url: ${Database_URL}
+    username: ${Database_Username}
+    password: ${Database_Password}
   jpa:
     show-sql: false
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
 
 minio:
-  endpoint: http://127.0.0.1:9000
-  access-key: admin
-  secret-key: BilgeAdam123**
-  bucket-name: enterprise-bucket
+  endpoint: ${MinIO_Endpoint}
+  access-key: ${MinIO_AccessKey}
+  secret-key: ${MinIO_SecretKey}
+  bucket-name: ${MinIO_BucketName}

@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
+import java.util.UUID;
+
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
@@ -12,12 +14,11 @@ import lombok.experimental.SuperBuilder;
 @Entity
 @Table(name = "file_info")
 public class FileInfo extends BaseEntity {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	Long id;
 	@Column(length = 2048)
 	String fileName;
 	@Column(length = 2048)
 	String url;
 	Long size;
+	
+	
 }

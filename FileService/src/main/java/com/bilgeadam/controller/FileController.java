@@ -75,4 +75,44 @@ public class FileController {
 		                                     .build());
 	}
 	
+	@PutMapping(RENAME_FILE+"/{oldFileName}")
+	public ResponseEntity<BaseResponse<String>> renameFile(@PathVariable("oldFileName") String oldFileName, @RequestParam("newFileName") String newFileName) {
+		try{
+			fileService.renameFile(oldFileName, newFileName);
+			return ResponseEntity.ok(BaseResponse.<String>builder()
+			                                     .code(200)
+						                         .message("File renamed successfully")
+						                         .data("File renamed successfully")
+						                         .success(true)
+			                                     .build());
+		}catch (Exception e){
+			return ResponseEntity.status(500).body(BaseResponse.<String>builder()
+					                                       .code(500)
+					                                       .message("File rename failed : "+e.getMessage())
+					                                       .data("File rename failed : "+e.getMessage())
+					                                       .success(false)
+			                                               .build());
+		}
+	}
+	
+	@GetMapping(GET_FILE_URL+"/{fileName}")
+	public ResponseEntity<BaseResponse<String>> getFileUrl(@PathVariable("fileName") String fileName) {
+		try{
+			return ResponseEntity.ok(BaseResponse.<String>builder()
+					                         .code(200)
+					                         .message("File URL retrieved successfully")
+					                         .data(fileService.getFileUrl(fileName))
+					                         .success(true)
+			                                 .build());
+		}
+		catch (Exception e){
+			return ResponseEntity.status(404).body(BaseResponse.<String>builder()
+					                                       .code(404)
+					                                       .message("File not found : "+e.getMessage())
+					                                       .data(null)
+					                                       .success(false)
+			                                               .build());
+		}
+	}
+	
 }

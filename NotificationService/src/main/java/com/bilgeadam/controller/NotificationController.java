@@ -54,7 +54,7 @@ public class NotificationController {
 
 
 
-    @GetMapping
+    @GetMapping("/list")
     public ResponseEntity<BaseResponse<List<Notification>>> getNotifications() {
 
 
@@ -66,10 +66,4 @@ public class NotificationController {
                 .success(true)
                 .build());
     }
-
-
-
-    //Kişiye göre listeleme
-    //Token eklicem, o tokena göre string validate yap
-
 }

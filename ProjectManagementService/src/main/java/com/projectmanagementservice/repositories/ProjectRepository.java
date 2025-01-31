@@ -13,4 +13,6 @@ public interface ProjectRepository extends JpaRepository<Project,Long>
     List<Project> findAllByNameContainingIgnoreCaseAndStatusIsNotAndAuthIdOrderByNameAsc(String s, EStatus eStatus, long i, PageRequest of);
 
     Optional<Project> findByIdAndAuthId(Long id, Long authId);
+
+    Optional<Project> findOptionalById(Long authId);
 }

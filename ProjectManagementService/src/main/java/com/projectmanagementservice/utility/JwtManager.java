@@ -1,6 +1,7 @@
 package com.projectmanagementservice.utility;
 
 
+import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
@@ -66,22 +67,20 @@ public class JwtManager {
         }
     }
 
-    public ERole getRoleFromToken(String token){
+
+
+    public Optional<String> getRoleFromToken(String token) {
         try {
             Algorithm algorithm = Algorithm.HMAC512(SECRETKEY);
-            JWTVerifier verifier = com.auth0.jwt.JWT.require(algorithm).withIssuer(ISSUER).build();
+            JWTVerifier verifier = JWT.require(algorithm).withIssuer(ISSUER).build();
             DecodedJWT decodedJWT = verifier.verify(token);
-
             if (decodedJWT == null) {
-                System.out.println("Token Null ...");
                 throw new ProjectManagementException(ErrorType.INVALID_TOKEN);
             }
-
             String role = decodedJWT.getClaim("role").asString();
-            return ERole.valueOf(role.toUpperCase());
-        }catch (Exception e){
-            System.out.println(e.getMessage());
-            System.out.println("yoksa bura mıı????");
+            return Optional.of(role);
+        } catch (Exception e) {
+            System.out.println(e.toString());
             throw new ProjectManagementException(ErrorType.INVALID_TOKEN);
         }
     }

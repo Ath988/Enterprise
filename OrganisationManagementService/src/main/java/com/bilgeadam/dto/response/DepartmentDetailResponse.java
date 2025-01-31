@@ -1,15 +1,13 @@
 package com.bilgeadam.dto.response;
 
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
 
 
 @NoArgsConstructor
-@Builder
 @Data
 public class DepartmentDetailResponse{
 
@@ -27,6 +25,7 @@ public class DepartmentDetailResponse{
         this.description = description;
         this.manager = manager;
         this.parentDepartment = parentDepartment;
+        this.positions = new ArrayList<>();
     }
 
     //Todo: Şirket ismi de eklenicek.
@@ -35,6 +34,7 @@ public class DepartmentDetailResponse{
     String description;
     String manager;
     String parentDepartment; //Bağlı olduğu birim
+    List<String> positions;
 
 
 }

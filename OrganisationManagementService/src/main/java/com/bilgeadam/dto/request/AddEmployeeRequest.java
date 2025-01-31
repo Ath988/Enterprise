@@ -7,6 +7,6 @@ public record AddEmployeeRequest(
         String lastName,
         String email,
         EmployeeRole role,
-        Long departmentId
+        Long positionId
 ) {
 }

@@ -8,4 +8,5 @@ public class RestApis {
 
     public static final String EMPLOYEE=ROOT+"/employee";
     public static final String DEPARTMENT=ROOT+"/department";
+    public static final String POSITION=ROOT+"/position";
 }

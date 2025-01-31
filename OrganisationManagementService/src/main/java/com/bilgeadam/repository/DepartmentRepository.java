@@ -3,6 +3,7 @@ package com.bilgeadam.repository;
 import com.bilgeadam.dto.response.AllDepartmentResponse;
 import com.bilgeadam.dto.response.DepartmentDetailResponse;
 import com.bilgeadam.entity.Department;
+import com.bilgeadam.view.VwDepartment;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -28,4 +29,9 @@ public interface DepartmentRepository extends JpaRepository<Department,Long> {
 
     @Query("SELECT d.companyId FROM Department d WHERE d.id = ?1")
     Optional<Long> findCompanyIdByDepartmentId(Long departmentId);
+
+    @Query("SELECT NEW com.bilgeadam.view.VwDepartment(d.id,d.name) FROM Department d WHERE d.companyId = ?1")
+    List<VwDepartment> findAllVwDepartmentByCompanyId(Long companyId);
+
+
 }

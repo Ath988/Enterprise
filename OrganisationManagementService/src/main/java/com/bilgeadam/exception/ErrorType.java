@@ -12,6 +12,8 @@ public enum ErrorType {
     UNAUTHORIZED(401,"Unauthorized",HttpStatus.UNAUTHORIZED),
     DEPARTMENT_NOT_FOUND(1001,"Departman bulunamadı",HttpStatus.BAD_REQUEST),
     EMPLOYEE_NOT_FOUND(2001,"Çalışan bulunamadı",HttpStatus.BAD_REQUEST),
+    MANAGER_NOT_FOUND(2002,"Yönetici bulunamadı",HttpStatus.BAD_REQUEST),
+    POSITION_NOT_FOUND(3001,"Pozisyon bulunamadı",HttpStatus.BAD_REQUEST),
     INVALID_TOKEN(9001,"Geçersiz token bilgisi.",HttpStatus.BAD_REQUEST),
     INVALID_PASSWORD(9002,"Kullanıcı adı ya da şifre bilgisi hatalı.",HttpStatus.BAD_REQUEST),
 

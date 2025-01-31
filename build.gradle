@@ -46,9 +46,9 @@ allprojects{
 		}
 	}
 	dependencies{
-		implementation libs.springBootStarterAmqp
+		//implementation libs.springBootStarterAmqp
 		implementation libs.springBootStarterDataJpa
-		implementation libs.springBootStarterSecurity
+		//implementation libs.springBootStarterSecurity
 		implementation libs.jwt
 		implementation libs.springBootStarterValidation
 		implementation libs.springBootStarterWeb
@@ -64,8 +64,10 @@ allprojects{
 		testImplementation libs.springBootStarterTest
 		testImplementation libs.openapiTest
 		testImplementation libs.springRabbitTest
-		testImplementation libs.springSecurityTest
+		//testImplementation libs.springSecurityTest
 		testRuntimeOnly libs.junitPlatformLauncher
+		implementation libs.mapstruct
+		annotationProcessor libs.mapstructProcessor
 	}
 	dependencyManagement {
 		imports {

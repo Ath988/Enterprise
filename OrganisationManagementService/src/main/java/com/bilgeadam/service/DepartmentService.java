@@ -1,15 +1,20 @@
 package com.bilgeadam.service;
 
 import com.bilgeadam.dto.request.AddNewDepartmentRequest;
+import com.bilgeadam.dto.request.UpdateDepartmentManagerRequest;
 import com.bilgeadam.dto.request.UpdateDepartmentRequest;
 import com.bilgeadam.dto.response.AllDepartmentResponse;
 import com.bilgeadam.dto.response.DepartmentDetailResponse;
+import com.bilgeadam.dto.response.OrganizationTreeResponse;
 import com.bilgeadam.entity.Department;
 import com.bilgeadam.entity.Employee;
 import com.bilgeadam.entity.enums.EState;
+import com.bilgeadam.entity.enums.EmployeeRole;
 import com.bilgeadam.exception.ErrorType;
 import com.bilgeadam.exception.OrganisationManagementException;
 import com.bilgeadam.repository.DepartmentRepository;
+import com.bilgeadam.view.VwDepartment;
+import com.bilgeadam.view.VwEmployee;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -25,24 +30,23 @@ import java.util.Optional;
 public class DepartmentService {
     private final DepartmentRepository departmentRepository;
     private final EmployeeService employeeService;
+    private final PositionService positionService;
 
-    public DepartmentService(DepartmentRepository departmentRepository, @Lazy EmployeeService employeeService) {
+    public DepartmentService(DepartmentRepository departmentRepository, @Lazy EmployeeService employeeService, PositionService positionService) {
         this.departmentRepository = departmentRepository;
         this.employeeService = employeeService;
+        this.positionService = positionService;
     }
 
     @Transactional
     public Boolean addDepartment(String token, AddNewDepartmentRequest dto) {
         Employee manager = employeeService.getEmployeeByToken(token);
-        //ceo veya direktör(genel müdür) değilse yeni departman açamasın.
-        //Todo: Bunun gibi kontroller için ileride çalışan rolüne bağlı security yetkilendirme kullanılabilir.
-        if (manager.getEmployeeRole().getRoleRank() > 2)
-            throw new OrganisationManagementException(ErrorType.UNAUTHORIZED);
+        //ceo veya direktör(genel müdür) değilse yeni departman açamasın. Role bağlı yetkilendirme kontrolü
 
         Department department = Department.builder()
                 .name(dto.departmentName())
                 .description(dto.description())
-                .managerId(manager.getId())
+//                .managerId(manager.getId()) departman yöneticisini sonradan atasın.
                 .companyId(manager.getCompanyId())
                 .build();
         if (dto.parentDepartmentId() != null) {
@@ -52,21 +56,30 @@ public class DepartmentService {
         return true;
     }
 
+    public Boolean updateDepartmentManager(String token, UpdateDepartmentManagerRequest dto) {
+        Employee manager = employeeService.getEmployeeByToken(token);
+        Employee departmentManager = employeeService.findById(dto.managerId());
+        checkCompany(manager.getCompanyId(), departmentManager.getCompanyId());
+        Department department = findById(dto.departmentId());
+        department.setManagerId(departmentManager.getId());
+        if (!departmentManager.getRole().equals(EmployeeRole.DEPARTMENT_MANAGER)) {
+            departmentManager.setRole(EmployeeRole.DEPARTMENT_MANAGER);
+            employeeService.save(departmentManager);
+        }
+        departmentRepository.save(department);
+        return true;
+
+    }
+
     @Transactional
     public Boolean updateDepartment(String token, UpdateDepartmentRequest dto) {
         Employee manager = employeeService.getEmployeeByToken(token);
-        Department department = departmentRepository.findById(dto.departmentId()).orElseThrow(() -> new OrganisationManagementException(ErrorType.DEPARTMENT_NOT_FOUND));
-        //Ana yönetici kadrosu (ceo ve genel müdür) veya o departmanın müdürü güncelleme yapabilsin sadece.
-        // 2. ana koşul yöneticilerin farklı şirket departmanlarına istek atmalarını önlemek için.
-        if ((manager.getEmployeeRole().getRoleRank() > 2 && !department.getManagerId().equals(manager.getId())))
-            throw new OrganisationManagementException(ErrorType.UNAUTHORIZED);
-
+        Department department = findById(dto.departmentId());
         checkCompany(manager.getCompanyId(), department.getCompanyId());
 
         department.setName(dto.departmentName());
         department.setDescription(dto.description());
         department.setParentDepartmentId(dto.parentDepartmentId());
-        //Todo: Departman yönetici değiştirmek için farklı metod yazılabilir
         departmentRepository.save(department);
         return true;
     }
@@ -76,9 +89,7 @@ public class DepartmentService {
     public Boolean deleteDepartment(String token, Long departmentId) {
         Employee manager = employeeService.getEmployeeByToken(token);
         Department department = findById(departmentId);
-        //Sadece ceo ve genel müdür departman silme işlemi yapabilsin. Ayrıca kendi şirket departmanları için mi bu istek atılıyor kontrolü.
-        if (manager.getEmployeeRole().getRoleRank() > 2 || !department.getCompanyId().equals(manager.getCompanyId()))
-            throw new OrganisationManagementException(ErrorType.UNAUTHORIZED);
+        checkCompany(manager.getCompanyId(), department.getCompanyId());
 
         department.setState(EState.PASSIVE);
         departmentRepository.save(department);
@@ -98,6 +109,8 @@ public class DepartmentService {
                 response.setParentDepartment(parentDepartment.getName());
             }
         }
+        List<String> positions = positionService.findAllPositionNamesByDepartmentId(departmentId);
+        response.setPositions(positions);
         return response;
     }
 
@@ -116,8 +129,10 @@ public class DepartmentService {
 
     public List<AllDepartmentResponse> findAllDepartmentsOfManager(String token, Long managerId) {
         Employee employee = employeeService.getEmployeeByToken(token);
-        Long companyId = departmentRepository.findCompanyIdByDepartmentId(employee.getDepartmentId()).orElseThrow(() -> new OrganisationManagementException(ErrorType.DEPARTMENT_NOT_FOUND));
-        checkCompany(employee.getCompanyId(), companyId);
+        Employee manager = employeeService.findById(managerId);
+        if(!manager.getRole().equals(EmployeeRole.DEPARTMENT_MANAGER))
+            throw new OrganisationManagementException(ErrorType.MANAGER_NOT_FOUND);
+        checkCompany(employee.getCompanyId(), manager.getCompanyId());
         return departmentRepository.findAllDepartmentsOfManagerByManagerId(managerId);
     }
 
@@ -150,9 +165,34 @@ public class DepartmentService {
         return departmentRepository.findById(departmentId).orElseThrow(() -> new OrganisationManagementException(ErrorType.DEPARTMENT_NOT_FOUND));
     }
 
-    private void checkCompany(Long managerCompanyId, Long departmentCompanyId){
-        if(!managerCompanyId.equals(departmentCompanyId))
+    private void checkCompany(Long managerCompanyId, Long departmentCompanyId) {
+        if (!managerCompanyId.equals(departmentCompanyId))
             throw new OrganisationManagementException(ErrorType.UNAUTHORIZED);
+    }
+
+
+    public OrganizationTreeResponse getOrganizationTree(Long companyId) {
+        //Todo: Firma kontrolü
+        String companyName = "KOÇ HOLDİNG"; //Şirket ya da membership entitysi açılana kadar geçici.
+        String CEO = employeeService.findCeoNameByCompanyId(companyId);
+        OrganizationTreeResponse response = OrganizationTreeResponse.builder()
+                .companyId(companyId)
+                .companyName(companyName)
+                .CEO(CEO)
+                .departments(new ArrayList<>())
+                .build();
+
+        List<VwDepartment> vwDepartments = departmentRepository.findAllVwDepartmentByCompanyId(companyId);
+        for (VwDepartment department : vwDepartments) {
+            Optional<VwEmployee> vwManagerOpt = employeeService.findVwManagerByDepartmentId(department.getDepartmentId());
+            //Departmanın yöneticisi yoksa.
+            VwEmployee vwManager = vwManagerOpt.orElseGet(() -> new VwEmployee(-1L, "-", "-"));
+            department.setManager(vwManager);
+            List<VwEmployee> vwEmployees = employeeService.findAllVwEmployeesByDepartmentId(department.getDepartmentId());
+            department.setEmployees(vwEmployees);
+        }
+        response.setDepartments(vwDepartments);
+        return response;
     }
 
 

@@ -22,15 +22,13 @@ public class Employee extends BaseEntity {
     Long id;
     Long companyId; //çalıştığı şirket Idsi
     Long authId;
-    Long managerEmployeeId;//yöneticisinin Idsi, hiyerarşik düzen için
     String firstName;
     String lastName;
     String email;
-    @CreationTimestamp
-    LocalDate hireDate;
-    Long departmentId; //çalışanın bağlı olduğu departman
+    Long positionId;
     @Enumerated(EnumType.STRING)
-    EmployeeRole employeeRole;
+    EmployeeRole role;
+
 
 
 }

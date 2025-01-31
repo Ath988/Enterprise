@@ -1,8 +1,6 @@
 package com.bilgeadam.dto.response;
 
-import com.bilgeadam.entity.enums.EmployeeRole;
-
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public record EmployeeDetailResponse(
 
@@ -10,8 +8,8 @@ public record EmployeeDetailResponse(
         String firstName,
         String lastName,
         String email,
-        LocalDate hireDate,
-        EmployeeRole employeeRole,
+        LocalDateTime hireDate,
+        String positionName,
         String departmentName
 
 

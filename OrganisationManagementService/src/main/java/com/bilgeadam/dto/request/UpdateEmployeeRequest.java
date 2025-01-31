@@ -7,8 +7,8 @@ public record UpdateEmployeeRequest(
         String firstName,
         String lastName,
         String email,
-        EmployeeRole role,
-        Long departmentId
+        EmployeeRole role
+
 
 ) {
 }

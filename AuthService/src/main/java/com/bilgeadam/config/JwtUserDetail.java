@@ -28,9 +28,9 @@ public class JwtUserDetail implements UserDetailsService {
         if (authUser.isEmpty()) return null;
 
         List<GrantedAuthority> authorizedList=new ArrayList<>();
-        authorizedList.add(new SimpleGrantedAuthority("PERSONAL")); //personal
-        authorizedList.add(new SimpleGrantedAuthority("USER")); //user
-        authorizedList.add(new SimpleGrantedAuthority("SYSTEM_MANAGEMENT")); //sistem yöneticisi
+        authorizedList.add(new SimpleGrantedAuthority("STAFF"));
+        authorizedList.add(new SimpleGrantedAuthority("MEMBER"));
+        authorizedList.add(new SimpleGrantedAuthority("SYSTEM_ADMIN"));
 
 
 

@@ -1,14 +1,14 @@
 package com.bilgeadam.entity;
 
 import com.bilgeadam.util.enums.Permission;
-import com.bilgeadam.util.enums.Role;
+import com.bilgeadam.util.enums.ERole;
 
 import java.util.Set;
 
 public class User {
     private Long id;
     private String username;
-    private Role role;
+    private ERole role;
     private Set<Permission> permissions;
 
     public Long getId() {
@@ -27,11 +27,11 @@ public class User {
         this.username = username;
     }
 
-    public Role getRole() {
+    public ERole getRole() {
         return role;
     }
 
-    public void setRole(Role role) {
+    public void setRole(ERole role) {
         this.role = role;
     }
 

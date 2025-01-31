@@ -2,7 +2,7 @@ package com.bilgeadam.service;
 
 import com.bilgeadam.entity.User;
 import com.bilgeadam.util.enums.Permission;
-import com.bilgeadam.util.enums.Role;
+import com.bilgeadam.util.enums.ERole;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -12,7 +12,7 @@ import java.util.Set;
 @Service
 @RequiredArgsConstructor
 public class UserService {
-    public Set<Permission> getPermissionsForRole(Role role) {
+    public Set<Permission> getPermissionsForRole(ERole role) {
         switch (role) {
             case SYSTEM_ADMIN:
                 return EnumSet.allOf(Permission.class);
@@ -37,7 +37,7 @@ public class UserService {
         }
     }
 
-    public void assignRoleToUser(User user, Role role) {
+    public void assignRoleToUser(User user, ERole role) {
         user.setRole(role);
         user.setPermissions(getPermissionsForRole(role));
     }

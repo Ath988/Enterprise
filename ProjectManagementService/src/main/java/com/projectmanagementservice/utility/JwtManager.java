@@ -17,7 +17,7 @@ import java.util.Optional;
 @Service
 public class JwtManager {
     private final String SECRETKEY ="secretkey";
-    private final String ISSUER ="enterprise";
+    private final String ISSUER ="EnterpriseApp";
     private final Long EXDATE = 1000L * 60 * 60 ; // 5 minutes
 
     public Optional<String> createToken (Long authId){
@@ -47,7 +47,6 @@ public class JwtManager {
             return Optional.empty();
         }
     }
-
     public Optional<Long> getIdFromToken(String token){
         try {
             Algorithm algorithm=Algorithm.HMAC512(SECRETKEY);
@@ -66,9 +65,6 @@ public class JwtManager {
             throw new ProjectManagementException(ErrorType.INVALID_TOKEN);
         }
     }
-
-
-
     public Optional<String> getRoleFromToken(String token) {
         try {
             Algorithm algorithm = Algorithm.HMAC512(SECRETKEY);

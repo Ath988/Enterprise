@@ -1,15 +1,12 @@
 package com.bilgeadam.entity;
 
 import com.bilgeadam.util.enums.EAuthState;
-import com.bilgeadam.util.enums.Permission;
-import com.bilgeadam.util.enums.Role;
+import com.bilgeadam.util.enums.ERole;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.Set;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -24,5 +21,5 @@ public class Auth {
     private String email;
     private String password;
     private EAuthState authState;
-    private Role role;
+    private ERole role;
 }

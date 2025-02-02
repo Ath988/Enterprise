@@ -2,6 +2,7 @@ package com.bilgeadam.service;
 
 import com.bilgeadam.dto.request.AddEmployeeRequest;
 import com.bilgeadam.dto.request.AssignEmployeesToDepartmentRequest;
+import com.bilgeadam.dto.request.CreateCompanyManagerRequest;
 import com.bilgeadam.dto.request.UpdateEmployeeRequest;
 import com.bilgeadam.dto.response.AllEmployeeResponse;
 import com.bilgeadam.dto.response.EmployeeDetailResponse;
@@ -13,6 +14,7 @@ import com.bilgeadam.entity.enums.EmployeeRole;
 import com.bilgeadam.exception.ErrorType;
 import com.bilgeadam.exception.OrganisationManagementException;
 import com.bilgeadam.repository.EmployeeRepository;
+import com.bilgeadam.utility.JwtManager;
 import com.bilgeadam.view.VwEmployee;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Lazy;
@@ -30,17 +32,34 @@ public class EmployeeService {
     private final DepartmentService departmentService;
     private final JwtService jwtService;
     private final PositionService positionService;
+    private final JwtManager jwtManager;
 
-    public EmployeeService(EmployeeRepository employeeRepository, @Lazy DepartmentService departmentService, JwtService jwtService, PositionService positionService) {
+    public EmployeeService(EmployeeRepository employeeRepository, @Lazy DepartmentService departmentService, JwtService jwtService, PositionService positionService, JwtManager jwtManager) {
         this.employeeRepository = employeeRepository;
         this.departmentService = departmentService;
         this.jwtService = jwtService;
         this.positionService = positionService;
+        this.jwtManager = jwtManager;
+    }
+
+
+    @Transactional
+    public Boolean createCompanyManager(CreateCompanyManagerRequest dto) {
+        Employee companyManager = Employee.builder()
+                .authId(dto.authId())
+                .companyId(dto.authId()) //Geçici
+                .positionId(1L) // BAŞKAN Position
+                .email(dto.email())
+                .role(EmployeeRole.COMPANY_OWNER)
+                .build();
+        employeeRepository.save(companyManager);
+        return true;
     }
 
 
     @Transactional
     public Boolean addNewEmployee(String token, AddEmployeeRequest dto) {
+        //Todo: AuthService email kontrolü
         Employee manager = getEmployeeByToken(token);
         Position position = positionService.findById(dto.positionId());
         if (manager.getRole().equals(EmployeeRole.DEPARTMENT_MANAGER)) {
@@ -66,6 +85,7 @@ public class EmployeeService {
 
     public List<AllEmployeeResponse> findAllEmployees(String token) {
         Employee employee = getEmployeeByToken(token);
+        System.out.println(employee);
         return employeeRepository.findAllEmployee(employee.getCompanyId());
     }
 
@@ -76,26 +96,37 @@ public class EmployeeService {
         return employeeRepository.findEmployeeDetail(employeeId).orElseThrow(() -> new OrganisationManagementException(ErrorType.EMPLOYEE_NOT_FOUND));
     }
 
+    public List<AllEmployeeResponse> findEmployeeHierarchy(String token, Long employeeId) {
+        Employee employeeByToken = getEmployeeByToken(token);
+        Employee employee = employeeRepository.findById(employeeId).orElseThrow(() -> new OrganisationManagementException(ErrorType.EMPLOYEE_NOT_FOUND));
+        checkCompany(employee.getCompanyId(), employeeByToken.getCompanyId());
 
- //    TEKRAR DÜZENLENCEK
+        List<AllEmployeeResponse> hierarchyList = new ArrayList<>();
 
-//    public List<AllEmployeeResponse> findEmployeeHierarchy(String token, Long employeeId) {
-//        Employee employeeByToken = getEmployeeByToken(token);
-//        Employee employee = employeeRepository.findById(employeeId).orElseThrow(() -> new OrganisationManagementException(ErrorType.EMPLOYEE_NOT_FOUND));
-//        checkCompany(employee.getCompanyId(), employeeByToken.getCompanyId());
-////        if (employee.getManagerEmployeeId() == null) return new ArrayList<>();
-//        List<AllEmployeeResponse> hierarchyList = new ArrayList<>();
-//        Department department = departmentService.findByPositionId(employee.getPositionId());
-//        Long managerId = department.getManagerId();
-//        while (managerId != null) {
-//            Employee manager = findById(managerId);
-//            String departmentName = department.getName();
-//            String positionName = positionService.findPositionNameByEmployeeId(managerId)
-//            hierarchyList.add(new AllEmployeeResponse(managerId, manager.getFirstName(), manager.getLastName(), manager.getEmployeeRole(), departmentName));
-//            managerId = manager.getManagerEmployeeId();
-//        }
-//        return hierarchyList;
-//    }
+        Position position = positionService.findById(employee.getPositionId());
+        Department department = departmentService.findById(position.getDepartmentId());
+        Long parentDepartmentId = department.getParentDepartmentId();
+
+
+        while (parentDepartmentId != null) {
+
+            Department managerDepartment = departmentService.findById(department.getParentDepartmentId());
+            Employee manager = findById(managerDepartment.getManagerId());
+
+            hierarchyList.add(new AllEmployeeResponse(
+                    manager.getId(),
+                    manager.getFirstName(),
+                    manager.getLastName(),
+                    manager.getRole().name(),
+                    managerDepartment.getName()
+            ));
+
+            parentDepartmentId = managerDepartment.getParentDepartmentId();
+            System.out.println(parentDepartmentId);
+
+        }
+        return hierarchyList;
+    }
 
     public List<AllEmployeeResponse> findEmployeeSubordinates(String token, Long employeeId) {
         Employee employeeByToken = getEmployeeByToken(token);
@@ -131,22 +162,14 @@ public class EmployeeService {
         return true;
     }
 
-    //geçici login metodu
-    public String login(Long employeeId) {
-        if (employeeRepository.existsById(employeeId)) {
-            return jwtService.createUserToken(employeeId);
-        }
-        throw new OrganisationManagementException(ErrorType.INVALID_PASSWORD);
-    }
-
     public Employee findById(Long managerId) {
         return employeeRepository.findById(managerId).orElseThrow(() -> new OrganisationManagementException(ErrorType.EMPLOYEE_NOT_FOUND));
     }
 
 
     public Employee getEmployeeByToken(String token) {
-        Long employeeId = jwtService.validateToken(token).orElseThrow(() -> new OrganisationManagementException(ErrorType.INVALID_TOKEN));
-        return employeeRepository.findById(employeeId).orElseThrow(() -> new OrganisationManagementException(ErrorType.EMPLOYEE_NOT_FOUND));
+        Long authId = jwtManager.getIdFromToken(token.substring(7)).orElseThrow(() -> new OrganisationManagementException(ErrorType.INVALID_TOKEN));
+        return employeeRepository.findByAuthId(authId).orElseThrow(() -> new OrganisationManagementException(ErrorType.EMPLOYEE_NOT_FOUND));
     }
 
     private void checkCompany(Long managerCompanyId, Long departmentCompanyId) {
@@ -175,11 +198,18 @@ public class EmployeeService {
         return employeeRepository.findCEOByCompanyId(companyId).orElseThrow(() -> new OrganisationManagementException(ErrorType.EMPLOYEE_NOT_FOUND));
     }
 
-    public Optional<VwEmployee> findVwManagerByDepartmentId(Long departmentId){
+    public Optional<VwEmployee> findVwManagerByDepartmentId(Long departmentId) {
         return employeeRepository.findVwManagerByDepartmentId(departmentId);
     }
 
-    public List<VwEmployee> findAllVwEmployeesByDepartmentId(Long departmentId){
+    public List<VwEmployee> findAllVwEmployeesByDepartmentId(Long departmentId) {
         return employeeRepository.findAllVwEmployeesByDepartmentId(departmentId);
     }
+
+    public Employee findCompanyManager(Long companyId) {
+        return employeeRepository.findCompanyManagerByCompanyId(companyId, EmployeeRole.COMPANY_OWNER)
+                .orElseThrow(() -> new OrganisationManagementException(ErrorType.EMPLOYEE_NOT_FOUND));
+    }
+
+
 }

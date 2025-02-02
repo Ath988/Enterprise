@@ -34,4 +34,6 @@ public interface DepartmentRepository extends JpaRepository<Department,Long> {
     List<VwDepartment> findAllVwDepartmentByCompanyId(Long companyId);
 
 
+
+
 }

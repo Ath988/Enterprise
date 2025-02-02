@@ -1,13 +1,11 @@
 package com.bilgeadam.service;
 
-import com.bilgeadam.dto.request.EmailDto;
-import com.bilgeadam.dto.request.LoginRequestDto;
-import com.bilgeadam.dto.request.NewPasswordRequestDto;
-import com.bilgeadam.dto.request.RegisterRequestDto;
+import com.bilgeadam.dto.request.*;
 import com.bilgeadam.entity.Auth;
 import com.bilgeadam.exception.EnterpriseException;
 import com.bilgeadam.exception.ErrorType;
 import com.bilgeadam.manager.MailManager;
+import com.bilgeadam.manager.OrganisationManagementManager;
 import com.bilgeadam.repository.AuthRepository;
 import com.bilgeadam.util.enums.EAuthState;
 import com.bilgeadam.util.enums.JwtManager;
@@ -25,6 +23,8 @@ public class AuthService {
     private final UserAuthVerifyCodeService userAuthVerifyCodeService;
     private final MailManager mailManager;
     private final JwtManager jwtManager;
+    private final OrganisationManagementManager organisationManagementManager;
+    private final AuthRepository authRepository;
 
     public String doLogin(LoginRequestDto dto) {
         Optional<Auth> userOptional = userRepository.findByEmail(dto.email());
@@ -57,6 +57,11 @@ public class AuthService {
                 .build();
         user = userRepository.save(user);
         String authCode = userAuthVerifyCodeService.generateAuthCode(user.getId());
+
+        //deneme için - msacak
+        organisationManagementManager.createCompanyManager(new CreateCompanyManagerRequest(user.getId(), user.getEmail()));
+
+
         mailManager.sendEmail(new EmailDto("enterprice@gmail.com", "enterprice@auth.com", user.getEmail(),
                 "E-posta Adresini Onayla",
                 "email adresini onaylamak icin linke tiklayiniz : http://localhost:9091/v1/dev/auth/auth-mail?auth=" + authCode));
@@ -110,6 +115,8 @@ public class AuthService {
         userRepository.save(user);
         return true;
     }
+
+
 
 
 }

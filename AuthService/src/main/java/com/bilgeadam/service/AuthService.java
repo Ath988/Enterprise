@@ -67,6 +67,7 @@ public class AuthService {
         Optional<Auth> userOptional = checkAuthUser(authCode);
         Auth user = userOptional.get();
         user.setAuthState(EAuthState.ACTIVE);
+        userRepository.save(user);
         return true;
     }
 

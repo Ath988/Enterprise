@@ -66,6 +66,8 @@ allprojects{
 		testImplementation libs.springRabbitTest
 		testImplementation libs.springSecurityTest
 		testRuntimeOnly libs.junitPlatformLauncher
+		implementation libs.mapstruct
+		annotationProcessor libs.mapstructProcessor
 	}
 	dependencyManagement {
 		imports {

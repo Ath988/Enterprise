@@ -1,7 +1,8 @@
 ext{
     versions = [
             jwt: "4.4.0",
-            openapi: "2.5.0"
+            openapi: "2.8.4",
+            mapstruct: "1.6.2"
     ]
     libs = [
             springBootStarterAmqp : "org.springframework.boot:spring-boot-starter-amqp",
@@ -25,5 +26,8 @@ ext{
             openapiCommon: 'org.springdoc:springdoc-openapi-starter-common:2.8.4',
             junitPlatformLauncher : 'org.junit.platform:junit-platform-launcher',
             jwt: "com.auth0:java-jwt:$versions.jwt",
+            openapi: "org.springdoc:springdoc-openapi-starter-webmvc-ui:$versions.openapi",
+            mapstruct: "org.mapstruct:mapstruct:$versions.mapstruct",
+            mapstructProcessor: "org.mapstruct:mapstruct-processor:$versions.mapstruct"
     ]
 }

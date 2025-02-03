@@ -32,7 +32,6 @@ public class JwtUtil {
                 .withClaim(USER_ID_CLAIM, userId)
                 .sign(algorithm);
     }
-
     public Optional<Long> extractUserId(String token) {
         try {
             DecodedJWT jwt = JWT.require(algorithm)
@@ -45,11 +44,9 @@ public class JwtUtil {
             return Optional.empty();
         }
     }
-
     public boolean isTokenValid(String token) {
         return extractUserId(token).isPresent();
     }
-
     public Optional<Long> validateToken(String token) {
 
         if (token != null && token.startsWith("Bearer ")) {

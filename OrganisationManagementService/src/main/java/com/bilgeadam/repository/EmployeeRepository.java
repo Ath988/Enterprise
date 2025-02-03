@@ -3,6 +3,8 @@ package com.bilgeadam.repository;
 import com.bilgeadam.dto.response.AllEmployeeResponse;
 import com.bilgeadam.dto.response.EmployeeDetailResponse;
 import com.bilgeadam.entity.Employee;
+import com.bilgeadam.entity.enums.EmployeeRole;
+import com.bilgeadam.utility.ERole;
 import com.bilgeadam.view.VwEmployee;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -41,5 +43,7 @@ public interface EmployeeRepository extends JpaRepository<Employee,Long> {
     List<VwEmployee> findAllVwEmployeesByDepartmentId(Long departmentId);
 
 
+    @Query("SELECT Employee FROM Employee e WHERE e.companyId = ?1 AND e.role = ?2")
+    Optional<Employee> findCompanyManagerByCompanyId(Long companyId, EmployeeRole role);
 
 }

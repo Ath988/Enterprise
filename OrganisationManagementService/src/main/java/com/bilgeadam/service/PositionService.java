@@ -106,4 +106,8 @@ public class PositionService {
     public List<String> findAllPositionNamesByDepartmentId(Long departmentId) {
         return positionRepository.findAllPositionNamesByDepartmentId(departmentId);
     }
+
+    public void save(Position position) {
+        positionRepository.save(position);
+    }
 }

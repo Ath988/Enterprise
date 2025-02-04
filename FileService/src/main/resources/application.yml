@@ -1,0 +1,19 @@
+server:
+  port: 9090
+
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: ${Database_URL}
+    username: ${Database_Username}
+    password: ${Database_Password}
+  jpa:
+    show-sql: false
+    hibernate:
+      ddl-auto: create
+
+minio:
+  endpoint: ${MinIO_Endpoint}
+  access-key: ${MinIO_AccessKey}
+  secret-key: ${MinIO_SecretKey}
+  bucket-name: ${MinIO_BucketName}

@@ -1,0 +1,17 @@
+server:
+  port: 9090
+
+spring:
+  security:
+    user:
+      name: ${SEC_NAME}
+      password: ${SEC_PASSWORD}
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true

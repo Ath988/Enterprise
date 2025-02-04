@@ -1,0 +1,33 @@
+ext{
+    versions = [
+            jwt: "4.4.0",
+            openapi: "2.8.4",
+            mapstruct: "1.6.2"
+    ]
+    libs = [
+            springBootStarterAmqp : "org.springframework.boot:spring-boot-starter-amqp",
+            springBootStarterDataJpa : "org.springframework.boot:spring-boot-starter-data-jpa",
+            springBootStarterSecurity : "org.springframework.boot:spring-boot-starter-security",
+            springBootStarterValidation : 'org.springframework.boot:spring-boot-starter-validation',
+            springBootStarterWeb : 'org.springframework.boot:spring-boot-starter-web',
+            springCloudStarterOpenFeign : 'org.springframework.cloud:spring-cloud-starter-openfeign',
+            springBootStarterWebsocket : 'org.springframework.boot:spring-boot-starter-websocket',
+            springCloudStarterGatewayMvc : 'org.springframework.cloud:spring-cloud-starter-gateway-mvc',
+            lombok : 'org.projectlombok:lombok',
+            springBootDevtools : 'org.springframework.boot:spring-boot-devtools',
+            postgresql : 'org.postgresql:postgresql',
+            springBootStarterTest : 'org.springframework.boot:spring-boot-starter-test',
+            springRabbitTest :  'org.springframework.amqp:spring-rabbit-test',
+            springSecurityTest :  'org.springframework.security:spring-security-test',
+            junitPlatformLauncher : 'org.junit.platform:junit-platform-launcher',
+            mailSender: 'org.springframework.boot:spring-boot-starter-mail',
+            openapi: 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.4',
+            openapiTest: 'org.springdoc:springdoc-openapi-starter-webmvc-api:2.8.4',
+            openapiCommon: 'org.springdoc:springdoc-openapi-starter-common:2.8.4',
+            junitPlatformLauncher : 'org.junit.platform:junit-platform-launcher',
+            jwt: "com.auth0:java-jwt:$versions.jwt",
+            openapi: "org.springdoc:springdoc-openapi-starter-webmvc-ui:$versions.openapi",
+            mapstruct: "org.mapstruct:mapstruct:$versions.mapstruct",
+            mapstructProcessor: "org.mapstruct:mapstruct-processor:$versions.mapstruct"
+    ]
+}

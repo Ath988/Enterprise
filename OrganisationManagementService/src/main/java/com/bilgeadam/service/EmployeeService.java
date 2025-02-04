@@ -5,7 +5,9 @@ import com.bilgeadam.dto.request.AssignEmployeesToDepartmentRequest;
 import com.bilgeadam.dto.request.CreateCompanyManagerRequest;
 import com.bilgeadam.dto.request.UpdateEmployeeRequest;
 import com.bilgeadam.dto.response.AllEmployeeResponse;
+import com.bilgeadam.dto.response.BaseResponse;
 import com.bilgeadam.dto.response.EmployeeDetailResponse;
+import com.bilgeadam.dto.response.EmployeeSaveResponse;
 import com.bilgeadam.entity.Department;
 import com.bilgeadam.entity.Employee;
 import com.bilgeadam.entity.Position;
@@ -13,11 +15,12 @@ import com.bilgeadam.entity.enums.EState;
 import com.bilgeadam.entity.enums.EmployeeRole;
 import com.bilgeadam.exception.ErrorType;
 import com.bilgeadam.exception.OrganisationManagementException;
+import com.bilgeadam.manager.AuthManager;
 import com.bilgeadam.repository.EmployeeRepository;
 import com.bilgeadam.utility.JwtManager;
 import com.bilgeadam.view.VwEmployee;
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,16 +33,16 @@ import java.util.Optional;
 public class EmployeeService {
     private final EmployeeRepository employeeRepository;
     private final DepartmentService departmentService;
-    private final JwtService jwtService;
     private final PositionService positionService;
     private final JwtManager jwtManager;
+    private final AuthManager authManager;
 
-    public EmployeeService(EmployeeRepository employeeRepository, @Lazy DepartmentService departmentService, JwtService jwtService, PositionService positionService, JwtManager jwtManager) {
+    public EmployeeService(EmployeeRepository employeeRepository, @Lazy DepartmentService departmentService, PositionService positionService, JwtManager jwtManager, AuthManager authManager) {
         this.employeeRepository = employeeRepository;
         this.departmentService = departmentService;
-        this.jwtService = jwtService;
         this.positionService = positionService;
         this.jwtManager = jwtManager;
+        this.authManager = authManager;
     }
 
 
@@ -58,7 +61,7 @@ public class EmployeeService {
 
 
     @Transactional
-    public Boolean addNewEmployee(String token, AddEmployeeRequest dto) {
+    public EmployeeSaveResponse addNewEmployee(String token, AddEmployeeRequest dto) {
         //Todo: AuthService email kontrolü
         Employee manager = getEmployeeByToken(token);
         Position position = positionService.findById(dto.positionId());
@@ -69,23 +72,27 @@ public class EmployeeService {
                 throw new OrganisationManagementException(ErrorType.UNAUTHORIZED);
         }
 
+        //Eklenilen çalışanı authService'e kaydediyoruz.
+        Long authId = getDataFromResponse(authManager.register(dto.registerRequestDto()));
+
         Employee employee = Employee.builder()
+                .authId(authId)
                 .positionId(dto.positionId())
-                .email(dto.email())
+                .email(dto.registerRequestDto().email())
                 .firstName(dto.firstName())
                 .lastName(dto.lastName())
                 .companyId(manager.getCompanyId())
                 .role(dto.role())
+                .gender(dto.gender())
                 .build();
         employeeRepository.save(employee);
-        return true;
+        return new EmployeeSaveResponse(employee.getId(), employee.getCompanyId());
 
         //Todo: Yeni çalışan eklendikten sonra, MailService üzerinden yöneticilere bilgi maili gönderilebilir.
     }
 
     public List<AllEmployeeResponse> findAllEmployees(String token) {
         Employee employee = getEmployeeByToken(token);
-        System.out.println(employee);
         return employeeRepository.findAllEmployee(employee.getCompanyId());
     }
 
@@ -118,7 +125,8 @@ public class EmployeeService {
                     manager.getFirstName(),
                     manager.getLastName(),
                     manager.getRole().name(),
-                    managerDepartment.getName()
+                    managerDepartment.getName(),
+                    manager.getGender()
             ));
 
             parentDepartmentId = managerDepartment.getParentDepartmentId();
@@ -158,6 +166,7 @@ public class EmployeeService {
         employee.setLastName(dto.lastName());
         employee.setEmail(dto.email());
         employee.setRole(dto.role());
+        employee.setGender(dto.gender());
         employeeRepository.save(employee);
         return true;
     }
@@ -209,6 +218,13 @@ public class EmployeeService {
     public Employee findCompanyManager(Long companyId) {
         return employeeRepository.findCompanyManagerByCompanyId(companyId, EmployeeRole.COMPANY_OWNER)
                 .orElseThrow(() -> new OrganisationManagementException(ErrorType.EMPLOYEE_NOT_FOUND));
+    }
+
+    private <T> T getDataFromResponse(ResponseEntity<BaseResponse<T>> response) {
+        if (response.getBody() == null || response.getBody().getData() == null) {
+            throw new OrganisationManagementException(ErrorType.INTERNAL_SERVER_ERROR);
+        }
+        return response.getBody().getData();
     }
 
 

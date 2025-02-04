@@ -7,6 +7,8 @@
     import com.bilgeadam.dto.response.AllEmployeeResponse;
     import com.bilgeadam.dto.response.BaseResponse;
     import com.bilgeadam.dto.response.EmployeeDetailResponse;
+    import com.bilgeadam.dto.response.EmployeeSaveResponse;
+    import com.bilgeadam.entity.Employee;
     import com.bilgeadam.service.EmployeeService;
     import lombok.RequiredArgsConstructor;
     import org.springframework.http.ResponseEntity;
@@ -33,11 +35,11 @@
 
         //Yeni çalışan ekler.
         @PostMapping
-        public ResponseEntity<BaseResponse<Boolean>> addEmployee(
+        public ResponseEntity<BaseResponse<EmployeeSaveResponse>> addEmployee(
                 @RequestHeader(value = "Authorization", required = false) String token,
                 @RequestBody AddEmployeeRequest dto) {
-            return ResponseEntity.ok(BaseResponse.<Boolean>builder()
-                    .success(employeeService.addNewEmployee(token,dto))
+            return ResponseEntity.ok(BaseResponse.<EmployeeSaveResponse>builder()
+                    .data(employeeService.addNewEmployee(token,dto))
                     .message("Yeni çalışan eklendi.")
                     .build());
         }

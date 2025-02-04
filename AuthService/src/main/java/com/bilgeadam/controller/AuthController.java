@@ -39,8 +39,8 @@ public class AuthController {
 
     }
     @PostMapping(DOREGISTER)
-    public ResponseEntity<BaseResponse<Boolean>> doRegister(@RequestBody @Valid RegisterRequestDto dto) {
-        return ResponseEntity.ok(BaseResponse.<Boolean>builder()
+    public ResponseEntity<BaseResponse<Long>> doRegister(@RequestBody @Valid RegisterRequestDto dto) {
+        return ResponseEntity.ok(BaseResponse.<Long>builder()
                         .success(true)
                         .data(userService.doRegister(dto))
                         .code(200)

@@ -1,4 +1,5 @@
 package com.bilgeadam.entity;
+import com.bilgeadam.entity.enums.EGender;
 import com.bilgeadam.entity.enums.EmployeeRole;
 import jakarta.persistence.*;
 import lombok.*;
@@ -28,6 +29,8 @@ public class Employee extends BaseEntity {
     Long positionId;
     @Enumerated(EnumType.STRING)
     EmployeeRole role;
+    @Enumerated(EnumType.STRING)
+    EGender gender;
 
 
 

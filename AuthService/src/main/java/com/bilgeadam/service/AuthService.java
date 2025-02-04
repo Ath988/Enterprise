@@ -42,7 +42,7 @@ public class AuthService {
         throw new EnterpriseException(ErrorType.LOGIN_ERROR);
     }
 
-    public Boolean doRegister(RegisterRequestDto dto) {
+    public Long doRegister(RegisterRequestDto dto) {
         Optional<Auth> userOptional = userRepository.findByEmail(dto.email());
         if (userOptional.isPresent()) {
             throw new EnterpriseException(ErrorType.REGISTER_ERROR);
@@ -58,6 +58,7 @@ public class AuthService {
         user = userRepository.save(user);
         String authCode = userAuthVerifyCodeService.generateAuthCode(user.getId());
 
+
         //deneme için - msacak
         organisationManagementManager.createCompanyManager(new CreateCompanyManagerRequest(user.getId(), user.getEmail()));
 
@@ -65,7 +66,7 @@ public class AuthService {
         mailManager.sendEmail(new EmailDto("enterprice@gmail.com", "enterprice@auth.com", user.getEmail(),
                 "E-posta Adresini Onayla",
                 "email adresini onaylamak icin linke tiklayiniz : http://localhost:9091/v1/dev/auth/auth-mail?auth=" + authCode));
-        return true;
+        return user.getId(); //diğer Servislerden kayıt isteği gönderildiğinde authId çekebilmek için düzenlendi, msacak
     }
 
     public Boolean authUserRegister(String authCode) {

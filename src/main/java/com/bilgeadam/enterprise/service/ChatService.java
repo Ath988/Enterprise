@@ -109,8 +109,8 @@ public class ChatService {
 					                                                     message.getId(),
 					                                                     message.getContent(),
 					                                                     message.getSenderId(),
-					                                                     userMap.getOrDefault(message.getSenderId(), new String[]{"Unknown", "Unknown"})[0], // senderName
-					                                                     userMap.getOrDefault(message.getSenderId(), new String[]{"Unknown", "Unknown"})[1]  // senderSurname
+					                                                     userMap.getOrDefault(message.getSenderId(), new String[]{"Unknown", "Unknown"})[0],
+					                                                     userMap.getOrDefault(message.getSenderId(), new String[]{"Unknown", "Unknown"})[1]
 			                                                     ))
 			                                                     .toList();
 			
@@ -179,7 +179,7 @@ public class ChatService {
 				sender.getIsOnline()
 		);
 		
-		return new NewMessageResponseDto(
+		return new NewMessageResponseDto(newMessageDto.chatId(),
 				message.getId(),
 				message.getContent(),
 				senderView,
@@ -222,10 +222,15 @@ public class ChatService {
 		}
 
 		List<ChatUser> chatUsers = newUserIds.stream()
-		                                     .map(newUserId -> new ChatUser(UUID.randomUUID().toString(), chat.getId(), newUserId))
+		                                     .map(newUserId -> ChatUser.builder().chatId(chat.getId()).userId(newUserId).build())
 		                                     .toList();
 		
-		chatUserRepository.saveAll(chatUsers);
+		try {
+			chatUserRepository.saveAll(chatUsers);
+		} catch (Exception e) {
+			System.out.println("Hata: " + e.getMessage());
+			throw e;
+		}
 		Set<User> addedUsers = userRepository.findUserByIdIn(newUserIds);
 		return addedUsers.stream()
 		                 .map(user -> new UserView(user.getId(), user.getName(), user.getSurname(), user.getIsOnline()))

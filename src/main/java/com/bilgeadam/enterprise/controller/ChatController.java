@@ -64,21 +64,18 @@ public class ChatController {
 	public void sendPrivateMessage(@DestinationVariable String chatId,
 	                               @Payload NewMessageDto newMessageDto,
 	                               @Header("Authorization") String token) {
-		messageProducer.sendMessage(newMessageDto.content());
 		String actualToken = getTokenFromHeader(token);
-		chatService.sendNewMessage(newMessageDto,actualToken);
-		messagingTemplate.convertAndSend("/topic/private/" + chatId, newMessageDto);
+		NewMessageResponseDto newMessageResponseDto = chatService.sendNewMessage(newMessageDto, actualToken);
+		messageProducer.sendMessage(newMessageResponseDto, "private.message");
 	}
 	
 	@MessageMapping("/group/{chatId}/sendMessage")
 	public void sendGroupMessage(@DestinationVariable String chatId,
-	                               @Payload NewMessageDto newMessageDto,
-	                               @Header("Authorization") String token) {
-		System.out.println("Received message -> chatId: " + chatId + ", content: " + newMessageDto.content());
+	                             @Payload NewMessageDto newMessageDto,
+	                             @Header("Authorization") String token) {
 		String actualToken = getTokenFromHeader(token);
-		System.out.println("actual token: "+actualToken);
-		chatService.sendNewMessage(newMessageDto,actualToken);
-		messagingTemplate.convertAndSend("/topic/group/" + chatId, newMessageDto);
+		NewMessageResponseDto newMessageResponseDto = chatService.sendNewMessage(newMessageDto, actualToken);
+		messageProducer.sendMessage(newMessageResponseDto, "group.message");
 	}
 	
 	

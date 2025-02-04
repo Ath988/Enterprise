@@ -7,6 +7,7 @@ import com.bilgeadam.enterprise.view.UserView;
 import java.time.LocalDateTime;
 
 public record NewMessageResponseDto(
+		String chatId,
 		String messageId,
 		String content,
 		UserView sender,

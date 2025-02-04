@@ -24,17 +24,17 @@ public class MockDataInitializer implements ApplicationRunner {
 	
 	@Override
 	public void run(ApplicationArguments args) {
-		List<User> users = createMockUsers();
-		userRepository.saveAll(users);
+	//	List<User> users = createMockUsers();
+	//	userRepository.saveAll(users);
 		
-		List<Chat> chats = createMockChats();
-		chatRepository.saveAll(chats);
+	//	List<Chat> chats = createMockChats();
+	//	chatRepository.saveAll(chats);
 		
-		List<ChatUser> chatUsers = createMockChatUsers(chats, users);
-		chatUserRepository.saveAll(chatUsers);
+	//	List<ChatUser> chatUsers = createMockChatUsers(chats, users);
+	//	chatUserRepository.saveAll(chatUsers);
 		
-		List<Message> messages = createMockMessages(chats, chatUsers);
-		messageRepository.saveAll(messages);
+	//	List<Message> messages = createMockMessages(chats, chatUsers);
+	//	messageRepository.saveAll(messages);
 		
 		System.out.println("Mock data initialized successfully!");
 	}

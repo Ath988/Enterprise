@@ -15,7 +15,10 @@ public enum ErrorType {
 	USER_NOT_PARTICIPANT(2004, "User not participant!", HttpStatus.BAD_REQUEST),
 	USER_ALREADY_IN_CHAT(2005, "User(s) already in chat: %s", HttpStatus.BAD_REQUEST),
 	MESSAGE_NOT_FOUND(3001,"Message not found!",HttpStatus.NOT_FOUND),
-	INVALID_CHAT_TYPE(2006,"Invalid chat type", HttpStatus.BAD_REQUEST);
+	INVALID_CHAT_TYPE(2006,"Invalid chat type", HttpStatus.BAD_REQUEST),
+	INTERNAL_SERVER_ERROR(5000, "An unexpected error occurred.", HttpStatus.INTERNAL_SERVER_ERROR),
+	VALIDATION_ERROR(4000, "Validation error occurred.", HttpStatus.BAD_REQUEST);
+	
 	
 	private final int code;
 	private final String messageTemplate;

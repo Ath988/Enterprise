@@ -1,0 +1,27 @@
+server:
+  port: 9092
+
+spring:
+
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/enterprisedb
+    username: postgres
+    password: root
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+  springdoc:
+    api-docs:
+      enabled: true
+    swagger-ui:
+      enabled: true
+      oauth:
+        client-id: your-client-id
+        client-secret: your-client-secret
+      persist-authorization: true
+    default-consumes-media-type: application/json
+    default-produces-media-type: application/json

@@ -16,7 +16,6 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "tbl_notification")
 public class Notification {
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;

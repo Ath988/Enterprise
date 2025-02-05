@@ -30,7 +30,7 @@ public class ProjectService
                 .builder()
                 .name(dto.name())
                 .description(dto.description())
-                        .authId(1L)
+                        .organizationId(1L)
                 .startDate(dto.startDate())
                 .endDate(dto.endDate())
                 .build());
@@ -39,7 +39,7 @@ public class ProjectService
 
     public Boolean delete(Long id)
     {
-        Project project = projectRepository.findByIdAndAuthId(id,1L).orElseThrow(() -> new ProjectManagementException(ErrorType.PROJECT_NOT_FOUND));
+        Project project = projectRepository.findByIdAndOrganizationId(id,1L).orElseThrow(() -> new ProjectManagementException(ErrorType.PROJECT_NOT_FOUND));
         project.setStatus(EStatus.DELETED);
         projectRepository.save(project);
         return true;
@@ -47,7 +47,7 @@ public class ProjectService
 
     public Boolean update(ProjectUpdateRequestDTO dto)
     {
-        Project project = projectRepository.findByIdAndAuthId(dto.id(),1L).orElseThrow(() -> new ProjectManagementException(ErrorType.PROJECT_NOT_FOUND));
+        Project project = projectRepository.findByIdAndOrganizationId(dto.id(),1L).orElseThrow(() -> new ProjectManagementException(ErrorType.PROJECT_NOT_FOUND));
         project.setName(dto.name());
         project.setDescription(dto.description());
         project.setStartDate(dto.startDate());
@@ -59,12 +59,12 @@ public class ProjectService
 
     public List<Project> findAllByNameContainingIgnoreCaseAndStatusIsNotAndAuthIdOrderByNameAsc(PageRequestDTO dto)
     {
-        return projectRepository.findAllByNameContainingIgnoreCaseAndStatusIsNotAndAuthIdOrderByNameAsc(dto.searchText(), EStatus.DELETED,1L, PageRequest.of(dto.page(), dto.size()));
+        return projectRepository.findAllByNameContainingIgnoreCaseAndStatusIsNotAndAuthIdOrderByNameAsc(dto.searchText(), EStatus.ACTIVE,1L, PageRequest.of(dto.page(), dto.size()));
     }
 
     public Project findByIdAndAuthId(Long id)
     {
-       return  projectRepository.findByIdAndAuthId(id,1L).orElseThrow(() -> new ProjectManagementException(ErrorType.PROJECT_NOT_FOUND));
+       return  projectRepository.findByIdAndOrganizationId(id,1L).orElseThrow(() -> new ProjectManagementException(ErrorType.PROJECT_NOT_FOUND));
     }
 
     public Boolean addTaskToProject(AddTaskToProjectDTO dto)

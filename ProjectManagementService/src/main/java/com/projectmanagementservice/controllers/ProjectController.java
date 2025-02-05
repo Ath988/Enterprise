@@ -41,13 +41,13 @@ public class ProjectController
         return ResponseEntity.ok(projectService.update(dto));
     }
 
-    @PostMapping(FIND_ALL)
+    @GetMapping(FIND_ALL)
     public ResponseEntity<List<Project>> findAll(@RequestBody PageRequestDTO dto){
 
         return ResponseEntity.ok(projectService.findAllByNameContainingIgnoreCaseAndStatusIsNotAndAuthIdOrderByNameAsc(dto));
     }
 
-    @PostMapping(FIND_BY_ID)
+    @GetMapping(FIND_BY_ID)
     public ResponseEntity<Project> findByIdAndAuthId(Long id){
 
         return ResponseEntity.ok(projectService.findByIdAndAuthId(id));

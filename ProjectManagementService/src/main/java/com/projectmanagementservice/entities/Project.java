@@ -21,7 +21,7 @@ public class Project extends BaseEntity
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
-    Long authId; //Daha sonra giriş yapan kullanıcıdan bilgiler alınarak kaydedilecek.
+    Long organizationId;
     String name;
     String description;
     LocalDate startDate;

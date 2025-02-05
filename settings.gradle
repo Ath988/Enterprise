@@ -16,4 +16,6 @@ include 'AuthService'
 
 include 'LogService'
 include 'CRMService'
+include 'ChatService'
+include 'HRService'
 include 'InventoryService'

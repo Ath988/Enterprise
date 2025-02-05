@@ -1,5 +1,7 @@
 package com.bilgeadam.dto.response;
 
+import com.bilgeadam.entity.enums.EGender;
+
 import java.time.LocalDateTime;
 
 public record EmployeeDetailResponse(
@@ -8,9 +10,9 @@ public record EmployeeDetailResponse(
         String firstName,
         String lastName,
         String email,
-        LocalDateTime hireDate,
         String positionName,
-        String departmentName
+        String departmentName,
+        EGender gender
 
 
 ) {

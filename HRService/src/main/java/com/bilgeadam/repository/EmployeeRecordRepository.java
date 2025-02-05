@@ -15,4 +15,6 @@ public interface EmployeeRecordRepository extends JpaRepository<EmployeeRecord,L
 
     @Query("SELECT NEW com.bilgeadam.dto.response.AllEmployeeRecordResponse(e.id,e.startDate,e.endDate) FROM EmployeeRecord e WHERE e.employeeId = ?1")
     Optional<AllEmployeeRecordResponse> findAllEmployeeRecordResponse(Long employeeId);
+
+
 }

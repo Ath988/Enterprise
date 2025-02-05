@@ -6,11 +6,13 @@ import com.bilgeadam.dto.response.BaseResponse;
 import com.bilgeadam.dto.response.otherServices.AllEmployeeResponse;
 import com.bilgeadam.dto.response.otherServices.EmployeeDetailResponse;
 import com.bilgeadam.dto.response.otherServices.EmployeeSaveResponse;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @FeignClient(url = "http://localhost:8080/v1/dev/employee", name = "organisationManager")
 public interface OrganisationManagementManager {
@@ -40,4 +42,17 @@ public interface OrganisationManagementManager {
             @RequestHeader(value = "Authorization", required = false) String token);
 
 
+    @GetMapping("/employee-name")
+    ResponseEntity<BaseResponse<String>> getEmployeeNameByToken(
+            @RequestHeader(value = "Authorization", required = false) String token,
+            @RequestParam Optional<Long> employeeId);
+
+    @GetMapping("/check-company/{employeeId}")
+    ResponseEntity<BaseResponse<Boolean>> checkCompanyId(
+            @RequestHeader(value = "Authorization", required = false) String token,
+            @PathVariable Long employeeId);
+
+    @GetMapping("/get-id")
+    public ResponseEntity<BaseResponse<Long>> getEmployeeId(
+            @RequestHeader(value = "Authorization", required = false) String token);
 }

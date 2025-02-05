@@ -46,4 +46,7 @@ public interface EmployeeRepository extends JpaRepository<Employee,Long> {
     @Query("SELECT Employee FROM Employee e WHERE e.companyId = ?1 AND e.role = ?2")
     Optional<Employee> findCompanyManagerByCompanyId(Long companyId, EmployeeRole role);
 
+    @Query("SELECT CONCAT(e.firstName, ' ',e.lastName) FROM Employee e WHERE e.id = ?1")
+    Optional<String> findEmployeeNameByEmployeeId(Long employeeId);
+
 }

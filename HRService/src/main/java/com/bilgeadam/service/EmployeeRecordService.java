@@ -15,14 +15,13 @@ import com.bilgeadam.exception.HRException;
 import com.bilgeadam.manager.OrganisationManagementManager;
 import com.bilgeadam.repository.EmployeeRecordRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import static com.bilgeadam.dto.response.BaseResponse.*;
 
 @Service
 @RequiredArgsConstructor
@@ -112,20 +111,12 @@ public class EmployeeRecordService {
         return employeeRecordRepository.findById(employeeRecordId).orElseThrow(() -> new HRException(ErrorType.EMPLOYEE_RECORD_NOT_FOUND));
     }
 
-
-    private <T> T getDataFromResponse(ResponseEntity<BaseResponse<T>> response) {
-        if (response.getBody() == null || response.getBody().getData() == null) {
-            throw new HRException(ErrorType.INTERNAL_SERVER_ERROR);
-        }
-        return response.getBody().getData();
+    public Boolean existsById(Long employeeRecordId){
+        return employeeRecordRepository.existsById(employeeRecordId);
     }
 
-    private Boolean getSuccessFromResponse(ResponseEntity<BaseResponse<Boolean>> response) {
-        if (response.getBody() == null || response.getBody().getSuccess() == null) {
-            throw new HRException(ErrorType.INTERNAL_SERVER_ERROR);
-        }
-        return response.getBody().getSuccess();
-    }
+
+
 
 
 }

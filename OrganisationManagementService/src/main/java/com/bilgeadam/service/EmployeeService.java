@@ -1,7 +1,6 @@
 package com.bilgeadam.service;
 
 import com.bilgeadam.dto.request.AddEmployeeRequest;
-import com.bilgeadam.dto.request.AssignEmployeesToDepartmentRequest;
 import com.bilgeadam.dto.request.CreateCompanyManagerRequest;
 import com.bilgeadam.dto.request.UpdateEmployeeRequest;
 import com.bilgeadam.dto.response.AllEmployeeResponse;
@@ -181,6 +180,7 @@ public class EmployeeService {
         return employeeRepository.findByAuthId(authId).orElseThrow(() -> new OrganisationManagementException(ErrorType.EMPLOYEE_NOT_FOUND));
     }
 
+
     private void checkCompany(Long managerCompanyId, Long departmentCompanyId) {
         if (!managerCompanyId.equals(departmentCompanyId))
             throw new OrganisationManagementException(ErrorType.UNAUTHORIZED);
@@ -226,6 +226,32 @@ public class EmployeeService {
         }
         return response.getBody().getData();
     }
+
+    public String getEmployeeNameByToken(String token, Optional<Long> employeeId){
+        Employee manager = getEmployeeByToken(token);
+        if(employeeId.isPresent()){
+            Long companyId = employeeRepository.findCompanyIdByEmployeeId(employeeId.get()).orElseThrow(()
+                    -> new OrganisationManagementException(ErrorType.EMPLOYEE_NOT_FOUND));
+            checkCompany(manager.getCompanyId(), companyId);
+            return employeeRepository.findEmployeeNameByEmployeeId(employeeId.get())
+                    .orElseThrow(() -> new OrganisationManagementException(ErrorType.EMPLOYEE_NOT_FOUND));
+        }
+        return manager.getFirstName() + " " + manager.getLastName();
+    }
+
+    public Boolean checkCompanyByToken(String token, Long employeeId){
+        Employee manager = getEmployeeByToken(token);
+        Long employeeCompanyId = employeeRepository.findCompanyIdByEmployeeId(employeeId)
+                .orElseThrow(()-> new OrganisationManagementException(ErrorType.EMPLOYEE_NOT_FOUND));
+        return manager.getCompanyId().equals(employeeCompanyId);
+    }
+
+    public Long getEmployeeIdFromToken(String token){
+        Employee manager = getEmployeeByToken(token);
+        return manager.getId();
+    }
+
+
 
 
 }

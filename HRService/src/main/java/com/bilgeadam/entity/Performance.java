@@ -17,9 +17,11 @@ public class Performance {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     Long employeeId;
-
+    @Column(nullable = false)
+    Long evaulatedBy; // değerlendirme yapanin employeeId
+    @Enumerated(EnumType.STRING)
     EPerformanceGrade grade;
     String feedBack;
     Integer trainingHours;

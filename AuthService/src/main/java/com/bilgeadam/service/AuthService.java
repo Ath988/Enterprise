@@ -60,6 +60,7 @@ public class AuthService {
 
 
         //deneme için - msacak
+        //Todo: Employee register işlemi için farklı endpoint gerekli.
         organisationManagementManager.createCompanyManager(new CreateCompanyManagerRequest(user.getId(), user.getEmail()));
 
 

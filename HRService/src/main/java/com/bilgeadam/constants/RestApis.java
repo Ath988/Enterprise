@@ -8,6 +8,7 @@ public class RestApis {
     private static final String ROOT = VERSION + DEV;
 
     public static final String EMPLOYEE_RECORD = ROOT + "/employee-record";
+    public static final String PERFORMANCE = ROOT + "/performance";
 
 
 }

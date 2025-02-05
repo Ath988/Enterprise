@@ -11,6 +11,7 @@ public enum ErrorType {
     VALIDATION_ERROR(400,"Girilen parametreler hatalıdır. Lütfen kontrol ederek tekrar deneyiniz.", HttpStatus.BAD_REQUEST),
     UNAUTHORIZED(401,"Unauthorized",HttpStatus.UNAUTHORIZED),
     EMPLOYEE_RECORD_NOT_FOUND(1001,"Çalışan kaydı bulunamadı",HttpStatus.BAD_REQUEST),
+    PERFORMANCE_NOT_FOUND(2001,"Performans kaydı bulunamadı",HttpStatus.BAD_REQUEST),
     INVALID_TOKEN(9001,"Geçersiz token bilgisi.",HttpStatus.BAD_REQUEST),
     INVALID_PASSWORD(9002,"Kullanıcı adı ya da şifre bilgisi hatalı.",HttpStatus.BAD_REQUEST),
 

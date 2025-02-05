@@ -8,18 +8,22 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Data
 public class PerformanceResponse {
 
-    public PerformanceResponse(Long id, EPerformanceGrade grade,String feedback, Integer trainingHours, String trainingTopics){
+    public PerformanceResponse(Long id, EPerformanceGrade grade,String feedback, Integer trainingHours,
+                               String trainingTopics,LocalDateTime evaluationDate){
         this.id = id;
         this.grade = grade;
         this.feedback = feedback;
         this.trainingHours = trainingHours;
         this.trainingTopics = trainingTopics;
+        this.evaluationDate = evaluationDate;
     }
 
     Long id;
@@ -29,4 +33,5 @@ public class PerformanceResponse {
     String feedback;
     Integer trainingHours;
     String trainingTopics;
+    LocalDateTime evaluationDate;
 }

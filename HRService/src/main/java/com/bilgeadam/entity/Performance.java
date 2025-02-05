@@ -2,18 +2,19 @@ package com.bilgeadam.entity;
 
 import com.bilgeadam.entity.enums.EPerformanceGrade;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
+import java.time.LocalDateTime;
+
+@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@SuperBuilder
 @Data
 @Entity
 @Table(name = "tbl_performance")
-public class Performance {
+public class Performance extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
@@ -26,6 +27,7 @@ public class Performance {
     String feedBack;
     Integer trainingHours;
     String trainingTopics;
+
 
 
 }

@@ -1,20 +1,19 @@
-package com.bilgeadam.dto.response;
+package com.bilgeadam.dto.response.otherServices;
 
 import com.bilgeadam.entity.enums.EGender;
 
-import java.time.LocalDateTime;
-
-public record EmployeeDetailResponse(
+//Liste olarak dönen çalışanlara ait özet bilgiler, genişletilebilir
+public record AllEmployeeResponse(
 
         Long employeeId,
         String firstName,
         String lastName,
-        String email,
         String positionName,
         String departmentName,
         EGender gender
 
-
 ) {
+
+
 
 }

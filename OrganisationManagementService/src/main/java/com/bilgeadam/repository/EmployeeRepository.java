@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public interface EmployeeRepository extends JpaRepository<Employee,Long> {
@@ -48,5 +49,8 @@ public interface EmployeeRepository extends JpaRepository<Employee,Long> {
 
     @Query("SELECT CONCAT(e.firstName, ' ',e.lastName) FROM Employee e WHERE e.id = ?1")
     Optional<String> findEmployeeNameByEmployeeId(Long employeeId);
+
+    @Query("SELECT e.id,CONCAT(e.firstName,' ',e.lastName) FROM Employee e WHERE e.id IN ?1")
+    List<Object[]> findAllEmployeeNamesFromEmployeeIdList(List<Long> employeeIdList);
 
 }

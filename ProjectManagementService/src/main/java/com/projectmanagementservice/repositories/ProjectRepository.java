@@ -10,7 +10,8 @@ import java.util.Optional;
 
 public interface ProjectRepository extends JpaRepository<Project,Long>
 {
-    List<Project> findAllByNameContainingIgnoreCaseAndStatusIsNotAndAuthIdOrderByNameAsc(String s, EStatus eStatus, long i, PageRequest of);
+    List<Project> findAllByNameContainingIgnoreCaseAndStatusIsNotAndOrganizationIdOrderByNameAsc
+            (String s, EStatus eStatus, Long organizationId, PageRequest of);
 
     Optional<Project> findByIdAndOrganizationId(Long id, Long organizationId);
 

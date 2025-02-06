@@ -19,13 +19,13 @@ import com.bilgeadam.repository.EmployeeRepository;
 import com.bilgeadam.utility.JwtManager;
 import com.bilgeadam.view.VwEmployee;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 
@@ -227,9 +227,9 @@ public class EmployeeService {
         return response.getBody().getData();
     }
 
-    public String getEmployeeNameByToken(String token, Optional<Long> employeeId){
+    public String getEmployeeNameByToken(String token, Optional<Long> employeeId) {
         Employee manager = getEmployeeByToken(token);
-        if(employeeId.isPresent()){
+        if (employeeId.isPresent()) {
             Long companyId = employeeRepository.findCompanyIdByEmployeeId(employeeId.get()).orElseThrow(()
                     -> new OrganisationManagementException(ErrorType.EMPLOYEE_NOT_FOUND));
             checkCompany(manager.getCompanyId(), companyId);
@@ -239,19 +239,26 @@ public class EmployeeService {
         return manager.getFirstName() + " " + manager.getLastName();
     }
 
-    public Boolean checkCompanyByToken(String token, Long employeeId){
+    public Boolean checkCompanyByToken(String token, Long employeeId) {
         Employee manager = getEmployeeByToken(token);
         Long employeeCompanyId = employeeRepository.findCompanyIdByEmployeeId(employeeId)
-                .orElseThrow(()-> new OrganisationManagementException(ErrorType.EMPLOYEE_NOT_FOUND));
+                .orElseThrow(() -> new OrganisationManagementException(ErrorType.EMPLOYEE_NOT_FOUND));
         return manager.getCompanyId().equals(employeeCompanyId);
     }
 
-    public Long getEmployeeIdFromToken(String token){
+    public Long getEmployeeIdFromToken(String token) {
         Employee manager = getEmployeeByToken(token);
         return manager.getId();
     }
 
-
+    public Map<Long, String> findAllEmployeeNamesByEmployeeIdList(List<Long> employeeIdList) {
+        List<Object[]> objectList = employeeRepository.findAllEmployeeNamesFromEmployeeIdList(employeeIdList);
+        return objectList.stream()
+                .collect(Collectors.toMap(
+                        row -> (Long) (row != null && row[0] != null ? row[0] : -1L),
+                        row -> (row != null && row[1] != null ? (String) row[1] : "UNKNOWN")
+                ));
+    }
 
 
 }

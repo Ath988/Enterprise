@@ -12,9 +12,12 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@CrossOrigin("*")
+import static com.bilgeadam.constant.RestApis.*;
+import java.util.List;
+
+@CrossOrigin("*") // Buraya frontend URL'ini yazın
 @RestController
-@RequestMapping(RestApis.USER + "/notifications")
+@RequestMapping(NOTIFICATION)
 @RequiredArgsConstructor
 public class NotificationController {
 
@@ -66,4 +69,19 @@ public class NotificationController {
                 .success(true)
                 .build());
     }
+    
+    //Bildiirmi okundu olarak işaretlemek için ekledim.
+    @PutMapping(ISREAD)
+    public ResponseEntity<BaseResponse<Notification>> markNotificationAsRead(@RequestParam Long id) {
+        Notification updatedNotification = notificationService.markAsRead(id);
+        
+        return ResponseEntity.ok(BaseResponse.<Notification>builder()
+                                             .code(200)
+                                             .data(updatedNotification)
+                                             .message("Bildirim okundu olarak işaretlendi!")
+                                             .success(true)
+                                             .build());
+    }
+    
+    
 }

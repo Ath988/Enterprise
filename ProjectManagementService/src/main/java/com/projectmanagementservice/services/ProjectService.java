@@ -59,7 +59,7 @@ public class ProjectService
 
     public List<Project> findAllByNameContainingIgnoreCaseAndStatusIsNotAndAuthIdOrderByNameAsc(PageRequestDTO dto)
     {
-        return projectRepository.findAllByNameContainingIgnoreCaseAndStatusIsNotAndAuthIdOrderByNameAsc(dto.searchText(), EStatus.ACTIVE,1L, PageRequest.of(dto.page(), dto.size()));
+        return projectRepository.findAllByNameContainingIgnoreCaseAndStatusIsNotAndOrganizationIdOrderByNameAsc(dto.searchText(), EStatus.ACTIVE,1L, PageRequest.of(dto.page(), dto.size()));
     }
 
     public Project findByIdAndAuthId(Long id)

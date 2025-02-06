@@ -45,7 +45,7 @@ public class EmployeeRecordService {
     }
 
 
-    //Todo: Kontrol et
+    //Todo: Kontrol et, Pagination ile getir.
     public List<AllEmployeeRecordResponse> findAllEmployeeRecord(String token) {
         List<AllEmployeeResponse> employeeListByOrganizationService =
                 getDataFromResponse(organisationManagementManager.getAllEmployees(token));
@@ -111,11 +111,14 @@ public class EmployeeRecordService {
         return employeeRecordRepository.findById(employeeRecordId).orElseThrow(() -> new HRException(ErrorType.EMPLOYEE_RECORD_NOT_FOUND));
     }
 
-    public Boolean existsById(Long employeeRecordId){
-        return employeeRecordRepository.existsById(employeeRecordId);
+    public Long findCompanyIdByEmployeeId(Long employeeId){
+        return employeeRecordRepository.findCompanyIdByEmployeeId(employeeId)
+                .orElseThrow(() -> new HRException(ErrorType.EMPLOYEE_RECORD_NOT_FOUND));
     }
 
-
+    public Boolean existsByEmployeeIdAndState(Long employeeId) {
+        return employeeRecordRepository.existsByEmployeeIdAndState(employeeId,EState.ACTIVE);
+    }
 
 
 

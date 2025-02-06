@@ -26,6 +26,4 @@ public class Project extends BaseEntity
     String description;
     LocalDate startDate;
     LocalDate endDate;
-    @OneToMany
-    List<Task> tasks;
 }

@@ -1,5 +1,5 @@
 package com.bilgeadam.subscriptionservice.entity.enums;
 
-public enum SubscriptionType {
+public enum SubscriptionPlan {
     BASIC, PRO, ENTERPRISE
 }

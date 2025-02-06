@@ -1,9 +1,13 @@
 package com.bilgeadam.subscriptionservice.service;
 
+import com.bilgeadam.subscriptionservice.dto.request.AddSubscriptionRequest;
+import com.bilgeadam.subscriptionservice.dto.request.ChangeSubscriptionPlanRequest;
 import com.bilgeadam.subscriptionservice.entity.Subscription;
 import com.bilgeadam.subscriptionservice.entity.enums.EntityStatus;
 import com.bilgeadam.subscriptionservice.entity.enums.SubscriptionStatus;
 import com.bilgeadam.subscriptionservice.entity.enums.SubscriptionPlan;
+import com.bilgeadam.subscriptionservice.exception.EnterpriseException;
+import com.bilgeadam.subscriptionservice.exception.ErrorType;
 import com.bilgeadam.subscriptionservice.mapper.SubscriptionMapper;
 import com.bilgeadam.subscriptionservice.repository.SubscriptionRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,11 +22,11 @@ public class SubscriptionService {
     private final SubscriptionRepository subscriptionRepository;
     private final Long SUBSCRIPTION_PERIOD = (30*24*60*60*1000L);
 
-    public Subscription addSubscription(String userId, SubscriptionPlan subscriptionPlan) {
+    public Subscription addSubscription(AddSubscriptionRequest dto) {
         Subscription subscription = Subscription.builder()
                 .subscriptionStatus(SubscriptionStatus.DEFAULT)
-                .subscriptionPlan(subscriptionPlan)
-                .userId(userId)
+                .subscriptionPlan(dto.subscriptionPlan())
+                .userId(dto.userId())
                 .startDate(System.currentTimeMillis()) // right now
                 .estimatedEndDate(System.currentTimeMillis() + SUBSCRIPTION_PERIOD) // 30 days later
                 .build();
@@ -35,23 +39,22 @@ public class SubscriptionService {
         if (optSubscription.isPresent()) {
             return optSubscription.get();
         }
-        // TODO hata yönetimi için özel hata tanımları
-        else throw new RuntimeException();
+        else throw new EnterpriseException(ErrorType.NO_ACTIVE_SUBSCRIPTION);
     }
 
     public List<Subscription> getSubscriptionHistory(String userId) {
         return subscriptionRepository.findAllByUserIdAndEntityStatus(userId, EntityStatus.ACTIVE);
     }
 
-    public List<Subscription> updateSubscriptionPlan(String userId, SubscriptionPlan subscriptionPlan) {
-        Subscription currentSubscription = getCurrentSubscription(userId);
-        if (currentSubscription.getSubscriptionPlan().equals(subscriptionPlan)) {
-            throw new RuntimeException();         // TODO hata yönetimi için özel hata tanımları
+    public Subscription updateSubscriptionPlan(ChangeSubscriptionPlanRequest dto) {
+        Subscription currentSubscription = getCurrentSubscription(dto.userId());
+        if (currentSubscription.getSubscriptionPlan().equals(dto.subscriptionPlan())) {
+            throw new EnterpriseException(ErrorType.SAME_SUBSCRIPTION_PLAN);
         }
-        int grade = subscriptionPlan.compareTo(currentSubscription.getSubscriptionPlan());
+        int grade = dto.subscriptionPlan().compareTo(currentSubscription.getSubscriptionPlan());
 
         Subscription newSubscription = SubscriptionMapper.INSTANCE.subscriptionToSubscription(currentSubscription);
-        newSubscription.setSubscriptionPlan(subscriptionPlan);
+        newSubscription.setSubscriptionPlan(dto.subscriptionPlan());
         newSubscription.setRelatedSubscriptionId(currentSubscription.getId());
 
         if (grade < 0) {
@@ -67,5 +70,8 @@ public class SubscriptionService {
 
         currentSubscription.setRelatedSubscriptionId(newSubscription.getId());
         currentSubscription = subscriptionRepository.save(currentSubscription);
+
+        return currentSubscription;
+
     }
 }

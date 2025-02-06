@@ -1,5 +1,7 @@
 package com.bilgeadam.subscriptionservice.controller;
 
+import com.bilgeadam.subscriptionservice.dto.request.AddSubscriptionRequest;
+import com.bilgeadam.subscriptionservice.dto.request.ChangeSubscriptionPlanRequest;
 import com.bilgeadam.subscriptionservice.entity.Subscription;
 import com.bilgeadam.subscriptionservice.entity.enums.SubscriptionPlan;
 import com.bilgeadam.subscriptionservice.service.SubscriptionService;
@@ -16,12 +18,12 @@ import static com.bilgeadam.subscriptionservice.constant.RestApis.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(SUBSCRIPTION)
-public class SubscriptionController { // TODO request'leri dto.request paketinde belirleyip yönetme  // TODO response'ları dto.response paketinde belirleyip yönetme
+public class SubscriptionController {
     private final SubscriptionService subscriptionService;
 
     @GetMapping
-    public ResponseEntity<Subscription> addSubscription(String userId, SubscriptionPlan subscriptionPlan) {
-        return ResponseEntity.ok(subscriptionService.addSubscription(userId, subscriptionPlan));
+    public ResponseEntity<Subscription> addSubscription(AddSubscriptionRequest dto) {
+        return ResponseEntity.ok(subscriptionService.addSubscription(dto));
     }
 
     @GetMapping
@@ -35,7 +37,7 @@ public class SubscriptionController { // TODO request'leri dto.request paketinde
     }
 
     @GetMapping
-    public ResponseEntity<List<Subscription>> changeSubscriptionPlan(String userId, SubscriptionPlan subscriptionPlan) {
-        return ResponseEntity.ok(subscriptionService.updateSubscriptionPlan(userId, subscriptionPlan));
+    public ResponseEntity<Subscription> changeSubscriptionPlan(ChangeSubscriptionPlanRequest dto) {
+        return ResponseEntity.ok(subscriptionService.updateSubscriptionPlan(dto));
     }
 }

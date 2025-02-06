@@ -51,8 +51,8 @@ public class ProjectService
         return true;
     }
     //TODO: kullanici authIdsi ile hangi organizasyona bagli oldugu bilgisi getirilmelidir!
-    public List<Project> findAllProjectsByOrganizationId(Long authId) {
-        Long organizationId = authId; // organizasyonun bulundugu senaryo
+    public List<Project> findAllProjectsByOrganizationId() {
+        Long organizationId = 1L; // organizasyonun bulundugu senaryo
         return projectRepository.findAllByOrganizationIdAndStatus(organizationId, EStatus.ACTIVE);
     }
 

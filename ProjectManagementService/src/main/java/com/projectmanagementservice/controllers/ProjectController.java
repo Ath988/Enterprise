@@ -32,7 +32,7 @@ public class ProjectController
     }
 
     @DeleteMapping(DELETE)
-    public ResponseEntity<BaseResponse<Boolean>> delete(ProjectDeleteRequest dto){
+    public ResponseEntity<BaseResponse<Boolean>> delete(@RequestBody ProjectDeleteRequest dto){
         //TODO: token kontrolu yapilacak!
         return ResponseEntity.ok(BaseResponse.<Boolean>builder()
                         .data(projectService.delete(dto))
@@ -56,12 +56,11 @@ public class ProjectController
     @GetMapping(FIND_ALL)
     public ResponseEntity<BaseResponse<List<Project>>> findAllProjects(@RequestParam(value = "token") String token){
         //TODO: token kontrolu yapilacak!
-        Long authId = Long.parseLong(token); //Token onaylandigi senaryo
         return ResponseEntity.ok(BaseResponse.<List<Project>>builder()
                         .code(200)
                         .success(true)
                         .message("Proje listesi getirildi!")
-                        .data(projectService.findAllProjectsByOrganizationId(authId))
+                        .data(projectService.findAllProjectsByOrganizationId())
                 .build());
     }
 }

@@ -10,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 import static com.bilgeadam.constants.RestApis.*;
 
 @RestController
@@ -27,6 +29,16 @@ public class PerformanceController {
                 .data(performanceService.getPerformance(token, performanceId))
                 .build());
     }
+
+    @GetMapping
+    public ResponseEntity<BaseResponse<List<PerformanceResponse>>> getPerformanceList(
+            @RequestHeader(value = "Authorization", required = false) String token) {
+        return ResponseEntity.ok(BaseResponse.<List<PerformanceResponse>>builder()
+                .data(performanceService.getAllPerformances(token))
+                .message("Tüm performans kayıtları getirildi.")
+                .build());
+    }
+
 
     @PostMapping
     public ResponseEntity<BaseResponse<Boolean>> addPerformance(
@@ -57,7 +69,6 @@ public class PerformanceController {
                 .message("Performans kaydı silindi.")
                 .build());
     }
-
 
 
 }

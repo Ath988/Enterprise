@@ -16,9 +16,10 @@ import java.time.LocalDateTime;
 @Data
 public class PerformanceResponse {
 
-    public PerformanceResponse(Long id, EPerformanceGrade grade,String feedback, Integer trainingHours,
+    public PerformanceResponse(Long id, Long employeeId,EPerformanceGrade grade,String feedback, Integer trainingHours,
                                String trainingTopics,LocalDateTime evaluationDate){
         this.id = id;
+        this.employeeId = employeeId;
         this.grade = grade;
         this.feedback = feedback;
         this.trainingHours = trainingHours;
@@ -27,6 +28,7 @@ public class PerformanceResponse {
     }
 
     Long id;
+    Long employeeId;
     String employeeName;
     String evaulatedBy;
     EPerformanceGrade grade;

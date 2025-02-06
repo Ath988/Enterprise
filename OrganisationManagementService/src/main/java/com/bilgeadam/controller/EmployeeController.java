@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static com.bilgeadam.constants.RestApis.*;
@@ -161,6 +162,13 @@ public class EmployeeController {
             @RequestHeader(value = "Authorization", required = false) String token) {
         return ResponseEntity.ok(BaseResponse.<Long>builder()
                 .data(employeeService.getEmployeeIdFromToken(token))
+                .build());
+    }
+
+    @PostMapping("get-all-employee-names")
+    public ResponseEntity<BaseResponse<Map<Long,String>>> getAllEmployeeNames(@RequestBody List<Long> employeeIdList) {
+        return ResponseEntity.ok(BaseResponse.<Map<Long,String>>builder()
+                        .data(employeeService.findAllEmployeeNamesByEmployeeIdList(employeeIdList))
                 .build());
     }
 

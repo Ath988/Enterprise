@@ -1,7 +1,7 @@
 package com.bilgeadam.subscriptionservice.entity;
 
 import com.bilgeadam.subscriptionservice.entity.enums.SubscriptionStatus;
-import com.bilgeadam.subscriptionservice.entity.enums.SubscriptionType;
+import com.bilgeadam.subscriptionservice.entity.enums.SubscriptionPlan;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,7 +18,7 @@ public class Subscription extends BaseEntity {
 
     String userId;
     @Enumerated(EnumType.STRING)
-    SubscriptionType subscriptionType;
+    SubscriptionPlan subscriptionPlan;
     Long startDate;
     Long estimatedEndDate;
     SubscriptionStatus subscriptionStatus;

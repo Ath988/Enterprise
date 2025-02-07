@@ -2,10 +2,8 @@ package com.bilgeadam.controller;
 
 import static com.bilgeadam.config.RestApis.*;
 
-import com.bilgeadam.config.RestApis;
 import com.bilgeadam.service.LoggingService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 public class LoggingController {
 	
 	
-	private LoggingService loggingService;
+	private final LoggingService loggingService;
 	
 	@PostMapping(REQUEST)
 	public ResponseEntity<String> logRequest(@RequestBody String requestLog) {

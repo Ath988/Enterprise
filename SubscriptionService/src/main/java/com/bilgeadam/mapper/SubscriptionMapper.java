@@ -1,6 +1,6 @@
-package com.bilgeadam.subscriptionservice.mapper;
+package com.bilgeadam.mapper;
 
-import com.bilgeadam.subscriptionservice.entity.Subscription;
+import com.bilgeadam.entity.Subscription;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 import org.mapstruct.factory.Mappers;

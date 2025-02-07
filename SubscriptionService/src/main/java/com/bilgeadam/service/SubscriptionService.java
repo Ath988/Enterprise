@@ -1,15 +1,11 @@
-package com.bilgeadam.subscriptionservice.service;
+package com.bilgeadam.service;
 
-import com.bilgeadam.subscriptionservice.dto.request.AddSubscriptionRequest;
-import com.bilgeadam.subscriptionservice.dto.request.ChangeSubscriptionPlanRequest;
-import com.bilgeadam.subscriptionservice.entity.Subscription;
-import com.bilgeadam.subscriptionservice.entity.enums.EntityStatus;
-import com.bilgeadam.subscriptionservice.entity.enums.SubscriptionStatus;
-import com.bilgeadam.subscriptionservice.entity.enums.SubscriptionPlan;
-import com.bilgeadam.subscriptionservice.exception.EnterpriseException;
-import com.bilgeadam.subscriptionservice.exception.ErrorType;
-import com.bilgeadam.subscriptionservice.mapper.SubscriptionMapper;
-import com.bilgeadam.subscriptionservice.repository.SubscriptionRepository;
+import com.bilgeadam.entity.Subscription;
+import com.bilgeadam.entity.enums.EntityStatus;
+import com.bilgeadam.entity.enums.SubscriptionStatus;
+import com.bilgeadam.entity.enums.SubscriptionPlan;
+import com.bilgeadam.mapper.SubscriptionMapper;
+import com.bilgeadam.repository.SubscriptionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

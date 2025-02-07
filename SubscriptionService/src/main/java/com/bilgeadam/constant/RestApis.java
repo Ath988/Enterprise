@@ -1,4 +1,4 @@
-package com.bilgeadam.subscriptionservice.constant;
+package com.bilgeadam.constant;
 
 public class RestApis {
     public static final String DOMAIN = "http://localhost:9100";

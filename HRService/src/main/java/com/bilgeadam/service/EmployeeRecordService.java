@@ -12,10 +12,12 @@ import com.bilgeadam.entity.EmployeeRecord;
 import com.bilgeadam.entity.enums.EState;
 import com.bilgeadam.exception.ErrorType;
 import com.bilgeadam.exception.HRException;
+import com.bilgeadam.manager.FileManager;
 import com.bilgeadam.manager.OrganisationManagementManager;
 import com.bilgeadam.repository.EmployeeRecordRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -28,6 +30,7 @@ import static com.bilgeadam.dto.response.BaseResponse.*;
 public class EmployeeRecordService {
     private final EmployeeRecordRepository employeeRecordRepository;
     private final OrganisationManagementManager organisationManagementManager;
+    private final FileManager fileManager;
 
 
     public Boolean addNewEmployeeRecord(String token, AddEmployeeRecordRequest dto) {
@@ -104,6 +107,19 @@ public class EmployeeRecordService {
             return true;
         }
         throw new HRException(ErrorType.INTERNAL_SERVER_ERROR);
+    }
+
+    public Boolean uploadPersonelFile(String token,Long employeeId, MultipartFile file) {
+        EmployeeRecord employeeRecord = findById(employeeId);
+        if(!getSuccessFromResponse(organisationManagementManager.checkCompanyId(token,employeeId)))
+            throw new HRException(ErrorType.UNAUTHORIZED);
+        System.out.println("11111111111111");
+
+        employeeRecord.setPerfonelFileUrl(getDataFromResponse(fileManager.uploadFile(file)));
+        employeeRecord.setPerfonelFileName(file.getOriginalFilename());
+        employeeRecordRepository.save(employeeRecord);
+
+        return true;
     }
 
 

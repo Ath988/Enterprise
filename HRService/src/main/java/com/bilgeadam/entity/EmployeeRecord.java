@@ -28,4 +28,7 @@ public class EmployeeRecord extends BaseEntity{
     LocalDate startDate;
     LocalDate endDate;
 
+    String perfonelFileName;
+    String perfonelFileUrl; //Gerek var mı ?
+
 }

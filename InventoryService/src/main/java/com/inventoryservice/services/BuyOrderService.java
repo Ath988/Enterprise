@@ -35,7 +35,7 @@ public class BuyOrderService
         this.supplierService = supplierService;
     }
     //1L OLAN BÜTÜN DEĞERLER DAHA SONRA İSTEK ATILAN HESABIN AUTH ID'SİNDEN ALINACAKTIR.
-    public Boolean saveBuyOrder(BuyOrderSaveRequestDTO dto)
+    public Boolean save(BuyOrderSaveRequestDTO dto)
     {
         if (dto.quantity() < 0)
         {
@@ -69,7 +69,7 @@ public class BuyOrderService
     }
 
 
-    public Boolean updateBuyOrder(BuyOrderUpdateRequestDTO dto)
+    public Boolean update(BuyOrderUpdateRequestDTO dto)
     {
         if (dto.quantity() < 0)
         {
@@ -99,14 +99,14 @@ public class BuyOrderService
     }
 
 
-    public List<BuyOrder> findAllBuyOrders(PageRequestDTO dto)
+    public List<BuyOrder> findAllByProduct_NameContainingIgnoreCaseAndAuthIdOrderByProduct_NameAsc(PageRequestDTO dto)
     {
        return buyOrderRepository.findAllByProduct_NameContainingIgnoreCaseAndAuthIdOrderByProduct_NameAsc(dto.searchText(), 1L, PageRequest.of(dto.page(), dto.size()));
 
     }
 
-    public BuyOrder findByIdAndAuthId(Long id, Long authId)
+    public BuyOrder findByIdAndAuthId(Long id)
     {
-        return buyOrderRepository.findByIdAndAuthId(id, authId).orElseThrow(() -> new InventoryServiceException(ErrorType.ORDER_NOT_FOUND));
+        return buyOrderRepository.findByIdAndAuthId(id, 1L).orElseThrow(() -> new InventoryServiceException(ErrorType.ORDER_NOT_FOUND));
     }
 }

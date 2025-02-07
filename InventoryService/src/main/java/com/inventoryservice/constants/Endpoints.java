@@ -15,11 +15,12 @@ public class Endpoints
 
     //controllers
 
-    public static final String ORDER = "/buy-order";
     public static final String PRODUCT = "/product";
 
     public static final String SUPPLIER = "/supplier";
     public static final String WAREHOUSE = "/ware-house";
+    public static final String BUYORDER = "/buy-order";
+
 
 
     //methods
@@ -39,4 +40,5 @@ public class Endpoints
 
     public static final String UPDATE_BUY_ORDER = "/update-buy-order";
     public static final String SAVE_FROM_ORDER_ID = "/save-from-order-id";
+
 }

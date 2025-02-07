@@ -10,5 +10,6 @@ public class RestApis {
     public static final String EMPLOYEE_RECORD = ROOT + "/employee-record";
     public static final String PERFORMANCE = ROOT + "/performance";
     public static final String PAYROLL = ROOT + "/payroll";
+    public static final String WORKING_HOURS = ROOT + "/working-hours";
 
 }

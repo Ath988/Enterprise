@@ -30,9 +30,10 @@ public class PayrollService {
 
     @Transactional
     public Boolean addPayroll(String token, AddPayrollRequest dto) {
-        if (!employeeRecordService.existsByEmployeeIdAndState(dto.employeeId()) ||
-                !getSuccessFromResponse(organisationManagementManager.checkCompanyId(token, dto.employeeId()))
-        ) throw new HRException(ErrorType.EMPLOYEE_RECORD_NOT_FOUND);
+        if (!employeeRecordService.existsByEmployeeIdAndState(dto.employeeId()))
+            throw new HRException(ErrorType.EMPLOYEE_RECORD_NOT_FOUND);
+
+        checkCompany(token,dto.employeeId());
 
         payrollRepository.save(Payroll.builder()
                 .employeeId(dto.employeeId())

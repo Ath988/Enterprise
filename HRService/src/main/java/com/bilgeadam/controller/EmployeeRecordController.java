@@ -10,6 +10,7 @@ import com.bilgeadam.service.EmployeeRecordService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -35,10 +36,10 @@ public class EmployeeRecordController {
 
     @GetMapping
     public ResponseEntity<BaseResponse<List<AllEmployeeRecordResponse>>> getEmployeeRecord(
-            @RequestHeader(value = "Authorization", required = false) String token){
+            @RequestHeader(value = "Authorization", required = false) String token) {
         return ResponseEntity.ok(BaseResponse.<List<AllEmployeeRecordResponse>>builder()
-                        .data(employeeRecordService.findAllEmployeeRecord(token))
-                        .message("Bütün çalışan kayıtları getirildi.")
+                .data(employeeRecordService.findAllEmployeeRecord(token))
+                .message("Bütün çalışan kayıtları getirildi.")
                 .build());
     }
 
@@ -75,7 +76,17 @@ public class EmployeeRecordController {
                 .build());
     }
 
-
+    //Todo: Şuan calismiyor bakilacak
+    @PostMapping("/upload-persone-file")
+    public ResponseEntity<BaseResponse<Boolean>> uploadPersonelFile(
+            @RequestHeader(value = "Authorization", required = false) String token,
+            @RequestParam Long employeeId,
+            @RequestParam("file") MultipartFile file) {
+        return ResponseEntity.ok(BaseResponse.<Boolean>builder()
+                .data(employeeRecordService.uploadPersonelFile(token, employeeId, file))
+                .message("Personel özlük dosyası yüklendi.")
+                .build());
+    }
 
 
 }

@@ -1,4 +1,4 @@
-package com.projectmanagementservice.dto.request;
+package com.inventoryservice.dto.request;
 
 public record PageRequestDTO(
     String searchText,

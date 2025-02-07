@@ -10,6 +10,7 @@ include 'ProjectManagementService'
 include 'FileService'
 include 'AuthService'
 include 'NotificationService'
+include 'SubscriptionService'
 
 
 include 'AuthService'
@@ -18,3 +19,4 @@ include 'LogService'
 include 'CRMService'
 include 'ChatService'
 include 'HRService'
+include 'InventoryService'

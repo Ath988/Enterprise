@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @FeignClient(url = "http://localhost:8080/v1/dev/employee", name = "organisationManager")
@@ -53,6 +54,9 @@ public interface OrganisationManagementManager {
             @PathVariable Long employeeId);
 
     @GetMapping("/get-id")
-    public ResponseEntity<BaseResponse<Long>> getEmployeeId(
+    ResponseEntity<BaseResponse<Long>> getEmployeeId(
             @RequestHeader(value = "Authorization", required = false) String token);
+
+    @PostMapping("get-all-employee-names")
+    ResponseEntity<BaseResponse<Map<Long,String>>> getAllEmployeeNames(@RequestBody List<Long> employeeIdList);
 }

@@ -99,9 +99,9 @@ public class BuyOrderService
     }
 
 
-    public List<BuyOrder> findAllByProduct_NameContainingIgnoreCaseAndAuthIdOrderByProduct_NameAsc(PageRequestDTO dto)
+    public List<BuyOrder> findAllByProduct_NameContainingIgnoreCaseAndStatusIsNotAndAuthIdOrderByProduct_NameAsc(PageRequestDTO dto)
     {
-       return buyOrderRepository.findAllByProduct_NameContainingIgnoreCaseAndAuthIdOrderByProduct_NameAsc(dto.searchText(), 1L, PageRequest.of(dto.page(), dto.size()));
+       return buyOrderRepository.findAllByProduct_NameContainingIgnoreCaseAndStatusIsNotAndAuthIdOrderByProduct_NameAsc(dto.searchText(), EStatus.DELETED, 1L, PageRequest.of(dto.page(), dto.size()));
 
     }
 

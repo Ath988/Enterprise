@@ -43,7 +43,7 @@ public class BuyOrderController
 
     public ResponseEntity<List<BuyOrder>> findAll(@RequestBody PageRequestDTO dto){
 
-        return ResponseEntity.ok(buyOrderService.findAllByProduct_NameContainingIgnoreCaseAndAuthIdOrderByProduct_NameAsc(dto));
+        return ResponseEntity.ok(buyOrderService.findAllByProduct_NameContainingIgnoreCaseAndStatusIsNotAndAuthIdOrderByProduct_NameAsc(dto));
     }
 
     @PostMapping(FIND_BY_ID)

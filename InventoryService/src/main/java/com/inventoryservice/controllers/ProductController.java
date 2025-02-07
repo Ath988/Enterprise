@@ -9,7 +9,6 @@ import com.inventoryservice.services.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -37,7 +36,6 @@ public class ProductController
     }
 
     @PutMapping(UPDATE)
-    @Operation(summary = "Updates Product")
     public ResponseEntity<Boolean> update(@RequestBody ProductUpdateRequestDTO dto){
 
         return ResponseEntity.ok(productService.update(dto));

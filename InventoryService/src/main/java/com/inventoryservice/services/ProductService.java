@@ -120,7 +120,7 @@ public class ProductService
 
     public List<Product> findAllByNameContainingIgnoreCaseAndStatusIsNotAndAuthIdOrderByName(PageRequestDTO dto)
     {
-        return productRepository.findAllByNameContainingIgnoreCaseAndStatusIsNotAndAuthIdOrderByName(dto.searchText(), EStatus.ACTIVE, 1L, PageRequest.of(dto.page(), dto.size()));
+        return productRepository.findAllByNameContainingIgnoreCaseAndStatusIsNotAndAuthIdOrderByName(dto.searchText(), EStatus.DELETED, 1L, PageRequest.of(dto.page(), dto.size()));
     }
 
 

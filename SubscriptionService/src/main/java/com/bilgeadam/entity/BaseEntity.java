@@ -2,10 +2,14 @@ package com.bilgeadam.entity;
 
 import com.bilgeadam.entity.enums.EntityStatus;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
+@AllArgsConstructor
+@NoArgsConstructor
 @MappedSuperclass
 @Data
 @SuperBuilder

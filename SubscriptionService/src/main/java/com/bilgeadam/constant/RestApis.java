@@ -13,4 +13,9 @@ public class RestApis {
     private static final String ROOT = VERSION + DEVELOPER;
 
     public static final String SUBSCRIPTION = ROOT + "/subscription";
+
+    public static final String ADD_SUBSCRIPTION = "/add";
+    public static final String GET_CURRENT_SUBSCRIPTION = "/get-current";
+    public static final String GET_SUBSCRIPTION_HISTORY = "/get-history";
+    public static final String UPDATE_SUBSCRIPTION = "/update";
 }

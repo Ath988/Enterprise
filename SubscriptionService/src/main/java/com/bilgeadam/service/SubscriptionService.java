@@ -1,9 +1,12 @@
 package com.bilgeadam.service;
 
+import com.bilgeadam.dto.request.AddSubscriptionRequest;
+import com.bilgeadam.dto.request.ChangeSubscriptionPlanRequest;
 import com.bilgeadam.entity.Subscription;
 import com.bilgeadam.entity.enums.EntityStatus;
 import com.bilgeadam.entity.enums.SubscriptionStatus;
-import com.bilgeadam.entity.enums.SubscriptionPlan;
+import com.bilgeadam.exception.EnterpriseException;
+import com.bilgeadam.exception.ErrorType;
 import com.bilgeadam.mapper.SubscriptionMapper;
 import com.bilgeadam.repository.SubscriptionRepository;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +34,7 @@ public class SubscriptionService {
 
     public Subscription getCurrentSubscription(String userId) {
         Optional<Subscription> optSubscription = subscriptionRepository
-                .findTopByUserIdAndEntityStatusAndEstimatedEndDateGreaterThanEqual(userId, EntityStatus.ACTIVE, System.currentTimeMillis());
+                .findTopByUserIdAndStatusAndEstimatedEndDateGreaterThanEqual(userId, EntityStatus.ACTIVE, System.currentTimeMillis());
         if (optSubscription.isPresent()) {
             return optSubscription.get();
         }
@@ -39,7 +42,7 @@ public class SubscriptionService {
     }
 
     public List<Subscription> getSubscriptionHistory(String userId) {
-        return subscriptionRepository.findAllByUserIdAndEntityStatus(userId, EntityStatus.ACTIVE);
+        return subscriptionRepository.findAllByUserIdAndStatus(userId, EntityStatus.ACTIVE);
     }
 
     public Subscription updateSubscriptionPlan(ChangeSubscriptionPlanRequest dto) {

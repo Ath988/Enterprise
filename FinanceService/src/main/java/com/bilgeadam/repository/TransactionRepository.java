@@ -12,5 +12,6 @@ public interface TransactionRepository extends JpaRepository<Transaction,Long> {
     List<Transaction> findByTypeAndCategoryOrderByCategoryAsc(ETransactionType type, EExpenseCategory category);
 
     List<Transaction> findByTypeAndCategoryOrderByCategoryDesc(ETransactionType type, EExpenseCategory category);
+
 }
 

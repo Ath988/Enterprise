@@ -48,7 +48,7 @@ allprojects{
 	dependencies{
 		implementation libs.springBootStarterAmqp
 		implementation libs.springBootStarterDataJpa
-		//implementation libs.springBootStarterSecurity
+		implementation libs.springBootStarterSecurity
 		implementation libs.jwt
 		implementation libs.springBootStarterValidation
 		implementation libs.springBootStarterWeb

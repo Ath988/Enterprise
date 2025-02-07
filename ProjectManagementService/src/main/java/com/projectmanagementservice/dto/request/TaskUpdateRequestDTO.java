@@ -2,6 +2,11 @@ package com.projectmanagementservice.dto.request;
 
 import java.time.LocalDate;
 
-public record TaskUpdateRequestDTO(Long id, String name, String description)
+public record TaskUpdateRequestDTO(
+        String token,
+        Long id,
+        Long authId,
+        String name,
+        String description)
 {
 }

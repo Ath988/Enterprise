@@ -20,11 +20,13 @@ public class JwtManager {
     private final String ISSUER ="EnterpriseApp";
     private final Long EXDATE = 1000L * 60 * 60 ; // 5 minutes
 
-    public Optional<String> createToken (Long authId){
+    public Optional<String> createToken (Long authId, ERole role, SubscriptionPlan subscriptionPlan){
         String token;
         try{
             token = com.auth0.jwt.JWT.create().withAudience()
                     .withClaim("id", authId)
+                    .withClaim("role", role.toString())
+                    .withClaim("subscriptionPlan", subscriptionPlan.toString())
                     .withIssuer(ISSUER)
                     .withIssuedAt(new Date())
                     .withExpiresAt(new Date(System.currentTimeMillis() + EXDATE))

@@ -1,15 +1,14 @@
-package com.bilgeadam.subscriptionservice.entity;
+package com.bilgeadam.entity;
 
-import com.bilgeadam.subscriptionservice.entity.enums.SubscriptionStatus;
-import com.bilgeadam.subscriptionservice.entity.enums.SubscriptionPlan;
+import com.bilgeadam.entity.enums.SubscriptionStatus;
+import com.bilgeadam.entity.enums.SubscriptionPlan;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
-@NoArgsConstructor
-@AllArgsConstructor
+
 @Data
 @Entity
 @Table(name = "Subscription")

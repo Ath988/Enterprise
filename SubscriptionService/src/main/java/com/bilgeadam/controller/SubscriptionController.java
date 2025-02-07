@@ -1,8 +1,8 @@
-package com.bilgeadam.subscriptionservice.controller;
+package com.bilgeadam.controller;
 
-import com.bilgeadam.subscriptionservice.entity.Subscription;
-import com.bilgeadam.subscriptionservice.entity.enums.SubscriptionPlan;
-import com.bilgeadam.subscriptionservice.service.SubscriptionService;
+import com.bilgeadam.entity.Subscription;
+import com.bilgeadam.entity.enums.SubscriptionPlan;
+import com.bilgeadam.service.SubscriptionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-import static com.bilgeadam.subscriptionservice.constant.RestApis.*;
+import static com.bilgeadam.constant.RestApis.*;
 
 @RestController
 @RequiredArgsConstructor

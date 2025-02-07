@@ -1,7 +1,7 @@
-package com.bilgeadam.subscriptionservice.repository;
+package com.bilgeadam.repository;
 
-import com.bilgeadam.subscriptionservice.entity.Subscription;
-import com.bilgeadam.subscriptionservice.entity.enums.EntityStatus;
+import com.bilgeadam.entity.Subscription;
+import com.bilgeadam.entity.enums.EntityStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

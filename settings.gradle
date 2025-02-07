@@ -20,3 +20,5 @@ include 'CRMService'
 include 'ChatService'
 include 'HRService'
 include 'InventoryService'
+include 'FinanceService'
+

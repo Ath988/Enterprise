@@ -1,4 +1,4 @@
-package com.bilgeadam.subscriptionservice.exception;
+package com.bilgeadam.exception;
 
 import lombok.Getter;
 

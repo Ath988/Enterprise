@@ -8,6 +8,7 @@ import com.bilgeadam.manager.MailManager;
 import com.bilgeadam.manager.OrganisationManagementManager;
 import com.bilgeadam.repository.AuthRepository;
 import com.bilgeadam.util.enums.EAuthState;
+import com.bilgeadam.util.enums.ERole;
 import com.bilgeadam.util.enums.JwtManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -35,7 +36,7 @@ public class AuthService {
         if (user.getAuthState().equals(EAuthState.PENDING)) {
             throw new EnterpriseException(ErrorType.LOGIN_ERROR_EMAIL_VALIDATION);
         }
-        Optional<String> token = jwtManager.createToken(user.getId());
+        Optional<String> token = jwtManager.createToken(user.getId(),user.getRole());
         if (token.isPresent()) {
             return token.get();
         }
@@ -54,6 +55,7 @@ public class AuthService {
                 .email(dto.email())
                 .password(passwordEncoder.encode(dto.password()))
                 .authState(EAuthState.PENDING)
+                .role(ERole.MEMBER)
                 .build();
         user = userRepository.save(user);
         String authCode = userAuthVerifyCodeService.generateAuthCode(user.getId());

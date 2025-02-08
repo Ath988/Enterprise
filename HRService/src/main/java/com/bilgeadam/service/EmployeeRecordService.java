@@ -113,7 +113,7 @@ public class EmployeeRecordService {
         EmployeeRecord employeeRecord = findById(employeeId);
         if(!getSuccessFromResponse(organisationManagementManager.checkCompanyId(token,employeeId)))
             throw new HRException(ErrorType.UNAUTHORIZED);
-        System.out.println("11111111111111");
+
 
         employeeRecord.setPerfonelFileUrl(getDataFromResponse(fileManager.uploadFile(file)));
         employeeRecord.setPerfonelFileName(file.getOriginalFilename());
@@ -121,7 +121,6 @@ public class EmployeeRecordService {
 
         return true;
     }
-
 
     public EmployeeRecord findById(Long employeeRecordId) {
         return employeeRecordRepository.findById(employeeRecordId).orElseThrow(() -> new HRException(ErrorType.EMPLOYEE_RECORD_NOT_FOUND));

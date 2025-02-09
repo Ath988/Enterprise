@@ -7,7 +7,7 @@ public record InvoiceUpdateRequestDTO(
         Long id,
         String taxNo,            // Vergi Numarası ya da TC numarası da girilebilir.
         String companyName,      // Şirket Adı
-        // String companyAdress, // Şirket  Adres Bilgisi
+        String companyAdress, // Şirket  Adres Bilgisi
         String buyerEmail,       // Alıcı Email Bilgisi
         String buyerPhone,       // Alıcı Telefon Bilgisi
         Long productId,          // Satılan ürün/hizmet ID

@@ -74,9 +74,9 @@ public class TransactionService {
     @Operation(summary = "Gider Kategorisine Göre Sıralama")
     public List<Transaction> getSortedTransactionsByCategory(ETransactionType type, EExpenseCategory category, boolean ascending) {
         if (ascending) {
-            return transactionRepository.findByTypeAndCategoryOrderByCategoryAsc(type, category);
+            return transactionRepository.findByTransactionTypeAndExpenseCategoryOrderByExpenseCategoryAsc(type, category);
         } else {
-            return transactionRepository.findByTypeAndCategoryOrderByCategoryDesc(type, category);
+            return transactionRepository.findByTransactionTypeAndExpenseCategoryOrderByExpenseCategoryDesc(type, category);
         }
     }
 

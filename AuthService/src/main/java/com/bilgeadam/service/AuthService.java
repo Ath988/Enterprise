@@ -2,6 +2,7 @@ package com.bilgeadam.service;
 
 import com.bilgeadam.dto.request.*;
 import com.bilgeadam.entity.Auth;
+import com.bilgeadam.entity.User;
 import com.bilgeadam.exception.EnterpriseException;
 import com.bilgeadam.exception.ErrorType;
 import com.bilgeadam.manager.MailManager;
@@ -55,7 +56,6 @@ public class AuthService {
                 .email(dto.email())
                 .password(passwordEncoder.encode(dto.password()))
                 .authState(EAuthState.PENDING)
-                .role(ERole.MEMBER)
                 .build();
         user = userRepository.save(user);
         String authCode = userAuthVerifyCodeService.generateAuthCode(user.getId());

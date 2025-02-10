@@ -7,7 +7,11 @@ import com.bilgeadam.dto.response.BaseResponse;
 import com.bilgeadam.dto.response.EmployeeRecordResponse;
 import com.bilgeadam.entity.EmployeeRecord;
 import com.bilgeadam.service.EmployeeRecordService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -76,17 +80,19 @@ public class EmployeeRecordController {
                 .build());
     }
 
-    //Todo: Şuan calismiyor bakilacak
-    @PostMapping("/upload-persone-file")
+    @Operation(summary = "Personel dosyası yükle", description = "Personel için bir özlük dosyası yükler.")
+    @PostMapping(value = "/upload-persone-file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<BaseResponse<Boolean>> uploadPersonelFile(
             @RequestHeader(value = "Authorization", required = false) String token,
             @RequestParam Long employeeId,
+            @Parameter(description = "Yüklenecek dosya", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE))
             @RequestParam("file") MultipartFile file) {
         return ResponseEntity.ok(BaseResponse.<Boolean>builder()
                 .data(employeeRecordService.uploadPersonelFile(token, employeeId, file))
                 .message("Personel özlük dosyası yüklendi.")
                 .build());
     }
+
 
 
 }

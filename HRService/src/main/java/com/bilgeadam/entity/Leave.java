@@ -1,12 +1,12 @@
 package com.bilgeadam.entity;
 
+import com.bilgeadam.entity.enums.ELeaveType;
 import com.bilgeadam.entity.enums.EStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
@@ -14,15 +14,21 @@ import java.time.LocalTime;
 @SuperBuilder
 @Data
 @Entity
-@Table(name = "tbl_working_hours")
-public class WorkingHours extends BaseEntity {
+@Table(name = "tbl_leave")
+public class Leave extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
     Long employeeId;
-    LocalDate date;
-    LocalTime startTime;
-    LocalTime endTime;
+    @Enumerated(EnumType.STRING)
+    ELeaveType leaveType;
+    String reason;
+    LocalDate startDate;
+    LocalDate endDate;
+    int duration;
     @Enumerated(EnumType.STRING)
     EStatus status;
+    Long approvedBy;
+    LocalDate approvedAt;
+    String response;
 }

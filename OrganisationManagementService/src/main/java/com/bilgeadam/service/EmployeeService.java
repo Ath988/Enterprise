@@ -61,7 +61,7 @@ public class EmployeeService {
 
     @Transactional
     public EmployeeSaveResponse addNewEmployee(String token, AddEmployeeRequest dto) {
-        //Todo: AuthService email kontrolü
+
         Employee manager = getEmployeeByToken(token);
         Position position = positionService.findById(dto.positionId());
         if (manager.getRole().equals(EmployeeRole.DEPARTMENT_MANAGER)) {

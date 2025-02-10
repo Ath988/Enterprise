@@ -28,6 +28,9 @@ ext{
             jwt: "com.auth0:java-jwt:$versions.jwt",
             openapi: "org.springdoc:springdoc-openapi-starter-webmvc-ui:$versions.openapi",
             mapstruct: "org.mapstruct:mapstruct:$versions.mapstruct",
-            mapstructProcessor: "org.mapstruct:mapstruct-processor:$versions.mapstruct"
+            mapstructProcessor: "org.mapstruct:mapstruct-processor:$versions.mapstruct",
+            feign_form: "io.github.openfeign.form:feign-form:3.8.0",
+            feign_form_spring: "io.github.openfeign.form:feign-form-spring:3.8.0"
+
     ]
 }

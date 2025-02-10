@@ -26,6 +26,7 @@ public interface AccountRepository  extends JpaRepository<Account, Long> {
     @Query("SELECT i FROM Account i WHERE i.currency = :currency AND i.balance > :balance")
     List<Account> findByCurrencyAndBalanceGreaterThan(@Param("currency") ECurrency currency, @Param("balance") BigDecimal balance);
 
+    // Banka Adı ile Sorgulama
     @Query("SELECT i FROM Account i WHERE i.bankName LIKE %:bankName% AND i.status != :status")
     Page<Account> findByBankNameContainingIgnoreCaseAndStatusNot(@Param("bankName") String bankName, @Param("status") EStatus status, Pageable pageable);
 

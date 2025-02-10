@@ -22,8 +22,7 @@ import java.util.List;
 public class SupplierService
 {
     private final SupplierRepository supplierRepository;
-    private final BuyOrderService orderService;
-    private final ProductService productService;
+
 
 
     //1L OLAN BÜTÜN DEĞERLER DAHA SONRA İSTEK ATILAN HESABIN AUTH ID'SİNDEN ALINACAKTIR.

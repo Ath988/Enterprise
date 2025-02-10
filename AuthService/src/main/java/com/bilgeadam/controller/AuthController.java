@@ -1,10 +1,8 @@
 package com.bilgeadam.controller;
 
-import com.bilgeadam.dto.request.LoginRequestDto;
-import com.bilgeadam.dto.request.RegisterRequestDto;
-import com.bilgeadam.dto.request.ForgotPasswordRequestDto;
-import com.bilgeadam.dto.request.NewPasswordRequestDto;
+import com.bilgeadam.dto.request.*;
 import com.bilgeadam.dto.response.BaseResponse;
+import com.bilgeadam.entity.Auth;
 import com.bilgeadam.exception.EnterpriseException;
 import com.bilgeadam.exception.ErrorType;
 import com.bilgeadam.service.AuthService;
@@ -85,6 +83,37 @@ public class AuthController {
                 .data(userService.updateUserForgotPassword(dto))
                 .code(200)
                 .build());
+    }
+
+    @GetMapping(GETPROFILE)
+    public ResponseEntity<BaseResponse<Auth>> getUserProfile(@RequestParam String token) {
+        return ResponseEntity.ok(BaseResponse.<Auth>builder()
+                .code(200)
+                .success(true)
+                .message("Kullanıcı bilgisi başarıyla getirildi.")
+                .data(userService.getUserProfile(token))
+                .build());
+    }
+
+    @PutMapping(UPDATEPROFILE)
+    public ResponseEntity<BaseResponse<Boolean>> updateProfile(@RequestBody @Valid UpdateProfileRequestDto dto) {
+        return ResponseEntity.ok(BaseResponse.<Boolean>builder()
+                .code(200)
+                .success(true)
+                .message("Güncelleme işlemi başarılı")
+                .data(userService.updateUserProfile(dto))
+                .build());
+    }
+
+    @PutMapping(UPDATEPASSWORD)
+    public ResponseEntity<BaseResponse<Boolean>> updatePasswordProfile(@RequestBody @Valid UpdatePasswordProfileRequestDto dto) {
+        return ResponseEntity.ok(BaseResponse.<Boolean>builder()
+                .code(200)
+                .success(true)
+                .message("Şifre Güncelleme işlemi başarılı!")
+                .data(userService.updateUserPassword(dto))
+                .build());
+
     }
 
 }

@@ -2,6 +2,7 @@ package com.bilgeadam.service;
 
 import com.bilgeadam.dto.request.*;
 import com.bilgeadam.entity.Auth;
+import com.bilgeadam.entity.User;
 import com.bilgeadam.exception.EnterpriseException;
 import com.bilgeadam.exception.ErrorType;
 import com.bilgeadam.manager.MailManager;
@@ -55,7 +56,6 @@ public class AuthService {
                 .email(dto.email())
                 .password(passwordEncoder.encode(dto.password()))
                 .authState(EAuthState.PENDING)
-                .role(ERole.MEMBER)
                 .build();
         user = userRepository.save(user);
         String authCode = userAuthVerifyCodeService.generateAuthCode(user.getId());
@@ -120,6 +120,50 @@ public class AuthService {
         userRepository.save(user);
         return true;
     }
+
+    public Boolean updateUserProfile(UpdateProfileRequestDto dto) {
+        Optional<Long> optionalUserId = jwtManager.validateToken(dto.token());
+        if (optionalUserId.isEmpty()) {
+            throw new EnterpriseException(ErrorType.INVALID_TOKEN);
+        }
+        Optional<Auth> optionalAuth = authRepository.findById(optionalUserId.get());
+        if (optionalAuth.isEmpty()) {
+            throw new EnterpriseException(ErrorType.NOTFOUND_USER);
+        }
+        Auth user = optionalAuth.get();
+        user.setFirstname(dto.firstname());
+        user.setLastname(dto.lastname());
+        user.setEmail(dto.email());
+        userRepository.save(user);
+        return true;
+    }
+    public Auth getUserProfile(String token){
+        Optional<Long> optionalAuthId = jwtManager.validateToken(token);
+        if (optionalAuthId.isEmpty()) {
+            throw new EnterpriseException(ErrorType.INVALID_TOKEN);
+        }
+        Optional<Auth> optionalAuth = authRepository.findById(optionalAuthId.get());
+        if (optionalAuth.isEmpty()) {
+            throw new EnterpriseException(ErrorType.NOTFOUND_USER);
+        }
+        return optionalAuth.get();
+    }
+
+    public Boolean updateUserPassword(UpdatePasswordProfileRequestDto dto){
+        Optional<Long> optionalUserId = jwtManager.validateToken(dto.token());
+        if (optionalUserId.isEmpty()) {
+            throw new EnterpriseException(ErrorType.INVALID_TOKEN);
+        }
+        Optional<Auth> optionalAuth = authRepository.findById(optionalUserId.get());
+        if (optionalAuth.isEmpty()) {
+            throw new EnterpriseException(ErrorType.NOTFOUND_USER);
+        }
+        Auth user = optionalAuth.get();
+        user.setPassword(passwordEncoder.encode(dto.password()));
+        userRepository.save(user);
+        return true;
+    }
+
 
 
 

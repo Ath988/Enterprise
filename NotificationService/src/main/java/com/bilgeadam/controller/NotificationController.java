@@ -84,4 +84,18 @@ public class NotificationController {
     }
     
     
+    //Başka servislerin bildirim gönderebilmesi için api ekledim.
+    @PostMapping(NOTIFICATIONSENDER)
+    public ResponseEntity<BaseResponse<Boolean>> notificationSender(@RequestBody NotificationMessageRequestDto dto){
+        Notification notification = notificationService.createNotification(dto);
+        messagingTemplate.convertAndSend("/topic/notifications", notification);
+        
+        return ResponseEntity.ok(BaseResponse.<Boolean>builder()
+                                         .code(200)
+                                         .data(true)
+                                         .message("Bildirim dış servis tarafından başarıyla gönderildi!")
+                                         .success(true)
+                                         .build());
+    }
+    
 }

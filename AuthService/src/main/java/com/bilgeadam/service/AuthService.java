@@ -6,6 +6,7 @@ import com.bilgeadam.entity.User;
 import com.bilgeadam.exception.EnterpriseException;
 import com.bilgeadam.exception.ErrorType;
 import com.bilgeadam.manager.MailManager;
+import com.bilgeadam.manager.NotificationManager;
 import com.bilgeadam.manager.OrganisationManagementManager;
 import com.bilgeadam.repository.AuthRepository;
 import com.bilgeadam.util.enums.EAuthState;
@@ -27,6 +28,7 @@ public class AuthService {
     private final JwtManager jwtManager;
     private final OrganisationManagementManager organisationManagementManager;
     private final AuthRepository authRepository;
+    private final NotificationManager notificationManager;
 
     public String doLogin(LoginRequestDto dto) {
         Optional<Auth> userOptional = userRepository.findByEmail(dto.email());
@@ -39,6 +41,7 @@ public class AuthService {
         }
         Optional<String> token = jwtManager.createToken(user.getId(),user.getRole());
         if (token.isPresent()) {
+            notificationManager.notificationSender(new NotificationMessageRequestDto("Giriş bildirimi","giriş yaptınız",true));
             return token.get();
         }
         throw new EnterpriseException(ErrorType.LOGIN_ERROR);
@@ -56,6 +59,7 @@ public class AuthService {
                 .email(dto.email())
                 .password(passwordEncoder.encode(dto.password()))
                 .authState(EAuthState.PENDING)
+                .role(ERole.MEMBER)
                 .build();
         user = userRepository.save(user);
         String authCode = userAuthVerifyCodeService.generateAuthCode(user.getId());

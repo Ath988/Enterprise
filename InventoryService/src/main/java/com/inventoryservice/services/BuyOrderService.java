@@ -43,6 +43,8 @@ public class BuyOrderService
         }
         Product product = productService.findByIdAndAuthId(dto.productId());
         Supplier supplier = supplierService.findById(dto.supplierId());
+        product.setStockCount(product.getStockCount() + dto.quantity());
+        productService.save(product);
 
         BuyOrder order = BuyOrder
                 .builder()

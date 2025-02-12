@@ -24,7 +24,7 @@ public class NotificationService {
         notification.setTitle(message.title());
         notification.setDescription(message.description());
         notification.setDate(LocalDateTime.now());
-        notification.setIsRead(message.isRead());
+        notification.setIsRead(false);
         return notificationRepository.save(notification);
     }
 

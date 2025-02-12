@@ -2,9 +2,11 @@ package com.bilgeadam.service;
 
 import com.bilgeadam.dto.request.*;
 import com.bilgeadam.entity.Auth;
+import com.bilgeadam.entity.User;
 import com.bilgeadam.exception.EnterpriseException;
 import com.bilgeadam.exception.ErrorType;
 import com.bilgeadam.manager.MailManager;
+import com.bilgeadam.manager.NotificationManager;
 import com.bilgeadam.manager.OrganisationManagementManager;
 import com.bilgeadam.repository.AuthRepository;
 import com.bilgeadam.util.enums.EAuthState;
@@ -26,6 +28,7 @@ public class AuthService {
     private final JwtManager jwtManager;
     private final OrganisationManagementManager organisationManagementManager;
     private final AuthRepository authRepository;
+    private final NotificationManager notificationManager;
 
     public String doLogin(LoginRequestDto dto) {
         Optional<Auth> userOptional = userRepository.findByEmail(dto.email());
@@ -38,6 +41,7 @@ public class AuthService {
         }
         Optional<String> token = jwtManager.createToken(user.getId(),user.getRole());
         if (token.isPresent()) {
+            notificationManager.notificationSender(new NotificationMessageRequestDto("Giriş bildirimi","giriş yaptınız",true));
             return token.get();
         }
         throw new EnterpriseException(ErrorType.LOGIN_ERROR);
@@ -53,6 +57,8 @@ public class AuthService {
         }
         Auth user = Auth.builder()
                 .email(dto.email())
+                .firstname(dto.firstname())
+                .lastname(dto.lastname())
                 .password(passwordEncoder.encode(dto.password()))
                 .authState(EAuthState.PENDING)
                 .role(ERole.MEMBER)
@@ -120,6 +126,50 @@ public class AuthService {
         userRepository.save(user);
         return true;
     }
+
+    public Boolean updateUserProfile(UpdateProfileRequestDto dto) {
+        Optional<Long> optionalUserId = jwtManager.validateToken(dto.token());
+        if (optionalUserId.isEmpty()) {
+            throw new EnterpriseException(ErrorType.INVALID_TOKEN);
+        }
+        Optional<Auth> optionalAuth = authRepository.findById(optionalUserId.get());
+        if (optionalAuth.isEmpty()) {
+            throw new EnterpriseException(ErrorType.NOTFOUND_USER);
+        }
+        Auth user = optionalAuth.get();
+        user.setFirstname(dto.firstname());
+        user.setLastname(dto.lastname());
+        user.setEmail(dto.email());
+        userRepository.save(user);
+        return true;
+    }
+    public Auth getUserProfile(String token){
+        Optional<Long> optionalAuthId = jwtManager.validateToken(token);
+        if (optionalAuthId.isEmpty()) {
+            throw new EnterpriseException(ErrorType.INVALID_TOKEN);
+        }
+        Optional<Auth> optionalAuth = authRepository.findById(optionalAuthId.get());
+        if (optionalAuth.isEmpty()) {
+            throw new EnterpriseException(ErrorType.NOTFOUND_USER);
+        }
+        return optionalAuth.get();
+    }
+
+    public Boolean updateUserPassword(UpdatePasswordProfileRequestDto dto){
+        Optional<Long> optionalUserId = jwtManager.validateToken(dto.token());
+        if (optionalUserId.isEmpty()) {
+            throw new EnterpriseException(ErrorType.INVALID_TOKEN);
+        }
+        Optional<Auth> optionalAuth = authRepository.findById(optionalUserId.get());
+        if (optionalAuth.isEmpty()) {
+            throw new EnterpriseException(ErrorType.NOTFOUND_USER);
+        }
+        Auth user = optionalAuth.get();
+        user.setPassword(passwordEncoder.encode(dto.password()));
+        userRepository.save(user);
+        return true;
+    }
+
 
 
 

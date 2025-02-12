@@ -54,6 +54,8 @@ public class AuthService {
         }
         Auth user = Auth.builder()
                 .email(dto.email())
+                .firstname(dto.firstname())
+                .lastname(dto.lastname())
                 .password(passwordEncoder.encode(dto.password()))
                 .authState(EAuthState.PENDING)
                 .build();

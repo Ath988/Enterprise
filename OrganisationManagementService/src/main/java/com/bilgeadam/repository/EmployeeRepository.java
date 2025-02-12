@@ -3,6 +3,7 @@ package com.bilgeadam.repository;
 import com.bilgeadam.dto.response.AllEmployeeResponse;
 import com.bilgeadam.dto.response.EmployeeDetailResponse;
 import com.bilgeadam.entity.Employee;
+import com.bilgeadam.entity.enums.EState;
 import com.bilgeadam.entity.enums.EmployeeRole;
 import com.bilgeadam.utility.ERole;
 import com.bilgeadam.view.VwEmployee;
@@ -15,13 +16,16 @@ import java.util.Optional;
 
 public interface EmployeeRepository extends JpaRepository<Employee,Long> {
 
-    @Query("SELECT NEW com.bilgeadam.dto.response.AllEmployeeResponse(e.id,e.firstName,e.lastName,p.title,d.name,e.gender) FROM Employee e JOIN Position p ON p.id = e.positionId JOIN Department d ON p.departmentId=d.id WHERE e.companyId = ?1 AND e.state = com.bilgeadam.entity.enums.EState.ACTIVE")
+    @Query("SELECT NEW com.bilgeadam.dto.response.AllEmployeeResponse(e.id,e.firstName,e.lastName,p.title,d.name,e.gender,e.state) FROM Employee e JOIN Position p ON p.id = e.positionId JOIN Department d ON p.departmentId=d.id WHERE e.companyId = ?1 AND e.state = ?2")
+    List<AllEmployeeResponse> findAllActiveEmployee(Long companyId, EState state);
+
+    @Query("SELECT NEW com.bilgeadam.dto.response.AllEmployeeResponse(e.id,e.firstName,e.lastName,p.title,d.name,e.gender,e.state) FROM Employee e JOIN Position p ON p.id = e.positionId JOIN Department d ON p.departmentId=d.id WHERE e.companyId = ?1")
     List<AllEmployeeResponse> findAllEmployee(Long companyId);
 
     @Query("SELECT NEW com.bilgeadam.dto.response.EmployeeDetailResponse(e.id,e.firstName,e.lastName,e.email,p.title,d.name,e.gender) FROM Employee e JOIN Position p ON p.id = e.positionId JOIN Department d ON p.departmentId=d.id WHERE ?1 = e.id")
     Optional<EmployeeDetailResponse> findEmployeeDetail(Long employeeId);
 
-    @Query("SELECT NEW com.bilgeadam.dto.response.AllEmployeeResponse(e.id,e.firstName,e.lastName,p.title,d.name,e.gender) FROM Employee e JOIN Position p ON p.id = e.positionId JOIN Department d ON p.departmentId=d.id WHERE d.managerId = ?1 AND e.state = com.bilgeadam.entity.enums.EState.ACTIVE AND e.role = com.bilgeadam.entity.enums.EmployeeRole.EMPLOYEE")
+    @Query("SELECT NEW com.bilgeadam.dto.response.AllEmployeeResponse(e.id,e.firstName,e.lastName,p.title,d.name,e.gender,e.state) FROM Employee e JOIN Position p ON p.id = e.positionId JOIN Department d ON p.departmentId=d.id WHERE d.managerId = ?1 AND e.state = com.bilgeadam.entity.enums.EState.ACTIVE AND e.role = com.bilgeadam.entity.enums.EmployeeRole.EMPLOYEE")
     List<AllEmployeeResponse> findAllEmployeeSubordinatesByManagerId(Long employeeId);
 
     Optional<Employee> findByAuthId(Long authId);
@@ -31,7 +35,7 @@ public interface EmployeeRepository extends JpaRepository<Employee,Long> {
 
     Optional<Employee> findOptionalById(Long id);
 
-    @Query("SELECT NEW com.bilgeadam.dto.response.AllEmployeeResponse(e.id,e.firstName,e.lastName,p.title,d.name,e.gender) FROM Employee e JOIN Position p ON p.id = e.positionId JOIN Department d ON p.departmentId=d.id WHERE d.id = ?1 AND e.state = com.bilgeadam.entity.enums.EState.ACTIVE")
+    @Query("SELECT NEW com.bilgeadam.dto.response.AllEmployeeResponse(e.id,e.firstName,e.lastName,p.title,d.name,e.gender,e.state) FROM Employee e JOIN Position p ON p.id = e.positionId JOIN Department d ON p.departmentId=d.id WHERE d.id = ?1 AND e.state = com.bilgeadam.entity.enums.EState.ACTIVE")
     List<AllEmployeeResponse> findAllEmployeesByDepartmentId(Long departmentId);
 
     @Query("SELECT CONCAT(e.firstName,' ',e.lastName) FROM Employee e WHERE e.companyId = ?1 AND e.role = com.bilgeadam.entity.enums.EmployeeRole.COMPANY_OWNER")

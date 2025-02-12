@@ -49,9 +49,9 @@ public class EmployeeRecordService {
 
 
     //Todo: Kontrol et, Pagination ile getir.
-    public List<AllEmployeeRecordResponse> findAllEmployeeRecord(String token) {
+    public List<AllEmployeeRecordResponse> findAllEmployeeRecord(String token,Optional<EState> state) {
         List<AllEmployeeResponse> employeeListByOrganizationService =
-                getDataFromResponse(organisationManagementManager.getAllEmployees(token));
+                getDataFromResponse(organisationManagementManager.getAllEmployees(token,state));
 
         return employeeListByOrganizationService.stream()
                 .map(employeeResponse -> {

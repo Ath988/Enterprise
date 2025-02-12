@@ -18,4 +18,6 @@ public class RestApis{
     public static final String TOPIC_NOTIFICATIONS = "/topic/notifications";
     public static final String ENDPOINT_WS = "/ws";
     public static final String ISREAD = "/isread";
+    public static final String NOTIFICATIONSENDER = "/notificationSender";
+    
 }

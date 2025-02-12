@@ -27,4 +27,5 @@ public class RestApis {
     public static final String SEND_MAIL = "/send-mail";
 
     public static final String CREATE_COMPANY_MANAGER = "/create-company-manager";
+    public static final String NOTIFICATIONSENDER = "/notificationSender";
 }

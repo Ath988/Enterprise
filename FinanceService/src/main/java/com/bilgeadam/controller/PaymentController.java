@@ -27,25 +27,25 @@ public class PaymentController {
     private PaymentService paymentService;
 
 
-    @PostMapping(SAVE)
+    @PostMapping(SAVE_PAYMENT)
     @Operation(summary = "Yeni Odeme Oluşturma")
     public ResponseEntity<Boolean> save(@RequestBody PaymentSaveRequestDTO dto) {
         return ResponseEntity.ok(paymentService.save(dto));
     }
-    @DeleteMapping(DELETE)
+    @DeleteMapping(DELETE_PAYMENT)
     @Operation(summary = "Odeme Silme")
     public ResponseEntity<Boolean> delete(Long id){
 
         return ResponseEntity.ok(paymentService.delete(id));
     }
     @Operation(summary = "Ödeme Güncelleme")
-    @PutMapping(UPDATE)
+    @PutMapping(UPDATE_PAYMENT)
     public ResponseEntity<Boolean> update(@RequestBody PaymentUpdateRequestDTO dto){
 
         return ResponseEntity.ok(paymentService.update(dto));
     }
     @Operation(summary = "ID'si Verilen Faturayı Bulma")
-    @GetMapping(FIND_BY_ID)
+    @GetMapping(GET_PAYMENT_BY_ID)
     public ResponseEntity<Payment> findById(Long id){
         return ResponseEntity.ok(paymentService.findById(id));
     }

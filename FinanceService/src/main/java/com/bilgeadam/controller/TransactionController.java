@@ -24,19 +24,19 @@ import static com.bilgeadam.constant.RestApis.*;
 public class TransactionController {
     private final TransactionService transactionService;
 
-    @PostMapping(SAVE)
+    @PostMapping(SAVE_TRANSACTION)
     public ResponseEntity<Boolean> save(@RequestBody TransactionSaveRequestDTO dto){
 
         return ResponseEntity.ok(transactionService.save(dto));
     }
 
-    @DeleteMapping(DELETE)
+    @DeleteMapping(DELETE_TRANSACTION)
     public ResponseEntity<Boolean> delete(Long id){
 
         return ResponseEntity.ok(transactionService.delete(id));
     }
 
-    @PutMapping(UPDATE)
+    @PutMapping(UPDATE_TRANSACTION)
     public ResponseEntity<Boolean> update(@RequestBody TransactionUpdateRequestDTO dto){
 
         return ResponseEntity.ok(transactionService.update(dto));

@@ -29,38 +29,38 @@ public class TaxRecordController {
 
     private TaxRecordService taxRecordService;
 
-    @PostMapping
+    @PostMapping(SAVE_TAX_RECORD)
     public ResponseEntity<TaxRecord> createTaxRecord(@RequestBody TaxRecord taxRecord) {
         return ResponseEntity.ok(taxRecordService.createTaxRecord(taxRecord));
     }
-    @DeleteMapping(DELETE)
+    @DeleteMapping(DELETE_TAX_RECORD)
     @Operation(summary = "Odeme Silme")
     public ResponseEntity<Boolean> delete(Long id){
 
         return ResponseEntity.ok(taxRecordService.delete(id));
     }
     @Operation(summary = "Ödeme Güncelleme")
-    @PutMapping(UPDATE)
+    @PutMapping(UPDATE_TAX_RECORD)
     public ResponseEntity<Boolean> update(@RequestBody TaxRecordUpdateRequestDTO dto){
 
         return ResponseEntity.ok(taxRecordService.update(dto));
     }
-    @GetMapping
+    @GetMapping(GET_ALL_TAX_RECORD)
     public ResponseEntity<List<TaxRecord>> getAllTaxRecords() {
         return ResponseEntity.ok(taxRecordService.getAllTaxRecords());
     }
 
-    @GetMapping("/{id}")
+    @GetMapping(GET_TAX_RECORD_BY_ID)
     public ResponseEntity<TaxRecord> getTaxRecordById(@PathVariable Long id) {
         return taxRecordService.getTaxRecordById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @GetMapping("/account/{accountId}")
-    public ResponseEntity<List<TaxRecord>> getTaxRecordsByAccountId(@PathVariable Long accountId) {
-        return ResponseEntity.ok(taxRecordService.getTaxRecordsByAccountId(accountId));
-    }
+//    @GetMapping("/account/{accountId}")
+//    public ResponseEntity<List<TaxRecord>> getTaxRecordsByAccountId(@PathVariable Long accountId) {
+//        return ResponseEntity.ok(taxRecordService.getTaxRecordsByAccountId(accountId));
+//    }
 
 
 }

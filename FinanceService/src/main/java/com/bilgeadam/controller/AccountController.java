@@ -28,27 +28,27 @@ import static com.bilgeadam.constant.RestApis.*;
 public class AccountController {
     private final AccountService accountService;
 
-    @PostMapping(SAVE)
+    @PostMapping(SAVE_ACCOUNT)
     @Operation(summary = "Creates New Account")
     public ResponseEntity<Boolean> save(@RequestBody AccountSaveRequestDTO dto) {
         return ResponseEntity.ok(accountService.saveAccount(dto));
     }
-    @DeleteMapping(DELETE)
+    @DeleteMapping(DELETE_ACCOUNT)
     public ResponseEntity<Boolean> delete(Long id){
 
         return ResponseEntity.ok(accountService.deleteAccount(id));
     }
-    @PutMapping(UPDATE)
+    @PutMapping(UPDATE_ACCOUNT)
     public ResponseEntity<Boolean> update(@RequestBody AccountUpdateRequestDTO dto){
 
         return ResponseEntity.ok(accountService.updateAccount(dto));
     }
-    @GetMapping(FIND_ALL)
+    @GetMapping(GET_ALL_ACCOUNTS)
     public ResponseEntity<List<Account>> findAll(@RequestBody PageRequestDTO dto){
 
         return ResponseEntity.ok(accountService.findAll(dto));
     }
-    @GetMapping(FIND_BY_ID)
+    @GetMapping(GET_ACCOUNT_BY_ID)
     public ResponseEntity<Account> findById(Long id){
 
         return ResponseEntity.ok(accountService.findById(id));
@@ -60,7 +60,7 @@ public class AccountController {
      * @param accountNumber Hesap numarası.
      * @return Hesap bilgisi.
      */
-    @GetMapping("/by-account-number/{accountNumber}")
+    @GetMapping(GET_ACCOUNT_BY_ACCOUNT_NUMBER)
     public ResponseEntity<AccountResponseDTO> getByAccountNumber(@PathVariable String accountNumber) {
         Account account = accountService.findByAccountNumber(accountNumber);
         return ResponseEntity.ok(new AccountResponseDTO(account));
@@ -72,27 +72,27 @@ public class AccountController {
      * @param companyName Şirket adı.
      * @return Hesap bilgisi.
      */
-    @GetMapping("/by-company-name/{companyName}")
+    @GetMapping(GET_ACCOUNT_BY_COMPANY_NAME)
     public ResponseEntity<AccountResponseDTO> getByCompanyName(@PathVariable String companyName) {
         Account account = accountService.findByCompanyName(companyName);
         return ResponseEntity.ok(new AccountResponseDTO(account));
     }
 
-    /**
-     * Belirtilen para birimi ve minimum bakiyeye sahip hesapları getirir.
-     *
-     * @param currency Para birimi.
-     * @param balance Minimum bakiye.
-     * @return Şartlara uyan hesap listesi.
-     */
-    @GetMapping("/by-currency-balance")
-    public ResponseEntity<List<AccountResponseDTO>> getByCurrencyAndBalance(
-            @RequestParam ECurrency currency,
-            @RequestParam BigDecimal balance) {
-        List<Account> accounts = accountService.findByCurrencyAndBalanceGreaterThan(currency, balance);
-        List<AccountResponseDTO> response = accounts.stream()
-                .map(AccountResponseDTO::new)
-                .toList();
-        return ResponseEntity.ok(response);
-    }
+//    /**
+//     * Belirtilen para birimi ve minimum bakiyeye sahip hesapları getirir.
+//     *
+//     * @param currency Para birimi.
+//     * @param balance Minimum bakiye.
+//     * @return Şartlara uyan hesap listesi.
+//     */
+//    @GetMapping("/by-currency-balance")
+//    public ResponseEntity<List<AccountResponseDTO>> getByCurrencyAndBalance(
+//            @RequestParam ECurrency currency,
+//            @RequestParam BigDecimal balance) {
+//        List<Account> accounts = accountService.findByCurrencyAndBalanceGreaterThan(currency, balance);
+//        List<AccountResponseDTO> response = accounts.stream()
+//                .map(AccountResponseDTO::new)
+//                .toList();
+//        return ResponseEntity.ok(response);
+//    }
 }

@@ -18,6 +18,7 @@ import static com.bilgeadam.constants.RestApis.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(POSITION)
+@CrossOrigin("*")
 public class PositionController {
     private final PositionService positionService;
 
@@ -52,8 +53,7 @@ public class PositionController {
                 .build());
     }
 
-    //Todo: Bu get endpointlerinde token ile company kontrolü yapılacak, kendi şirketi dışındaki pozisyonlara bakılmasın isteniyorsa.
-    @GetMapping("{companyId}/all-positions")
+    @GetMapping("/all-positions/{companyId}")
     public ResponseEntity<BaseResponse<List<PositionDetailResponse>>> getAllPositions(@PathVariable Long companyId){
         return ResponseEntity.ok(BaseResponse.<List<PositionDetailResponse>>builder()
                 .data(positionService.findAllPositionsByCompanyId(companyId))

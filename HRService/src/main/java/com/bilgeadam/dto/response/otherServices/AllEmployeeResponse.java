@@ -1,6 +1,7 @@
 package com.bilgeadam.dto.response.otherServices;
 
 import com.bilgeadam.entity.enums.EGender;
+import com.bilgeadam.entity.enums.EState;
 
 //Liste olarak dönen çalışanlara ait özet bilgiler, genişletilebilir
 public record AllEmployeeResponse(
@@ -10,7 +11,8 @@ public record AllEmployeeResponse(
         String lastName,
         String positionName,
         String departmentName,
-        EGender gender
+        EGender gender,
+        EState state
 
 ) {
 

@@ -33,13 +33,13 @@ public class TaskController
     }
 
     @DeleteMapping(DELETE)
-    public ResponseEntity<BaseResponse<Boolean>> deleteTask(TaskDeleteRequest dto){
+    public ResponseEntity<BaseResponse<Boolean>> deleteTask(@RequestParam Long taskId){
         //TODO: token kontrollu yapilacak!
         return ResponseEntity.ok(BaseResponse.<Boolean>builder()
                         .success(true)
                         .message("Task silme islemi basariyla gerceklestirilmistir!")
                         .code(200)
-                        .data(taskService.deleteTask(dto.taskId()))
+                        .data(taskService.deleteTask(taskId))
                 .build());
     }
 

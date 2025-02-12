@@ -6,6 +6,7 @@ public record TaskSaveRequestDTO(
         String token,
         Long projectId,
         String name,
-        String description)
+        String description,
+        String taskStatus)
 {
 }

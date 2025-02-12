@@ -2,6 +2,10 @@ server:
   port: 9100
 
 spring:
+  security:
+    user:
+      name: super_admin
+      password: root
   application:
     name: SubscriptionService
   datasource:

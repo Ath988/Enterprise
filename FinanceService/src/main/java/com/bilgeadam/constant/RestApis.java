@@ -15,7 +15,7 @@ public class RestApis {
     public static final String PAYMENT = ROOT + "/payment";
     public static final String INVOICE = ROOT + "/invoice";
     public static final String FINANCIAL_REPORT = ROOT + "/financial-report";
-//************************************************************************************
+//*********************************************************************************
 
     public static final String SAVE_ACCOUNT =  ROOT + "/add-account";
     public static final String DELETE_ACCOUNT =  ROOT + "/delete-account";

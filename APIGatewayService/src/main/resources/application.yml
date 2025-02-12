@@ -1,55 +1,79 @@
 server:
   port: 8080
 
+
 spring:
+  application:
+    name: api-gateway
+  main:
+    web-application-type: reactive
+    allow-bean-definition-overriding: true
   cloud:
     gateway:
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowed-origin-patterns:
+              - "http://localhost:5173"
+            allowed-methods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowed-headers: "*"
+            allow-credentials: true
+        add-to-simple-url-handler-mapping: true
       routes:
-        - id : auth-service
-          uri: lb://AUTH-SERVICE
+        - id: auth-service
+          uri: http://localhost:8081
           predicates:
             - Path=/v1/dev/auth/**, /v1/dev/user/**
 
         - id: chat-service
-          uri: lb://CHAT-SERVICE
+          uri: http://localhost:8082
           predicates:
-            - Path=/v1/dev/chat
+            - Path=/v1/dev/chat/**
 
         - id: crm-service
-          uri: lb://CRM-SERVICE
+          uri: http://localhost:8083
           predicates:
             - Path=/v1/dev/campaign/**, /v1/dev/customer/**, /v1/dev/sales-opportunity/**, /v1/dev/support-ticket/**
 
         - id: hr-service
-          uri: lb://HR-SERVICE
+          uri: http://localhost:8084
           predicates:
             - Path=/v1/dev/employee-record/**, /v1/dev/payroll/**, /v1/dev/performance/**
 
-        - id: inventory-service
-          uri: lb://INVENTORY-SERVICE
+        - id: finance-service
+          uri: http://localhost:8085
           predicates:
-            - Path=/dev/v1/inventory/product/**
+            - Path=/v1/dev/account/**, /v1/dev/transaction/**
+
+        - id: inventory-service
+          uri: http://localhost:8086
+          predicates:
+            - Path=/v1/dev/inventory/product/**
 
         - id: organisation-management-service
-          uri: lb://ORGANISATION-MANAGEMENT-SERVICE
+          uri: http://localhost:8087
           predicates:
             - Path=/v1/dev/department/**, /v1/dev/employee/**, /v1/dev/position/**
 
         - id: project-management-service
-          uri: lb://PROJECT-MANAGEMENT-SERVICE
+          uri: http://localhost:8088
           predicates:
-            - Path=/dev/v1/project-management/project/**, /dev/v1/project-management/task/**, /dev/v1/project-management/user/**
+            - Path=/v1/dev/project-management/project/**, /v1/dev/project-management/task/**, /v1/dev/project-management/user/**
 
         - id: subscription-service
-          uri: lb://SUBSCRIPTION-SERVICE
+          uri: http://localhost:8089
           predicates:
             - Path=/v1/dev/subscription/**
-
-eureka:
-  client:
-    service-url:
-      defaultZone: http://localhost:8761/eureka/
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials, RETAIN_FIRST
 
 
-jwt:
-  secret: ${JWT_SECRET}
+management:
+  health:
+    rabbit:
+      enabled: false

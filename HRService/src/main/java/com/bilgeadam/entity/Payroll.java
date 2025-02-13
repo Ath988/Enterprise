@@ -24,6 +24,7 @@ public class Payroll extends BaseEntity{
     Double grossSalary;
     Double deductions;
     Double netSalary;
+    @Enumerated(EnumType.STRING)
     ECurrency salaryCurrency;
     @Enumerated(EnumType.STRING)
     EStatus status;

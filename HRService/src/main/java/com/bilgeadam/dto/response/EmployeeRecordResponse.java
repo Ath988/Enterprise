@@ -17,11 +17,13 @@ import java.time.LocalDate;
 @Data
 public class EmployeeRecordResponse {
 
-    public EmployeeRecordResponse(Long id,Long employeeId,LocalDate startDate, LocalDate endDate) {
+    public EmployeeRecordResponse(Long id,Long employeeId,LocalDate startDate, LocalDate endDate,String personelFileName,String personelFileUrl) {
         this.id = id;
         this.startDate = startDate;
         this.endDate = endDate;
         this.employeeId = employeeId;
+        this.personelFileName = personelFileName;
+        this.personelFileUrl = personelFileUrl;
     }
 
 
@@ -29,6 +31,9 @@ public class EmployeeRecordResponse {
     Long employeeId;
     LocalDate startDate;
     LocalDate endDate;
+    String personelFileName;
+    String personelFileUrl;
+
     EmployeeDetailResponse employeeDetailResponse;
 
 }

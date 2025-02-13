@@ -39,7 +39,7 @@ public class LeaveService {
                 .reason(dto.reason())
                 .startDate(dto.startDate())
                 .endDate(dto.endDate())
-                .duration((int) ChronoUnit.DAYS.between(dto.startDate(), dto.endDate()))
+                .duration((int) ChronoUnit.DAYS.between(dto.startDate(), dto.endDate())+1)
                 .status(EStatus.PENDING)
                 .build());
         return true;
@@ -159,6 +159,7 @@ public class LeaveService {
         leave.setApprovedBy(managerId);
         leave.setStatus(EStatus.APPROVED);
         leave.setUpdateAt(LocalDateTime.now());
+        leave.setApprovedAt(LocalDate.now());
         leaveRepository.save(leave);
         return true;
     }

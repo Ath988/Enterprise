@@ -4,6 +4,7 @@ import com.bilgeadam.entity.enums.SubscriptionStatus;
 import com.bilgeadam.entity.enums.SubscriptionPlan;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;

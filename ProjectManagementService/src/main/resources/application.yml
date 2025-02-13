@@ -13,9 +13,9 @@ spring:
     password: root
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/projectManagementDB
+    url: jdbc:postgresql://localhost:5432/project_management_db
     username: postgres
-    password: 1234
+    password: root
   jpa:
     hibernate:
       ddl-auto: create-drop

@@ -21,7 +21,7 @@ import static com.bilgeadam.constant.RestApis.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(AUTH)
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin("*")
 public class AuthController {
     private final AuthService userService;
 

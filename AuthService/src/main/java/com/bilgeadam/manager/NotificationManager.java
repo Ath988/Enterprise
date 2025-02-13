@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import static com.bilgeadam.constant.RestApis.NOTIFICATIONSENDER;
 
-@FeignClient(url = "http://localhost:9092/v1/dev/notification", name = "notificationSender")
+@FeignClient(url = "http://localhost:8090/v1/dev/notification", name = "notificationSender")
 public interface NotificationManager {
 	
 	@PostMapping(NOTIFICATIONSENDER)

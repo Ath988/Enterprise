@@ -13,10 +13,10 @@ public class UserController {
 
     private final UserService userService;
 
-    @PostMapping("/{userId}/assign-role")
-    public User assignRoleToUser(@PathVariable Long userId, @RequestParam ERole role) {
-        User user = new User(); // Fetch user from repository in a real scenario
-        userService.assignRoleToUser(user, role);
-        return user;
-    }
+//    @PostMapping("/{userId}/assign-role")
+//    public User assignRoleToUser(@PathVariable Long userId, @RequestParam ERole role) {
+//        User user = new User(); // Fetch user from repository in a real scenario
+//        userService.assignRoleToUser(user, role);
+//        return user;
+//    }
 }

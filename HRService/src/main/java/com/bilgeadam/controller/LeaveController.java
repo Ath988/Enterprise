@@ -19,6 +19,7 @@ import static com.bilgeadam.constants.RestApis.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(LEAVE)
+@CrossOrigin("*")
 public class LeaveController {
     private final LeaveService leaveService;
 

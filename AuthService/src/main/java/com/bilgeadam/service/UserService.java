@@ -12,6 +12,7 @@ import java.util.Set;
 @Service
 @RequiredArgsConstructor
 public class UserService {
+    
     public Set<Permission> getPermissionsForRole(ERole role) {
         switch (role) {
             case SYSTEM_ADMIN:
@@ -37,9 +38,9 @@ public class UserService {
         }
     }
 
-    public void assignRoleToUser(User user, ERole role) {
-        user.setRole(role);
-        user.setPermissions(getPermissionsForRole(role));
-    }
+//    public void assignRoleToUser(User user, ERole role) {
+//        user.setRole(role);
+//        user.setPermission(getPermissionsForRole(role));
+//    }
 
 }

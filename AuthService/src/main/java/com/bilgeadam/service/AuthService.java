@@ -74,7 +74,7 @@ public class AuthService {
 
         mailManager.sendEmail(new EmailDto("enterprice@gmail.com", "enterprice@auth.com", user.getEmail(),
                 "E-posta Adresini Onayla",
-                "email adresini onaylamak icin linke tiklayiniz : http://localhost:9091/v1/dev/auth/auth-mail?auth=" + authCode));
+                "email adresini onaylamak icin linke tiklayiniz : http://localhost:8081/v1/dev/auth/auth-mail?auth=" + authCode));
         return user.getId(); //diğer Servislerden kayıt isteği gönderildiğinde authId çekebilmek için düzenlendi, msacak
     }
 
@@ -130,7 +130,7 @@ public class AuthService {
         String authCode = userAuthVerifyCodeService.generateAuthCode(user.getId());
         mailManager.sendEmail(new EmailDto("enterprice@gmail.com", "enterprice@forgotpassword.com", user.getEmail(),
                 "Sifre Sifirlama",
-                "Sifre sifirlama linki : http://localhost:9091/v1/dev/auth/new-password?auth=" + authCode));
+                "Sifre sifirlama linki : http://localhost:8081/v1/dev/auth/new-password?auth=" + authCode));
 
         return true;
     }

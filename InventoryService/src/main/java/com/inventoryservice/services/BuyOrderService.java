@@ -4,6 +4,7 @@ package com.inventoryservice.services;
 import com.inventoryservice.dto.request.BuyOrderSaveRequestDTO;
 import com.inventoryservice.dto.request.BuyOrderUpdateRequestDTO;
 import com.inventoryservice.dto.request.PageRequestDTO;
+import com.inventoryservice.dto.response.BuyOrderResponseDTO;
 import com.inventoryservice.entities.BuyOrder;
 import com.inventoryservice.entities.Product;
 import com.inventoryservice.entities.Supplier;
@@ -18,6 +19,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -101,10 +103,18 @@ public class BuyOrderService
     }
 
 
-    public List<BuyOrder> findAllByProduct_NameContainingIgnoreCaseAndStatusIsNotAndAuthIdOrderByProduct_NameAsc(PageRequestDTO dto)
+    public List<BuyOrderResponseDTO> findAllByProduct_NameContainingIgnoreCaseAndStatusIsNotAndAuthIdOrderByProduct_NameAsc(PageRequestDTO dto)
     {
-       return buyOrderRepository.findAllByProduct_NameContainingIgnoreCaseAndStatusIsNotAndAuthIdOrderByProduct_NameAsc(dto.searchText(), EStatus.DELETED, 1L, PageRequest.of(dto.page(), dto.size()));
+        List<BuyOrder> buyOrders = buyOrderRepository.findAllByProduct_NameContainingIgnoreCaseAndStatusIsNotAndAuthIdOrderByProduct_NameAsc(dto.searchText(), EStatus.DELETED, 1L, PageRequest.of(dto.page(), dto.size()));
 
+        List<BuyOrderResponseDTO> newlist = new ArrayList<>();
+
+        for (BuyOrder buyOrder : buyOrders)
+        {
+            newlist.add(new BuyOrderResponseDTO(buyOrder.getId(), buyOrder.getAuthId(),  buyOrder.getSupplier().getName(),buyOrder.getProduct().getName(),buyOrder.getQuantity(),buyOrder.getUnitPrice(),buyOrder.getTotal(),buyOrder.getCreatedAt(),buyOrder.getUpdatedAt(),buyOrder.getStatus()));
+        }
+
+        return newlist;
     }
 
     public BuyOrder findByIdAndAuthId(Long id)

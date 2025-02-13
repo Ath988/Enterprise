@@ -21,31 +21,31 @@ import static com.bilgeadam.constant.RestApis.*;
 public class InvoiceController {
     private final InvoiceService invoiceService;
 
-    @PostMapping(SAVE)
+    @PostMapping(SAVE_INVOICE)
     @Operation(summary = "Yeni Fatura Oluşturma")
     public ResponseEntity<Boolean> save(@RequestBody InvoiceSaveRequestDTO dto) {
         return ResponseEntity.ok(invoiceService.save(dto));
     }
-    @DeleteMapping(DELETE)
+    @DeleteMapping(DELETE_INVOICE)
     @Operation(summary = "Fatura Silme")
     public ResponseEntity<Boolean> delete(Long id){
 
         return ResponseEntity.ok(invoiceService.delete(id));
     }
     @Operation(summary = "Fatura Güncelleme")
-    @PutMapping(UPDATE)
+    @PutMapping(UPDATE_INVOICE)
     public ResponseEntity<Boolean> update(@RequestBody InvoiceUpdateRequestDTO dto){
 
         return ResponseEntity.ok(invoiceService.update(dto));
     }
     @Operation(summary = "Tüm Faturalar")
-    @GetMapping(FIND_ALL)
+    @GetMapping(GET_ALL_INVOICES)
     public ResponseEntity<List<Invoice>> findAll(@RequestBody PageRequestDTO dto){
 
         return ResponseEntity.ok(invoiceService.findAll(dto));
     }
     @Operation(summary = "ID'si Verilen Faturayı Bulma")
-    @GetMapping(FIND_BY_ID)
+    @GetMapping(GET_INVOICE_BY_ID)
     public ResponseEntity<Invoice> findById(Long id){
         return ResponseEntity.ok(invoiceService.findById(id));
     }

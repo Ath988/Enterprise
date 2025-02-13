@@ -24,31 +24,31 @@ import static com.bilgeadam.constant.RestApis.*;
 public class TransactionController {
     private final TransactionService transactionService;
 
-    @PostMapping(SAVE)
+    @PostMapping(SAVE_TRANSACTION)
     public ResponseEntity<Boolean> save(@RequestBody TransactionSaveRequestDTO dto){
 
         return ResponseEntity.ok(transactionService.save(dto));
     }
 
-    @DeleteMapping(DELETE)
+    @DeleteMapping(DELETE_TRANSACTION)
     public ResponseEntity<Boolean> delete(Long id){
 
         return ResponseEntity.ok(transactionService.delete(id));
     }
 
-    @PutMapping(UPDATE)
+    @PutMapping(UPDATE_TRANSACTION)
     public ResponseEntity<Boolean> update(@RequestBody TransactionUpdateRequestDTO dto){
 
         return ResponseEntity.ok(transactionService.update(dto));
     }
 
-    @GetMapping("/account/{accountId}")
+    @GetMapping(GET_TRANSACTION_BY_ACCOUNT_ID)
     @Operation(summary = "Hesap numarasına göre işlemleri getir")
     public ResponseEntity<List<Transaction>> getTransactionsByAccount(@PathVariable Long accountId) {
         return ResponseEntity.ok(transactionService.getTransactionsByAccountId(accountId));
     }
 
-    @GetMapping("/date-range")
+    @GetMapping(GET_TRANSACTION_BETWEEN_START_DATE_AND_END_DATE)
     @Operation(summary = "Belirtilen tarih aralığındaki işlemleri getir")
     public ResponseEntity<List<Transaction>> getTransactionsByDateRange(
             @RequestParam LocalDate startDate,
@@ -56,31 +56,31 @@ public class TransactionController {
         return ResponseEntity.ok(transactionService.getTransactionsByDateRange(startDate, endDate));
     }
 
-    @GetMapping("/type/{type}")
+    @GetMapping(GET_TRANSACTION_BY_TYPE)
     @Operation(summary = "İşlem türüne (Gelir/Gider) göre kayıtları getir")
     public ResponseEntity<List<Transaction>> getTransactionsByType(@PathVariable ETransactionType type) {
         return ResponseEntity.ok(transactionService.getTransactionsByType(type));
     }
 
-    @GetMapping("/total-income")
+    @GetMapping(GET_TOTAL_INCOME)
     @Operation(summary = "Toplam gelir hesapla")
     public ResponseEntity<BigDecimal> getTotalIncome() {
         return ResponseEntity.ok(transactionService.getTotalIncome());
     }
 
-    @GetMapping("/total-expense")
+    @GetMapping(GET_TOTAL_EXPENSE)
     @Operation(summary = "Toplam gider hesapla")
     public ResponseEntity<BigDecimal> getTotalExpense() {
         return ResponseEntity.ok(transactionService.getTotalExpense());
     }
 
-    @GetMapping("/net-profit")
+    @GetMapping(GET_NET_PROFIT)
     @Operation(summary = "Net kar hesapla (Gelir - Gider)")
     public ResponseEntity<BigDecimal> getNetProfit() {
         return ResponseEntity.ok(transactionService.getNetProfit());
     }
 
-    @GetMapping("/sorted")
+    @GetMapping(GET_TRANSACTION_BY_CATEGORY)
     @Operation(summary = "Gider kategorisine göre sıralı işlemleri getir")
     public ResponseEntity<List<Transaction>> getSortedTransactionsByCategory(
             @RequestParam ETransactionType type,

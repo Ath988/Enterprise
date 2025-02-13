@@ -5,6 +5,7 @@ import com.bilgeadam.entity.Auth;
 import com.bilgeadam.entity.User;
 import com.bilgeadam.exception.EnterpriseException;
 import com.bilgeadam.exception.ErrorType;
+import com.bilgeadam.manager.LogManager;
 import com.bilgeadam.manager.MailManager;
 import com.bilgeadam.manager.NotificationManager;
 import com.bilgeadam.manager.OrganisationManagementManager;
@@ -29,6 +30,7 @@ public class AuthService {
     private final OrganisationManagementManager organisationManagementManager;
     private final AuthRepository authRepository;
     private final NotificationManager notificationManager;
+    private final LogManager logManager;
 
     public String doLogin(LoginRequestDto dto) {
         Optional<Auth> userOptional = userRepository.findByEmail(dto.email());
@@ -112,6 +114,7 @@ public class AuthService {
     public Optional<Auth> checkAuthUser(String authCode) {
         Optional<Long> userIdByAuthCode = userAuthVerifyCodeService.findUserIdByAuthCode(authCode);
         if (userIdByAuthCode.isEmpty()) {
+            logManager.logRequest(ErrorType.NOTFOUND_USER_AUTH.getMessage());
             throw new EnterpriseException(ErrorType.NOTFOUND_USER_AUTH);
         }
         Optional<Auth> userOptional = userRepository.findById(userIdByAuthCode.get());

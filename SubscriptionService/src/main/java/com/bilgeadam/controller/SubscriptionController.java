@@ -4,6 +4,7 @@ import com.bilgeadam.dto.request.AddSubscriptionRequest;
 import com.bilgeadam.dto.request.ChangeSubscriptionPlanRequest;
 import com.bilgeadam.dto.response.BaseResponse;
 import com.bilgeadam.entity.Subscription;
+import com.bilgeadam.entity.enums.SubscriptionPlan;
 import com.bilgeadam.service.SubscriptionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -57,6 +58,26 @@ public class SubscriptionController {
                 .success(true)
                 .code(200)
                 .message("subscription updated")
+                .build());
+    }
+
+    @GetMapping(CANCEL_SUBSCRIPTION)
+    public ResponseEntity<BaseResponse<Subscription>> cancelCurrentSubscription(String userId) {
+        return ResponseEntity.ok(BaseResponse.<Subscription>builder()
+                .data(subscriptionService.cancelSubscription(userId))
+                .success(true)
+                .code(200)
+                .message("current subscription fetched")
+                .build());
+    }
+
+    @GetMapping(GET_ACTIVE_SUBSCRIPTION)
+    public ResponseEntity<BaseResponse<SubscriptionPlan>> getActiveSubscriptionPlan(String userId) {
+        return ResponseEntity.ok(BaseResponse.<SubscriptionPlan>builder()
+                .data(subscriptionService.getCurrentActiveSubscriptionPlan(userId))
+                .success(true)
+                .code(200)
+                .message("active subscription fetched")
                 .build());
     }
 }

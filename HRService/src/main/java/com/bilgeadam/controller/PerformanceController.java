@@ -17,6 +17,7 @@ import static com.bilgeadam.constants.RestApis.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(PERFORMANCE)
+@CrossOrigin("*")
 public class PerformanceController {
     private final PerformanceService performanceService;
 

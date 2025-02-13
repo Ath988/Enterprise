@@ -2,6 +2,8 @@ package com.bilgeadam.entity;
 
 import com.bilgeadam.entity.enums.EPerformanceGrade;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
@@ -25,6 +27,7 @@ public class Performance extends BaseEntity {
     @Enumerated(EnumType.STRING)
     EPerformanceGrade grade;
     String feedBack;
+    @Min(value = 1)
     Integer trainingHours;
     String trainingTopics;
 

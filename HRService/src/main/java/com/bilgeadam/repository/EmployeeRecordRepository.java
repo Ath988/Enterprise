@@ -12,10 +12,10 @@ import java.util.Optional;
 
 public interface EmployeeRecordRepository extends JpaRepository<EmployeeRecord,Long> {
 
-    @Query("SELECT new com.bilgeadam.dto.response.EmployeeRecordResponse(e.id,e.employeeId,e.startDate,e.endDate) FROM EmployeeRecord e WHERE e.id = ?1")
+    @Query("SELECT new com.bilgeadam.dto.response.EmployeeRecordResponse(e.id,e.employeeId,e.startDate,e.endDate,e.perfonelFileName,e.perfonelFileUrl) FROM EmployeeRecord e WHERE e.id = ?1")
     Optional<EmployeeRecordResponse> findEmployeeRecordResponseById(Long id);
 
-    @Query("SELECT NEW com.bilgeadam.dto.response.AllEmployeeRecordResponse(e.id,e.startDate,e.endDate) FROM EmployeeRecord e WHERE e.employeeId = ?1")
+    @Query("SELECT NEW com.bilgeadam.dto.response.AllEmployeeRecordResponse(e.id,e.startDate,e.endDate,e.perfonelFileName,e.perfonelFileUrl) FROM EmployeeRecord e WHERE e.employeeId = ?1")
     Optional<AllEmployeeRecordResponse> findAllEmployeeRecordResponse(Long employeeId);
 
     @Query("SELECT e.companyId FROM EmployeeRecord e WHERE e.employeeId = ?1")

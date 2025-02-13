@@ -69,6 +69,7 @@ public class EmployeeRecordController {
     public ResponseEntity<BaseResponse<Boolean>> updateEmployeeRecord(
             @RequestHeader(value = "Authorization", required = false) String token,
             @RequestBody UpdateEmployeeRecordRequest dto) {
+        System.out.println(dto);
         return ResponseEntity.ok(BaseResponse.<Boolean>builder()
                 .success(employeeRecordService.updateEmployeeRecord(token, dto))
                 .message("Çalışan kaydı güncellendi.")
@@ -90,11 +91,11 @@ public class EmployeeRecordController {
     @PostMapping(value = "/upload-persone-file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<BaseResponse<Boolean>> uploadPersonelFile(
             @RequestHeader(value = "Authorization", required = false) String token,
-            @RequestParam Long employeeId,
+            @RequestParam Long employeeRecordId,
             @Parameter(description = "Yüklenecek dosya", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE))
             @RequestParam("file") MultipartFile file) {
         return ResponseEntity.ok(BaseResponse.<Boolean>builder()
-                .data(employeeRecordService.uploadPersonelFile(token, employeeId, file))
+                .data(employeeRecordService.uploadPersonelFile(token, employeeRecordId, file))
                 .message("Personel özlük dosyası yüklendi.")
                 .build());
     }

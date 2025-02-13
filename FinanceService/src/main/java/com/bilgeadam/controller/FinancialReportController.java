@@ -49,7 +49,6 @@ public class FinancialReportController {
                 .build());
     }
 
-
     @GetMapping(GET_FINANCIAL_REPORT_BY_ID)
     public ResponseEntity<FinancialReport> findById(Long id){
         return ResponseEntity.ok(financialReportService.findById(id));

@@ -44,7 +44,6 @@ import static com.bilgeadam.constant.RestApis.*;
             return ResponseEntity.ok(accountService.updateAccount(dto));
         }
 
-
         @GetMapping(GET_ALL_ACCOUNTS)
         public ResponseEntity<List<Account>> findAll(@RequestBody PageRequestDTO dto){
 

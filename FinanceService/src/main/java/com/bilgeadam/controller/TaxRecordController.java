@@ -62,5 +62,4 @@ public class TaxRecordController {
         return ResponseEntity.ok(taxRecordService.getTaxRecordsByAccountId(accountId));
     }
 
-
 }

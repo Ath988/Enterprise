@@ -88,5 +88,4 @@ public class TransactionController {
             @RequestParam boolean ascending) {
         return ResponseEntity.ok(transactionService.getSortedTransactionsByCategory(type, category, ascending));
     }
-
 }

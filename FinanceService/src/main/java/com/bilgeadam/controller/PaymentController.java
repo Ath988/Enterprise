@@ -56,7 +56,6 @@ public class PaymentController {
         return ResponseEntity.ok(paymentService.findByAccountId(accountId));
     }
 
-
     @GetMapping(GET_PAYMENT_BY_INVOICE_ID)
     @Operation(summary = "Fatura Numarası Verilen Ödemeleri Listeleme")
     public ResponseEntity<List<Payment>> getPaymentsByInvoice(@PathVariable Long invoiceId) {

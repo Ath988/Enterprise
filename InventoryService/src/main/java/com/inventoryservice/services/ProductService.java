@@ -5,6 +5,7 @@ import com.inventoryservice.InventoryServiceApplication;
 import com.inventoryservice.dto.request.PageRequestDTO;
 import com.inventoryservice.dto.request.ProductSaveRequestDTO;
 import com.inventoryservice.dto.request.ProductUpdateRequestDTO;
+import com.inventoryservice.dto.response.ProductResponseDTO;
 import com.inventoryservice.entities.Product;
 import com.inventoryservice.entities.Supplier;
 import com.inventoryservice.entities.WareHouse;
@@ -19,6 +20,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -94,6 +96,8 @@ public class ProductService
             throw new InventoryServiceException(ErrorType.VALUE_CAN_NOT_BE_BELOW_ZERO);
         }
         Product product = productRepository.findByIdAndAuthId(dto.id(), 1L).orElseThrow(() -> new InventoryServiceException(ErrorType.PRODUCT_NOT_FOUND));
+        WareHouse wareHouse = wareHouseService.findByIdAndAuthId(dto.wareHouseId());
+        Supplier supplier = supplierService.findByIdAndAuthId(dto.supplierId());
         if (dto.name() != null)
         {
             product.setName(dto.name());
@@ -114,13 +118,23 @@ public class ProductService
         {
             product.setMinimumStockLevel(dto.minimumStockLevel());
         }
+        product.setSupplier(supplier);
+        product.setWareHouse(wareHouse);
         productRepository.save(product);
         return true;
     }
 
-    public List<Product> findAllByNameContainingIgnoreCaseAndStatusIsNotAndAuthIdOrderByName(PageRequestDTO dto)
+    public List<ProductResponseDTO> findAllByNameContainingIgnoreCaseAndStatusIsNotAndAuthIdOrderByName(PageRequestDTO dto)
     {
-        return productRepository.findAllByNameContainingIgnoreCaseAndStatusIsNotAndAuthIdOrderByName(dto.searchText(), EStatus.DELETED, 1L, PageRequest.of(dto.page(), dto.size()));
+        List<Product> productList = productRepository.findAllByNameContainingIgnoreCaseAndStatusIsNotAndAuthIdOrderByName(dto.searchText(), EStatus.DELETED, 1L, PageRequest.of(dto.page(), dto.size()));
+        List<ProductResponseDTO> newList = new ArrayList<>();
+
+        for (Product product : productList)
+        {
+            newList.add(new ProductResponseDTO( product.getId(), product.getAuthId(), product.getSupplier().getName(),product.getWareHouse().getName(),product.getName(),product.getDescription(),product.getPrice(),product.getStockCount(),product.getMinimumStockLevel(),product.getCreatedAt(),product.getUpdatedAt(),product.getStatus()));
+        }
+
+        return newList;
     }
 
 

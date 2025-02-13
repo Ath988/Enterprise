@@ -1,4 +1,6 @@
 package com.projectmanagementservice.entities;
+import com.projectmanagementservice.entities.enums.EStatus;
+import com.projectmanagementservice.utility.ETaskStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,5 +24,6 @@ public class Task extends BaseEntity
     Long projectId;
     String name;
     String description;
-
+    @Enumerated(EnumType.STRING)
+    ETaskStatus taskStatus;
 }

@@ -23,23 +23,22 @@ public class FinancialReportController {
 
     private FinancialReportService financialReportService;
 
-    @PostMapping(SAVE)
+    @PostMapping(SAVE_FINANCIAL_REPORT)
     @Operation(summary = "Yeni Finansal Rapor Oluşturma")
     public ResponseEntity<FinancialReport> createReport(@RequestBody FinancialReport report) {
         return ResponseEntity.ok(financialReportService.save(report));
     }
 
-    @DeleteMapping(DELETE)
+    @DeleteMapping(DELETE_FINANCIAL_REPORT)
     public ResponseEntity<Boolean> delete(Long id) {
         return ResponseEntity.ok(financialReportService.deleteFinancialReport(id));
     }
-
-    @PutMapping(UPDATE)
+    @PutMapping(UPDATE_FINANCIAL_REPORT)
     public ResponseEntity<Boolean> update(@RequestBody FinancialReportUpdateRequestDTO dto) {
         return ResponseEntity.ok(financialReportService.update(dto));
     }
 
-    @GetMapping(FIND_ALL)
+    @GetMapping(GET_ALL_FINANCIAL_REPORT)
     public ResponseEntity<ResponseDTO<List<FinancialReport>>> findAll(@RequestBody PageRequestDTO dto) {
         return ResponseEntity.ok(ResponseDTO
                 .<List<FinancialReport>>builder()
@@ -49,8 +48,7 @@ public class FinancialReportController {
                 .build());
     }
 
-
-    @GetMapping(FIND_BY_ID)
+    @GetMapping(GET_FINANCIAL_REPORT_BY_ID)
     public ResponseEntity<FinancialReport> findById(Long id){
         return ResponseEntity.ok(financialReportService.findById(id));
     }

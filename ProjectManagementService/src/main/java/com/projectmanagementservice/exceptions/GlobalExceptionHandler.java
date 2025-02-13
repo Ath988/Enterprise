@@ -15,10 +15,10 @@ import java.util.List;
 @Slf4j
 public class GlobalExceptionHandler {
 
-	@ExceptionHandler(RuntimeException.class)
-	public ResponseEntity<ErrorMessage> runtimeExcepitonHandler(RuntimeException exception){
-		return  createResponseEntity(ErrorType.INTERNAL_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR, null);
-	}
+//	@ExceptionHandler(RuntimeException.class)
+//	public ResponseEntity<ErrorMessage> runtimeExcepitonHandler(RuntimeException exception){
+//		return  createResponseEntity(ErrorType.INTERNAL_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR, null);
+//	}
 
     @ExceptionHandler(ProjectManagementException.class)
     @ResponseBody

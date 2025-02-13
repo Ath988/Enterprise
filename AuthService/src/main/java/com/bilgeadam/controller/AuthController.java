@@ -46,6 +46,16 @@ public class AuthController {
                 .build());
     }
 
+    @PostMapping("/create-employee")
+    public ResponseEntity<BaseResponse<Long>> registerEmployee(@RequestBody @Valid RegisterRequestDto dto) {
+        return ResponseEntity.ok(BaseResponse.<Long>builder()
+                .success(true)
+                .data(userService.registerEmployee(dto))
+                .code(200)
+                .message("Kayit olma islemi basariyla tamamlanmistir!\nHesabinizi aktiflestirmek icin e-postanizi kotrol ediniz!")
+                .build());
+    }
+
     @GetMapping(AUTHMAIL)
     public ResponseEntity<BaseResponse<Boolean>> authUser(@RequestParam(name = "auth") String authCode) {
         userService.authUserRegister(authCode);

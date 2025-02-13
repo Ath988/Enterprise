@@ -6,6 +6,7 @@ import com.bilgeadam.dto.response.BaseResponse;
 import com.bilgeadam.dto.response.otherServices.AllEmployeeResponse;
 import com.bilgeadam.dto.response.otherServices.EmployeeDetailResponse;
 import com.bilgeadam.dto.response.otherServices.EmployeeSaveResponse;
+import com.bilgeadam.entity.enums.EState;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
@@ -38,9 +39,10 @@ public interface OrganisationManagementManager {
             @RequestHeader(value = "Authorization", required = false) String token,
             @PathVariable Long employeeId);
 
-    @GetMapping
+    @GetMapping("/get-all")
     ResponseEntity<BaseResponse<List<AllEmployeeResponse>>> getAllEmployees(
-            @RequestHeader(value = "Authorization", required = false) String token);
+            @RequestHeader(value = "Authorization", required = false) String token,
+            @RequestParam Optional<EState> state);
 
 
     @GetMapping("/employee-name")

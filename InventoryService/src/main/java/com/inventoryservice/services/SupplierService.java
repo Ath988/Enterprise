@@ -59,6 +59,11 @@ public class SupplierService
     public Boolean update(SupplierUpdateRequestDTO dto)
     {
         Supplier supplier = supplierRepository.findByIdAndAuthId(dto.id(), 1L).orElseThrow(() -> new InventoryServiceException(ErrorType.SUPPLIER_NOT_FOUND));
+        if(!supplier.getEmail().equals(dto.email())){
+            supplierRepository.findByEmailAndAuthId(dto.email(),1L).ifPresent(s -> {
+                throw new InventoryServiceException(ErrorType.SUPPLIER_EMAIL_ALREADY_EXISTS);
+            });
+        }
         if (dto.name() != null)
         {
             supplier.setName(dto.name());
@@ -66,6 +71,10 @@ public class SupplierService
         if (dto.contactInfo() != null)
         {
             supplier.setContactInfo(dto.contactInfo());
+        }
+        if (dto.email()!= null)
+        {
+            supplier.setEmail(dto.email());
         }
         if (dto.address() != null)
         {

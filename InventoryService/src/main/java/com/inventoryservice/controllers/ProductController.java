@@ -4,6 +4,7 @@ package com.inventoryservice.controllers;
 import com.inventoryservice.dto.request.PageRequestDTO;
 import com.inventoryservice.dto.request.ProductSaveRequestDTO;
 import com.inventoryservice.dto.request.ProductUpdateRequestDTO;
+import com.inventoryservice.dto.response.ProductResponseDTO;
 import com.inventoryservice.entities.Product;
 import com.inventoryservice.services.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -43,7 +44,7 @@ public class ProductController
 
     @PostMapping(FIND_ALL)
 
-    public ResponseEntity<List<Product>> findAll(@RequestBody PageRequestDTO dto){
+    public ResponseEntity<List<ProductResponseDTO>> findAll(@RequestBody PageRequestDTO dto){
 
         return ResponseEntity.ok(productService.findAllByNameContainingIgnoreCaseAndStatusIsNotAndAuthIdOrderByName(dto));
     }

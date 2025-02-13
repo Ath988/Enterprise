@@ -14,11 +14,11 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RabbitMQConfig {
 
-    String directExchange = "businessDirectExchange";
+    String directExchange = "DirectExchange";
     String queueFindAuthByToken = "find.auth.by.token";
     String keyFindAuthByToken = "key.find.auth.by.token";
-    String queueGetModelFromStockService = "queueGetModelFromStockService";
-    String keyGetModelFromStockService = "keyGetModelFromStockService";
+    String queueGetModelFromInventoryService = "queueGetModelFromInventoryService";
+    String keyGetModelFromInventoryService = "keyGetModelFromInventoryService";
 
     @Bean
     public DirectExchange directExchange(){
@@ -27,12 +27,12 @@ public class RabbitMQConfig {
 
     @Bean
     public Queue queueGetModelFromStockService(){
-        return new Queue(queueGetModelFromStockService);
+        return new Queue(queueGetModelFromInventoryService);
     }
 
     @Bean
     public Binding bindingGetModelFromStockService(Queue queueGetModelFromStockService, DirectExchange directExchange){
-        return BindingBuilder.bind(queueGetModelFromStockService).to(directExchange).with(keyGetModelFromStockService);
+        return BindingBuilder.bind(queueGetModelFromStockService).to(directExchange).with(keyGetModelFromInventoryService);
     }
 
     @Bean

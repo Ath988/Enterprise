@@ -8,7 +8,7 @@ public class RestApis {
     public static final String MICROSERVICE = "/finance";
     private static final String ROOT = DEV + VERSION + MICROSERVICE;
 
-//*********************************************************************************
+//********************************************************************************
 
     public static final String ACCOUNT = ROOT + "/account";
     public static final String TRANSACTION = ROOT + "/transaction";

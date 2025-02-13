@@ -6,6 +6,7 @@ import com.projectmanagementservice.entities.enums.EStatus;
 import com.projectmanagementservice.exceptions.ErrorType;
 import com.projectmanagementservice.exceptions.ProjectManagementException;
 import com.projectmanagementservice.repositories.TaskRepository;
+import com.projectmanagementservice.utility.ETaskStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -23,8 +24,9 @@ public class TaskService
         taskRepository.save(Task
                 .builder()
                 .name(dto.name())
-                        .projectId(dto.projectId())
+                .projectId(dto.projectId())
                 .description(dto.description())
+                .taskStatus(ETaskStatus.TODO)
                 .build());
         return true;
     }
@@ -43,12 +45,14 @@ public class TaskService
         task.setName(dto.name());
         task.setAuthId(dto.authId() == null ? 0L : dto.authId());
         task.setDescription(dto.description());
+        //TODO: swich case yazilacak!
+        task.setTaskStatus(ETaskStatus.TODO);
         taskRepository.save(task);
         return true;
     }
 
     public List<Task> findAllTaskByProjectId(Long projectId) {
-        return taskRepository.findAllByProjectId(projectId);
+        return taskRepository.findAllByProjectIdAndStatus(projectId, EStatus.ACTIVE);
     }
 
     public Boolean addUserToTask(AddUserToTaskDTO dto){

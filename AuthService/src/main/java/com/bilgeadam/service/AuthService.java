@@ -78,6 +78,29 @@ public class AuthService {
         return user.getId(); //diğer Servislerden kayıt isteği gönderildiğinde authId çekebilmek için düzenlendi, msacak
     }
 
+    public Long registerEmployee(RegisterRequestDto dto) {
+        Optional<Auth> userOptional = userRepository.findByEmail(dto.email());
+        if (userOptional.isPresent()) {
+            throw new EnterpriseException(ErrorType.REGISTER_ERROR);
+        }
+        if (!dto.password().equals(dto.rePassword())) {
+            throw new EnterpriseException(ErrorType.INVALID_PASSWORD);
+        }
+        Auth user = Auth.builder()
+                .email(dto.email())
+                .password(passwordEncoder.encode(dto.password()))
+                .authState(EAuthState.PENDING)
+                .role(ERole.MEMBER)
+                .build();
+        user = userRepository.save(user);
+        String authCode = userAuthVerifyCodeService.generateAuthCode(user.getId());
+
+        mailManager.sendEmail(new EmailDto("enterprice@gmail.com", "enterprice@auth.com", user.getEmail(),
+                "E-posta Adresini Onayla",
+                "email adresini onaylamak icin linke tiklayiniz : http://localhost:9091/v1/dev/auth/auth-mail?auth=" + authCode));
+        return user.getId();
+    }
+
     public Boolean authUserRegister(String authCode) {
         Optional<Auth> userOptional = checkAuthUser(authCode);
         Auth user = userOptional.get();

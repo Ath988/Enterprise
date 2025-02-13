@@ -2,6 +2,7 @@ package com.inventoryservice.controllers;
 
 
 import com.inventoryservice.dto.request.*;
+import com.inventoryservice.dto.response.BuyOrderResponseDTO;
 import com.inventoryservice.entities.BuyOrder;
 import com.inventoryservice.entities.Product;
 import com.inventoryservice.services.BuyOrderService;
@@ -41,7 +42,7 @@ public class BuyOrderController
 
     @PostMapping(FIND_ALL)
 
-    public ResponseEntity<List<BuyOrder>> findAll(@RequestBody PageRequestDTO dto){
+    public ResponseEntity<List<BuyOrderResponseDTO>> findAll(@RequestBody PageRequestDTO dto){
 
         return ResponseEntity.ok(buyOrderService.findAllByProduct_NameContainingIgnoreCaseAndStatusIsNotAndAuthIdOrderByProduct_NameAsc(dto));
     }

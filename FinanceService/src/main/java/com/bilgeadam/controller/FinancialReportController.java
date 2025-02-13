@@ -33,7 +33,6 @@ public class FinancialReportController {
     public ResponseEntity<Boolean> delete(Long id) {
         return ResponseEntity.ok(financialReportService.deleteFinancialReport(id));
     }
-
     @PutMapping(UPDATE_FINANCIAL_REPORT)
     public ResponseEntity<Boolean> update(@RequestBody FinancialReportUpdateRequestDTO dto) {
         return ResponseEntity.ok(financialReportService.update(dto));

@@ -56,7 +56,6 @@ public class TaxRecordController {
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
-
     @GetMapping(GET_TAX_RECORD_BY_ACCOUNT_ID)
     public ResponseEntity<List<TaxRecord>> getTaxRecordsByAccountId(@PathVariable Long accountId) {
         return ResponseEntity.ok(taxRecordService.getTaxRecordsByAccountId(accountId));

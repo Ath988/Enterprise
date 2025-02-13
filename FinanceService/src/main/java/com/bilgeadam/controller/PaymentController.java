@@ -61,7 +61,6 @@ public class PaymentController {
     public ResponseEntity<List<Payment>> getPaymentsByInvoice(@PathVariable Long invoiceId) {
         return ResponseEntity.ok(paymentService.findByInvoiceId(invoiceId));
     }
-
     @GetMapping(GET_PAYMENT_BY_STATUS_IS_PAID)
     @Operation(summary = "Ödemesi Yapılanlar")
     public ResponseEntity<List<Payment>> getPaymentsByStatus(@RequestParam Boolean isPaid) {

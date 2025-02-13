@@ -73,7 +73,6 @@ public class TransactionController {
     public ResponseEntity<BigDecimal> getTotalExpense() {
         return ResponseEntity.ok(transactionService.getTotalExpense());
     }
-
     @GetMapping(GET_NET_PROFIT)
     @Operation(summary = "Net kar hesapla (Gelir - Gider)")
     public ResponseEntity<BigDecimal> getNetProfit() {

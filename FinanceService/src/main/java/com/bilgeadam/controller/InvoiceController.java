@@ -55,5 +55,4 @@ public class InvoiceController {
     public ResponseEntity<Invoice> findByIdAndInvoiceDate(Long id, LocalDate invoiceDate){
         return ResponseEntity.ok(invoiceService.findByIdAndInvoiceDate(id,invoiceDate));
     }
-
 }

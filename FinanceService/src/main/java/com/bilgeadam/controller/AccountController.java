@@ -37,7 +37,6 @@ import static com.bilgeadam.constant.RestApis.*;
         public ResponseEntity<Boolean> delete(@PathVariable Long id) {
             return ResponseEntity.ok(accountService.deleteAccount(id));
         }
-
         @PutMapping(UPDATE_ACCOUNT)
         @Operation(summary = "Updates an account")
         public ResponseEntity<Boolean> update(@RequestBody AccountUpdateRequestDTO dto) {

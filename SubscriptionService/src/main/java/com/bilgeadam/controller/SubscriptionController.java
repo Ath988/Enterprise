@@ -6,6 +6,7 @@ import com.bilgeadam.dto.response.BaseResponse;
 import com.bilgeadam.entity.Subscription;
 import com.bilgeadam.entity.enums.SubscriptionPlan;
 import com.bilgeadam.service.SubscriptionService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -51,8 +52,8 @@ public class SubscriptionController {
                 .build());
     }
 
-    @GetMapping(UPDATE_SUBSCRIPTION)
-    public ResponseEntity<BaseResponse<Subscription>> updateSubscriptionPlan(ChangeSubscriptionPlanRequest dto) {
+    @PostMapping(UPDATE_SUBSCRIPTION)
+    public ResponseEntity<BaseResponse<Subscription>> updateSubscriptionPlan(@RequestBody @Valid ChangeSubscriptionPlanRequest dto) {
         return ResponseEntity.ok(BaseResponse.<Subscription>builder()
                 .data(subscriptionService.updateSubscriptionPlan(dto))
                 .success(true)

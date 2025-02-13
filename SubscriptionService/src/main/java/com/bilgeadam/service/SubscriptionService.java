@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -64,7 +65,9 @@ public class SubscriptionService {
     }
 
     public List<Subscription> getSubscriptionHistory(String userId) {
-        return subscriptionRepository.findAllByUserIdAndStatus(userId, EntityStatus.ACTIVE);
+        List<Subscription> subHistory = subscriptionRepository.findAllByUserIdAndStatus(userId, EntityStatus.ACTIVE);
+        subHistory.sort((sub1, sub2)-> (int)(sub2.getEstimatedEndDate()-sub1.getEstimatedEndDate()));
+        return subHistory;
     }
 
     public Subscription updateSubscriptionPlan(ChangeSubscriptionPlanRequest dto) {
@@ -75,6 +78,7 @@ public class SubscriptionService {
         int grade = dto.subscriptionPlan().compareTo(currentSubscription.getSubscriptionPlan());
 
         Subscription newSubscription = SubscriptionMapper.INSTANCE.subscriptionToSubscription(currentSubscription);
+        newSubscription.setId(null);
         newSubscription.setSubscriptionPlan(dto.subscriptionPlan());
         newSubscription.setRelatedSubscriptionId(currentSubscription.getId());
 
@@ -90,9 +94,10 @@ public class SubscriptionService {
         newSubscription = subscriptionRepository.save(newSubscription);
 
         currentSubscription.setRelatedSubscriptionId(newSubscription.getId());
-        currentSubscription = subscriptionRepository.save(currentSubscription);
+        currentSubscription.setEstimatedEndDate(System.currentTimeMillis());
+        subscriptionRepository.save(currentSubscription);
 
-        return currentSubscription;
+        return newSubscription;
 
     }
 

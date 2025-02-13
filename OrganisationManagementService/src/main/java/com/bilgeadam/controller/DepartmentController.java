@@ -19,6 +19,7 @@ import static com.bilgeadam.constants.RestApis.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(DEPARTMENT)
+@CrossOrigin("*")
 public class DepartmentController {
     private final DepartmentService departmentService;
 

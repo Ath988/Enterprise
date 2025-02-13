@@ -1,7 +1,9 @@
 server:
-  port: 8080
+  port: 8087
 
 spring:
+  application:
+    name: organisation-management-service
   datasource:
     driver-class-name: org.postgresql.Driver
     url: ${ORGANISATION_MANAGEMENT_DB_URL}

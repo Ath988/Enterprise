@@ -45,8 +45,16 @@ public class TaskService
         task.setName(dto.name());
         task.setAuthId(dto.authId() == null ? 0L : dto.authId());
         task.setDescription(dto.description());
-        //TODO: swich case yazilacak!
-        task.setTaskStatus(ETaskStatus.TODO);
+        switch (dto.taskStatus()) {
+            case "To Do":
+                task.setTaskStatus(ETaskStatus.TODO);
+            case "In Progress":
+                task.setTaskStatus(ETaskStatus.IN_PROGRESS);
+            case "Done":
+                task.setTaskStatus(ETaskStatus.DONE);
+            default:
+                task.setTaskStatus(ETaskStatus.UNDEFINED);
+        }
         taskRepository.save(task);
         return true;
     }

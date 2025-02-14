@@ -11,7 +11,8 @@ public enum ErrorType {
 
 
     NO_ACTIVE_SUBSCRIPTION(9002, "kullanıcının aktif bir aboneliği bulunamadı.", HttpStatus.NOT_FOUND),
-    SAME_SUBSCRIPTION_PLAN(9003, "kullanıcı zaten sahip olduğu plana upgrade/ downgrade yapmaya çalışıyor", HttpStatus.BAD_REQUEST);
+    SAME_SUBSCRIPTION_PLAN(9003, "kullanıcı zaten sahip olduğu plana upgrade/ downgrade yapmaya çalışıyor", HttpStatus.BAD_REQUEST),
+    INVALID_TOKEN(9004, "verilen token geçersiz" , HttpStatus.BAD_REQUEST),;
 
     int code;
     String message;

@@ -17,13 +17,13 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 public class Subscription extends BaseEntity {
 
-    String userId;
+    Long userId;
     @Enumerated(EnumType.STRING)
     SubscriptionPlan subscriptionPlan;
     Long startDate;
     Long estimatedEndDate;
     SubscriptionStatus subscriptionStatus;
-    String relatedSubscriptionId;
+    Long relatedSubscriptionId;
 }
 
 

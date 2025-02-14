@@ -26,13 +26,13 @@ public class SubscriptionController {
     }
 
     @GetMapping(GET_CURRENT_SUBSCRIPTION)
-    public ResponseEntity<Subscription> getCurrentSubscription(String userId) {
-        return ResponseEntity.ok(subscriptionService.getCurrentSubscription(userId));
+    public ResponseEntity<Subscription> getCurrentSubscription(String token) {
+        return ResponseEntity.ok(subscriptionService.getCurrentSubscription(token));
     }
 
     @GetMapping(GET_SUBSCRIPTION_HISTORY)
-    public ResponseEntity<List<Subscription>> getSubscriptionHistory(String userId) {
-        return ResponseEntity.ok(subscriptionService.getSubscriptionHistory(userId));
+    public ResponseEntity<List<Subscription>> getSubscriptionHistory(String token) {
+        return ResponseEntity.ok(subscriptionService.getSubscriptionHistory(token));
     }
 
     @GetMapping(UPDATE_SUBSCRIPTION)

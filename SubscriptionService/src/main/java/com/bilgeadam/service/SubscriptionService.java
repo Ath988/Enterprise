@@ -9,6 +9,7 @@ import com.bilgeadam.exception.EnterpriseException;
 import com.bilgeadam.exception.ErrorType;
 import com.bilgeadam.mapper.SubscriptionMapper;
 import com.bilgeadam.repository.SubscriptionRepository;
+import com.bilgeadam.utility.JwtManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -20,19 +21,32 @@ import java.util.Optional;
 public class SubscriptionService {
     private final SubscriptionRepository subscriptionRepository;
     private final Long SUBSCRIPTION_PERIOD = (30*24*60*60*1000L);
+    private final JwtManager jwtManager = new JwtManager();
+
+    private Long tokenToUserId(String token){
+        Optional<Long> optUserId = jwtManager.validateToken(token);
+        if (optUserId.isEmpty()) {
+            throw new EnterpriseException(ErrorType.INVALID_TOKEN);
+        }
+        return optUserId.get();
+    }
 
     public Subscription addSubscription(AddSubscriptionRequest dto) {
+        Long userId = tokenToUserId(dto.token());
+
         Subscription subscription = Subscription.builder()
                 .subscriptionStatus(SubscriptionStatus.DEFAULT)
                 .subscriptionPlan(dto.subscriptionPlan())
-                .userId(dto.userId())
+                .userId(userId)
                 .startDate(System.currentTimeMillis()) // right now
                 .estimatedEndDate(System.currentTimeMillis() + SUBSCRIPTION_PERIOD) // 30 days later
                 .build();
         return subscriptionRepository.save(subscription);
     }
 
-    public Subscription getCurrentSubscription(String userId) {
+    public Subscription getCurrentSubscription(String token) {
+        Long userId = tokenToUserId(token);
+
         Optional<Subscription> optSubscription = subscriptionRepository
                 .findTopByUserIdAndStatusAndEstimatedEndDateGreaterThanEqual(userId, EntityStatus.ACTIVE, System.currentTimeMillis());
         if (optSubscription.isPresent()) {
@@ -41,12 +55,15 @@ public class SubscriptionService {
         else throw new EnterpriseException(ErrorType.NO_ACTIVE_SUBSCRIPTION);
     }
 
-    public List<Subscription> getSubscriptionHistory(String userId) {
+    public List<Subscription> getSubscriptionHistory(String token) {
+        Long userId = tokenToUserId(token);
         return subscriptionRepository.findAllByUserIdAndStatus(userId, EntityStatus.ACTIVE);
     }
 
     public Subscription updateSubscriptionPlan(ChangeSubscriptionPlanRequest dto) {
-        Subscription currentSubscription = getCurrentSubscription(dto.userId());
+
+
+        Subscription currentSubscription = getCurrentSubscription(dto.token());
         if (currentSubscription.getSubscriptionPlan().equals(dto.subscriptionPlan())) {
             throw new EnterpriseException(ErrorType.SAME_SUBSCRIPTION_PLAN);
         }

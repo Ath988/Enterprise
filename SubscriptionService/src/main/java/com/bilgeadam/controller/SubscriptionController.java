@@ -33,9 +33,9 @@ public class SubscriptionController {
     }
 
     @GetMapping(GET_CURRENT_SUBSCRIPTION)
-    public ResponseEntity<BaseResponse<Subscription>> getCurrentSubscription(String userId) {
+    public ResponseEntity<BaseResponse<Subscription>> getCurrentSubscription(String token) {
         return ResponseEntity.ok(BaseResponse.<Subscription>builder()
-                .data(subscriptionService.getCurrentSubscription(userId))
+                .data(subscriptionService.getCurrentSubscription(token))
                 .success(true)
                 .code(200)
                 .message("current subscription fetched")
@@ -43,9 +43,9 @@ public class SubscriptionController {
     }
 
     @GetMapping(GET_SUBSCRIPTION_HISTORY)
-    public ResponseEntity<BaseResponse<List<Subscription>>> getSubscriptionHistory(String userId) {
+    public ResponseEntity<BaseResponse<List<Subscription>>> getSubscriptionHistory(String token) {
         return ResponseEntity.ok(BaseResponse.<List<Subscription>>builder()
-                .data(subscriptionService.getSubscriptionHistory(userId))
+                .data(subscriptionService.getSubscriptionHistory(token))
                 .success(true)
                 .code(200)
                 .message("subscription history fetched")
@@ -63,9 +63,9 @@ public class SubscriptionController {
     }
 
     @GetMapping(CANCEL_SUBSCRIPTION)
-    public ResponseEntity<BaseResponse<Subscription>> cancelCurrentSubscription(String userId) {
+    public ResponseEntity<BaseResponse<Subscription>> cancelCurrentSubscription(String token) {
         return ResponseEntity.ok(BaseResponse.<Subscription>builder()
-                .data(subscriptionService.cancelSubscription(userId))
+                .data(subscriptionService.cancelSubscription(token))
                 .success(true)
                 .code(200)
                 .message("current subscription fetched")
@@ -73,9 +73,9 @@ public class SubscriptionController {
     }
 
     @GetMapping(GET_ACTIVE_SUBSCRIPTION)
-    public ResponseEntity<BaseResponse<SubscriptionPlan>> getActiveSubscriptionPlan(String userId) {
+    public ResponseEntity<BaseResponse<SubscriptionPlan>> getActiveSubscriptionPlan(String token) {
         return ResponseEntity.ok(BaseResponse.<SubscriptionPlan>builder()
-                .data(subscriptionService.getCurrentActiveSubscriptionPlan(userId))
+                .data(subscriptionService.getCurrentActiveSubscriptionPlan(token))
                 .success(true)
                 .code(200)
                 .message("active subscription fetched")

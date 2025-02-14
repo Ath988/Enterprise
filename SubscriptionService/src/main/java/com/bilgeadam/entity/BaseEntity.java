@@ -15,10 +15,13 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 public abstract class BaseEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    Long id;
+    @Enumerated(EnumType.STRING)
     @Builder.Default
     EntityStatus status = EntityStatus.ACTIVE;
-    Long createdAt;
-    Long updatedAt;
+    @Builder.Default
+    Long createdAt = System.currentTimeMillis();
+    @Builder.Default
+    Long updatedAt = System.currentTimeMillis();
 }

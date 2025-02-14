@@ -10,8 +10,8 @@ import java.util.Optional;
 public interface SubscriptionRepository extends JpaRepository<Subscription, String> {
 
 
-    Optional<Subscription> findTopByUserIdAndStatusAndEstimatedEndDateGreaterThanEqual(String userId, EntityStatus entityStatus, Long currentEpochMillis);
+    Optional<Subscription> findTopByUserIdAndStatusAndEstimatedEndDateGreaterThanEqual(Long userId, EntityStatus entityStatus, Long currentEpochMillis);
 
-    List<Subscription> findAllByUserIdAndStatus(String userId, EntityStatus entityStatus);
+    List<Subscription> findAllByUserIdAndStatus(Long userId, EntityStatus entityStatus);
 
 }

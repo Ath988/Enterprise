@@ -1,5 +1,5 @@
 server:
-  port: 9093
+  port: 8089
 
 spring:
   security:
@@ -10,9 +10,9 @@ spring:
     name: SubscriptionService
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/subscription_db
-    username: postgres
-    password: root
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update

@@ -11,6 +11,7 @@ import com.bilgeadam.exception.EnterpriseException;
 import com.bilgeadam.exception.ErrorType;
 import com.bilgeadam.mapper.SubscriptionMapper;
 import com.bilgeadam.repository.SubscriptionRepository;
+import com.bilgeadam.utility.JwtManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,15 @@ import java.util.UUID;
 public class SubscriptionService {
     private final SubscriptionRepository subscriptionRepository;
     private final Long SUBSCRIPTION_PERIOD = (30*24*60*60*1000L);
+    private final JwtManager jwtManager = new JwtManager();
+
+    private Long tokenToUserId(String token){
+        Optional<Long> optUserId = jwtManager.validateToken(token);
+        if (optUserId.isEmpty()) {
+            throw new EnterpriseException(ErrorType.INVALID_TOKEN);
+        }
+        return optUserId.get();
+    }
 
     @Scheduled(cron= "0 0 0 * * *")
     private void updateSubscriptionStatus(){
@@ -36,26 +46,32 @@ public class SubscriptionService {
     }
 
     public Subscription addSubscription(AddSubscriptionRequest dto) {
+        Long userId = tokenToUserId(dto.token());
+
         Subscription subscription = Subscription.builder()
                 .subscriptionType(SubscriptionType.DEFAULT)
                 .subscriptionStatus(SubscriptionStatus.ACTIVE)
                 .subscriptionPlan(dto.subscriptionPlan())
-                .userId(dto.userId())
+                .userId(userId)
                 .startDate(System.currentTimeMillis()) // right now
                 .estimatedEndDate(System.currentTimeMillis() + SUBSCRIPTION_PERIOD) // 30 days later
                 .build();
         return subscriptionRepository.save(subscription);
     }
 
-    public SubscriptionPlan getCurrentActiveSubscriptionPlan(String userId){
-        Subscription subscription = getCurrentSubscription(userId);
+
+    public SubscriptionPlan getCurrentActiveSubscriptionPlan(String token){
+        Subscription subscription = getCurrentSubscription(token);
         if (subscription.getSubscriptionStatus() != SubscriptionStatus.ACTIVE){
             throw new EnterpriseException(ErrorType.NO_ACTIVE_SUBSCRIPTION);
         }
         return subscription.getSubscriptionPlan();
-    }
+        }
 
-    public Subscription getCurrentSubscription(String userId) {
+
+
+    public Subscription getCurrentSubscription(String token) {
+        Long userId = tokenToUserId(token);
         Optional<Subscription> optSubscription = subscriptionRepository
                 .findTopByUserIdAndStatusAndEstimatedEndDateGreaterThanEqual(userId, EntityStatus.ACTIVE, System.currentTimeMillis());
         if (optSubscription.isPresent()) {
@@ -64,14 +80,17 @@ public class SubscriptionService {
         else throw new EnterpriseException(ErrorType.NO_CURRENT_SUBSCRIPTION);
     }
 
-    public List<Subscription> getSubscriptionHistory(String userId) {
+    public List<Subscription> getSubscriptionHistory(String token) {
+        Long userId = tokenToUserId(token);
         List<Subscription> subHistory = subscriptionRepository.findAllByUserIdAndStatus(userId, EntityStatus.ACTIVE);
         subHistory.sort((sub1, sub2)-> (int)(sub2.getEstimatedEndDate()-sub1.getEstimatedEndDate()));
         return subHistory;
     }
 
     public Subscription updateSubscriptionPlan(ChangeSubscriptionPlanRequest dto) {
-        Subscription currentSubscription = getCurrentSubscription(dto.userId());
+
+
+        Subscription currentSubscription = getCurrentSubscription(dto.token());
         if (currentSubscription.getSubscriptionPlan().equals(dto.subscriptionPlan())) {
             throw new EnterpriseException(ErrorType.SAME_SUBSCRIPTION_PLAN);
         }
@@ -101,11 +120,12 @@ public class SubscriptionService {
 
     }
 
-    public Subscription cancelSubscription(String userId) {
-        Subscription subscription = getCurrentSubscription(userId);
+    public Subscription cancelSubscription(String token) {
+        Subscription subscription = getCurrentSubscription(token);
         if (subscription.getSubscriptionStatus() == SubscriptionStatus.CANCELLED)
             throw new EnterpriseException(ErrorType.ALREADY_CANCELLED);
         subscription.setSubscriptionStatus(SubscriptionStatus.CANCELLED);
         return subscriptionRepository.save(subscription);
     }
 }
+

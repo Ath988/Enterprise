@@ -17,7 +17,8 @@ public abstract class BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;
-    EntityStatus status;
+    @Builder.Default
+    EntityStatus status = EntityStatus.ACTIVE;
     Long createdAt;
     Long updatedAt;
 }

@@ -18,9 +18,9 @@ public class GenerateDemoData {
 
     @PostConstruct
     public void generateData(){
-//        if(employeeRepository.count() == 0){
-//            employeeRepository.saveAll(GenerateEmployee.generateEmployee());
-//        }
+        if(employeeRepository.count() == 0){
+            employeeRepository.saveAll(GenerateEmployee.generateEmployee());
+        }
         if(departmentRepository.count() == 0){
             departmentRepository.saveAll(GenerateDepartments.generateDepartments());
         }

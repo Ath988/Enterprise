@@ -37,13 +37,14 @@ public class AuthService {
         if (userOptional.isEmpty() || !passwordEncoder.matches(dto.password(), userOptional.get().getPassword())) {
             throw new EnterpriseException(ErrorType.LOGIN_ERROR);
         }
+
         Auth user = userOptional.get();
         if (user.getAuthState().equals(EAuthState.PENDING)) {
             throw new EnterpriseException(ErrorType.LOGIN_ERROR_EMAIL_VALIDATION);
         }
         Optional<String> token = jwtManager.createToken(user.getId(),user.getRole());
         if (token.isPresent()) {
-            notificationManager.notificationSender(new NotificationMessageRequestDto("Giriş bildirimi","giriş yaptınız",true));
+//            notificationManager.notificationSender(new NotificationMessageRequestDto("Giriş bildirimi","giriş yaptınız",true));
             return token.get();
         }
         throw new EnterpriseException(ErrorType.LOGIN_ERROR);
@@ -82,6 +83,10 @@ public class AuthService {
 
     public Long registerEmployee(RegisterRequestDto dto) {
         Optional<Auth> userOptional = userRepository.findByEmail(dto.email());
+        System.out.println("**********************DTO**********");
+        System.out.println(dto);
+        System.out.println();
+        System.out.println("**********************DTO**********");
         if (userOptional.isPresent()) {
             throw new EnterpriseException(ErrorType.REGISTER_ERROR);
         }
@@ -93,6 +98,8 @@ public class AuthService {
                 .password(passwordEncoder.encode(dto.password()))
                 .authState(EAuthState.PENDING)
                 .role(ERole.MEMBER)
+                .firstname(dto.firstname())
+                .lastname(dto.lastname())
                 .build();
         user = userRepository.save(user);
         String authCode = userAuthVerifyCodeService.generateAuthCode(user.getId());

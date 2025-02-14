@@ -3,6 +3,12 @@ package com.bilgeadam.dto.request.otherServices;
 import jakarta.validation.constraints.*;
 
 public record RegisterRequestDto(
+        @NotEmpty (message = " firstname alani bos birakilamaz!")
+        @NotBlank (message = "firstname alani bos birakilamaz! Sadece Bosluk karakteri gecerli degildir!")
+        String firstname,
+        @NotEmpty (message = "lastname alani bos birakilamaz!")
+        @NotBlank (message = "lastname alani bos birakilamaz! Sadece Bosluk karakteri gecerli degildir!")
+        String lastname,
         @Email
         @NotEmpty (message = "sifre tekrar alani bos birakilamaz!")
         @NotBlank (message = "sifre tekrar alani bos birakilamaz! Sadece Bosluk karakteri gecerli degildir!")

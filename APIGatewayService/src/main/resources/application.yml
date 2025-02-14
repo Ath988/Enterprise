@@ -40,7 +40,7 @@ spring:
         - id: hr-service
           uri: http://localhost:8084
           predicates:
-            - Path=/v1/dev/employee-record/**, /v1/dev/payroll/**, /v1/dev/performance/**
+            - Path=/v1/dev/employee-record/**, /v1/dev/payroll/**, /v1/dev/performance/** ,/v1/dev/leave/**, /v1/dev/working-hours
 
         - id: finance-service
           uri: http://localhost:8085

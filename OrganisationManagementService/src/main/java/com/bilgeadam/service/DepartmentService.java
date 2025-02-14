@@ -116,6 +116,7 @@ public class DepartmentService {
 
     public List<AllDepartmentResponse> findAllDepartments(String token) {
         Employee employee = employeeService.getEmployeeByToken(token);
+        System.out.println("employee = " + employee);
         return departmentRepository.findAllDepartments(employee.getCompanyId());
     }
 

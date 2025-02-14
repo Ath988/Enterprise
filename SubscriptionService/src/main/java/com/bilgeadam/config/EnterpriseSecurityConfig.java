@@ -22,10 +22,9 @@ public class EnterpriseSecurityConfig {
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // OPTIONS isteklerine izin ver
                         .anyRequest().permitAll()
                 );
-        
+
         return http.build();
     }
-    
     
     @Bean
     public PasswordEncoder passwordEncoder() { return new BCryptPasswordEncoder(); }

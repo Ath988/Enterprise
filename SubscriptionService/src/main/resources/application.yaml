@@ -1,7 +1,11 @@
 server:
-  port: 8089
+  port: 9093
 
 spring:
+  security:
+    user:
+      name: super_admin
+      password: root
   application:
     name: SubscriptionService
   datasource:

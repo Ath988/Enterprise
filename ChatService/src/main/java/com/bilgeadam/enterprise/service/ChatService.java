@@ -10,9 +10,12 @@ import com.bilgeadam.enterprise.repository.ChatUserRepository;
 import com.bilgeadam.enterprise.repository.MessageRepository;
 import com.bilgeadam.enterprise.repository.UserRepository;
 import com.bilgeadam.enterprise.utility.JwtManager;
+import com.bilgeadam.enterprise.view.ChatUserInfo;
+import com.bilgeadam.enterprise.view.ChatView;
 import com.bilgeadam.enterprise.view.MessageView;
 import com.bilgeadam.enterprise.view.UserView;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,10 +41,22 @@ public class ChatService {
 		return jwtManager.createToken(optId.get());
 	}
 	
+	public List<UserView> getUsers(String userId) {
+		return userRepository.findAll().stream()
+		                     .filter(user -> !user.getId().equals(userId))
+		                     .map(user -> new UserView(
+				                     user.getId(),
+				                     user.getName(),
+				                     user.getSurname(),
+				                     user.getIsOnline(),
+				                     user.getProfilePicture()))
+		                     .toList();
+	}
+
+	
 	@Transactional
-	public GroupChatCreateResponseDto createNewGroupChat(CreateGroupChatRqDto dto) {
+	public GroupChatCreateResponseDto createNewGroupChat(CreateGroupChatRqDto dto, String creatorId) {
 		Set<User> users = userRepository.findUserByIdIn(dto.userIds());
-		
 		if (users.size() != dto.userIds().size()) {
 			throw new EnterpriseException(ErrorType.USER_NOT_FOUND);
 		}
@@ -50,12 +65,13 @@ public class ChatService {
 		                .name(dto.name().isBlank() ? "New Group Chat" : dto.name())
 		                .description(dto.description())
 		                .eChatType(EChatType.GROUP)
+				.chatImage(dto.chatImageUrl())
 		                .build();
 		
 		chatRepository.save(chat);
 
 		Set<String> allUserIds = new HashSet<>(dto.userIds());
-		allUserIds.add(dto.creatorId());
+		allUserIds.add(creatorId);
 		
 		List<ChatUser> chatUsers = allUserIds.stream()
 		                                     .map(userId -> ChatUser.builder()
@@ -67,7 +83,7 @@ public class ChatService {
 		
 		chatUserRepository.saveAll(chatUsers);
 		
-		return new GroupChatCreateResponseDto(chat.getId(), chat.getName(), chat.getDescription(), chat.getCreateDate());
+		return new GroupChatCreateResponseDto(chat.getId(), chat.getName(), chat.getDescription(), chat.getCreateDate(), chat.getChatImage());
 	}
 	
 	
@@ -76,13 +92,9 @@ public class ChatService {
 	@Transactional
 	public PrivateChatResponseDto createPrivateChat(CreatePrivateChatRqDto dto, String userId) {
 		
-		if (dto.userIds().size() != 2)
-			throw new EnterpriseException(ErrorType.INVALID_CHAT_PARTICIPANTS);
-		
-		if (!dto.userIds().contains(userId))
-			throw new EnterpriseException(ErrorType.USER_NOT_PARTICIPANT);
-		
-		Set<String> userIds = new HashSet<>(dto.userIds());
+		Set<String> userIds = new HashSet<>();
+		userIds.add(dto.recipientId());
+		userIds.add(userId);
 
 		List<Object[]> userResults = userRepository.findUserNamesByIds(userIds);
 		Map<String, String[]> userMap = userResults.stream()
@@ -97,6 +109,19 @@ public class ChatService {
 		                              .findFirst()
 		                              .orElse("Unknown");
 		
+		
+		Optional<String> recipientIdOptional = userMap.keySet().stream()
+		                                              .filter(id -> !id.equals(userId))
+		                                              .findFirst();
+		
+		String recipientId = recipientIdOptional.orElseThrow(() ->
+				                                                     new EnterpriseException(ErrorType.USER_NOT_PARTICIPANT)
+		);
+		
+		User userById = userRepository.findUserById(recipientId).orElseThrow(()->new EnterpriseException(ErrorType.USER_NOT_FOUND));
+		
+		UserView recipientUser = new UserView(userById.getId(), userById.getName(), userById.getSurname(), userById.getIsOnline(), userById.getProfilePicture());
+		
 		Optional<Chat> existingChat = chatRepository.findPrivateChatByUsers(userIds, userIds.size(), EChatType.PRIVATE);
 		
 		if (existingChat.isPresent()) {
@@ -110,11 +135,12 @@ public class ChatService {
 					                                                     message.getContent(),
 					                                                     message.getSenderId(),
 					                                                     userMap.getOrDefault(message.getSenderId(), new String[]{"Unknown", "Unknown"})[0],
-					                                                     userMap.getOrDefault(message.getSenderId(), new String[]{"Unknown", "Unknown"})[1]
+					                                                     userMap.getOrDefault(message.getSenderId(), new String[]{"Unknown", "Unknown"})[1],
+					                                                     message.getTimeStamp()
 			                                                     ))
 			                                                     .toList();
 			
-			return new PrivateChatResponseDto(chat.getId(), recipientName, lastTenMessages);
+			return new PrivateChatResponseDto(chat.getId(), recipientName, lastTenMessages, recipientUser);
 		}
 		
 		Chat newChat = Chat.builder()
@@ -133,7 +159,8 @@ public class ChatService {
 		return new PrivateChatResponseDto(
 				newChat.getId(),
 				recipientName,
-				new ArrayList<>()
+				new ArrayList<>(),
+				recipientUser
 		);
 	}
 	
@@ -176,7 +203,8 @@ public class ChatService {
 				sender.getId(),
 				sender.getName(),
 				sender.getSurname(),
-				sender.getIsOnline()
+				sender.getIsOnline(),
+				sender.getProfilePicture()
 		);
 		
 		return new NewMessageResponseDto(newMessageDto.chatId(),
@@ -233,7 +261,7 @@ public class ChatService {
 		}
 		Set<User> addedUsers = userRepository.findUserByIdIn(newUserIds);
 		return addedUsers.stream()
-		                 .map(user -> new UserView(user.getId(), user.getName(), user.getSurname(), user.getIsOnline()))
+		                 .map(user -> new UserView(user.getId(), user.getName(), user.getSurname(), user.getIsOnline(), user.getProfilePicture()))
 		                 .collect(Collectors.toSet());
 	}
 	
@@ -286,7 +314,7 @@ public class ChatService {
 		List<User> users = userRepository.findUsersByIds(userIds);
 
 		return users.stream()
-		            .map(user -> new UserView(user.getId(), user.getName(), user.getSurname(), user.getIsOnline()))
+		            .map(user -> new UserView(user.getId(), user.getName(), user.getSurname(), user.getIsOnline(), user.getProfilePicture()))
 		            .collect(Collectors.toSet());
 	}
 	
@@ -328,11 +356,16 @@ public class ChatService {
 		
 		List<String> userIds = chatUserRepository.findUserIdsByChatId(chat.getId());
 		
-		Map<String, String[]> userMap = userRepository.findUserNamesByIds(new HashSet<>(userIds))
+		Map<String, Object[]> userMap = userRepository.findUserNamesByIds(new HashSet<>(userIds))
 		                                              .stream()
 		                                              .collect(Collectors.toMap(
 				                                              row -> (String) row[0],
-				                                              row -> new String[]{(String) row[1], (String) row[2]}
+				                                              row -> new Object[]{
+						                                              (String) row[1],       // firstName
+						                                              (String) row[2],       // lastName
+						                                              (Boolean) row[3],      // isOnline
+						                                              (String) row[4]        // profilePicture
+				                                              }
 		                                              ));
 		
 		List<MessageView> messageViews = messages.stream()
@@ -340,17 +373,37 @@ public class ChatService {
 				                                         message.getId(),
 				                                         message.getContent(),
 				                                         message.getSenderId(),
-				                                         userMap.getOrDefault(message.getSenderId(), new String[]{"Unknown", "Unknown"})[0], // adı çektk
-				                                         userMap.getOrDefault(message.getSenderId(), new String[]{"Unknown", "Unknown"})[1]  // soyadı çektik
+				                                         (String) userMap.getOrDefault(
+						                                         message.getSenderId(),
+						                                         new Object[]{"Unknown", "Unknown", false, ""}
+				                                         )[0],
+				                                         (String) userMap.getOrDefault(
+						                                         message.getSenderId(),
+						                                         new Object[]{"Unknown", "Unknown", false, ""}
+				                                         )[1],
+				                                         message.getTimeStamp()
 		                                         ))
 		                                         .toList();
 		
 		List<UserView> participants = userIds.stream()
 		                                     .map(uid -> new UserView(
 				                                     uid,
-				                                     userMap.getOrDefault(uid, new String[]{"Unknown", "Unknown"})[0],
-				                                     userMap.getOrDefault(uid, new String[]{"Unknown", "Unknown"})[1],
-				                                     false
+				                                     (String) userMap.getOrDefault(
+						                                     uid,
+						                                     new Object[]{"Unknown", "Unknown", false, ""}
+				                                     )[0],
+				                                     (String) userMap.getOrDefault(
+						                                     uid,
+						                                     new Object[]{"Unknown", "Unknown", false, ""}
+				                                     )[1],
+				                                     (Boolean) userMap.getOrDefault(
+						                                     uid,
+						                                     new Object[]{"Unknown", "Unknown", false, ""}
+				                                     )[2],
+				                                     (String) userMap.getOrDefault(
+						                                     uid,
+						                                     new Object[]{"Unknown", "Unknown", false, ""}
+				                                     )[3]
 		                                     ))
 		                                     .toList();
 		
@@ -359,8 +412,30 @@ public class ChatService {
 				chat.getName(),
 				chat.getDescription(),
 				participants,
-				messageViews
+				messageViews,
+				chat.getChatImage(),
+				userId,
+				chat.getEChatType()
 		);
+	}
+	
+	public ChatView getChatInfo(String chatId) {
+		List<ChatUserInfo> infos = chatRepository.findChatUserInfoByChatId(chatId);
+		if (infos.isEmpty()) {
+			throw new EnterpriseException(ErrorType.CHAT_NOT_FOUND);
+		}
+		
+		ChatUserInfo first = infos.get(0);
+		List<UserView> userViews = infos.stream()
+		                                .map(info -> new UserView(
+				                                info.userId(),
+				                                info.userName(),
+				                                info.userSurname(),
+				                                info.isOnline(),
+				                                info.profilePicture()))
+		                                .collect(Collectors.toList());
+		
+		return new ChatView(userViews, first.createdAt(), first.description(), first.name());
 	}
 
 
@@ -370,6 +445,12 @@ public class ChatService {
 		if(optionalId.isEmpty())
 			throw new EnterpriseException(ErrorType.USER_NOT_AUTHORIZED);
 		return optionalId.get();
+	}
+	
+	
+	public List<MessageView> getChatMessagesBefore(String chatId, LocalDateTime lastTimestamp, Pageable pageable) {
+		LocalDateTime effectiveTimestamp = lastTimestamp != null ? lastTimestamp : LocalDateTime.now().plusYears(100);
+		return messageRepository.findMessagesByChatIdBefore(chatId, pageable, effectiveTimestamp);
 	}
 	
 	

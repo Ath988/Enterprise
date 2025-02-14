@@ -28,5 +28,6 @@ public class Chat {
 	private LocalDateTime createDate=LocalDateTime.now();
 	@Builder.Default
 	private boolean isDeleted=false;
+	private String chatImage;
 	
 }

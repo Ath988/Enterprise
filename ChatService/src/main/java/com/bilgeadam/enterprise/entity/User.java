@@ -23,4 +23,5 @@ public class User {
 	private String surname;
 	@Builder.Default
 	private Boolean isOnline = false;
+	private String profilePicture;
 }

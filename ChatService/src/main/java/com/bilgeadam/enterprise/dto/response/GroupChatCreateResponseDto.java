@@ -9,6 +9,7 @@ public record GroupChatCreateResponseDto(
 		String id,
 		String name,
 		String description,
-		LocalDateTime createDate
+		LocalDateTime createDate,
+		String chatImageUrl
 ) {
 }

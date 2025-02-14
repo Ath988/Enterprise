@@ -28,7 +28,7 @@ public interface UserRepository extends JpaRepository<User, String> {
 	List<User> findUsersByIds(@Param("userIds") List<String> userIds);
 	
 	@Query("""
-    SELECT u.id, u.name, u.surname
+    SELECT u.id, u.name, u.surname, u.isOnline, u.profilePicture
     FROM User u
     WHERE u.id IN :userIds
 """)

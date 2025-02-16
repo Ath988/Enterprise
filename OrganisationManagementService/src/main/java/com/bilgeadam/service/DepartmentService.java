@@ -46,7 +46,7 @@ public class DepartmentService {
         Department department = Department.builder()
                 .name(dto.departmentName())
                 .description(dto.description())
-//                .managerId(manager.getId()) departman yöneticisini sonradan atasın.
+             .managerId(manager.getId())
                 .companyId(manager.getCompanyId())
                 .build();
         if (dto.parentDepartmentId() != null) {
@@ -116,7 +116,7 @@ public class DepartmentService {
 
     public List<AllDepartmentResponse> findAllDepartments(String token) {
         Employee employee = employeeService.getEmployeeByToken(token);
-        return departmentRepository.findAllDepartments(employee.getCompanyId());
+        return departmentRepository.findAllDepartments(employee.getCompanyId(), EState.ACTIVE);
     }
 
 

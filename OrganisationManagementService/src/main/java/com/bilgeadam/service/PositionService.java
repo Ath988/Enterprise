@@ -1,6 +1,7 @@
 package com.bilgeadam.service;
 
 import com.bilgeadam.dto.request.AddNewPositionRequest;
+import com.bilgeadam.dto.request.AssignPositionToEmployeeListRequest;
 import com.bilgeadam.dto.request.UpdatePositionRequest;
 import com.bilgeadam.dto.response.PositionDetailResponse;
 import com.bilgeadam.entity.Department;
@@ -109,5 +110,19 @@ public class PositionService {
 
     public void save(Position position) {
         positionRepository.save(position);
+    }
+
+    public Boolean assignPositionToEmployeeList(String token, AssignPositionToEmployeeListRequest dto){
+        Employee manager = employeeService.getEmployeeByToken(token);
+        //Pozisyon var mı yok mu kontrol edilebilir.
+        for(Long employeeId : dto.employeeIdList()){
+
+            Employee employee = employeeService.findById(employeeId);
+            checkCompany(manager.getCompanyId(), employee.getCompanyId());
+            employee.setPositionId(dto.positionId());
+            employee.setUpdateAt(LocalDateTime.now());
+            employeeService.save(employee);
+        }
+        return true;
     }
 }

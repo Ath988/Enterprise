@@ -24,6 +24,7 @@ import static com.bilgeadam.constants.RestApis.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(EMPLOYEE)
+@CrossOrigin("*")
 public class EmployeeController {
     private final EmployeeService employeeService;
 
@@ -48,7 +49,7 @@ public class EmployeeController {
     }
 
     //Tüm çalışanların özet bilgilerini getirir.
-    @GetMapping
+    @GetMapping("/get-all-employee")
     public ResponseEntity<BaseResponse<List<AllEmployeeResponse>>> getAllEmployees(
             @RequestHeader(value = "Authorization", required = false) String token) {
         return ResponseEntity.ok(BaseResponse.<List<AllEmployeeResponse>>builder()

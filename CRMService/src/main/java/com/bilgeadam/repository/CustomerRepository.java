@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface CustomerRepository extends JpaRepository<Customer, Long> {
-	Optional<Customer> findByEmail(String email);
+	/*Optional<Customer> findByEmail(String email);
 	Optional<Customer> findByPhone(String phone);
 	
 	// 1. Belirli bir şirket adına göre müşteri listesi getiren sorgu
@@ -23,5 +23,5 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
 	List<Customer> findByPhoneStartingWith(String areaCode);
 	
 	// 5. En son eklenen müşterileri sıralı getiren sorgu
-	List<Customer> findTop10ByOrderByIdDesc();
+	List<Customer> findTop10ByOrderByIdDesc();*/
 }

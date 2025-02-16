@@ -7,6 +7,7 @@ public record TaskUpdateRequestDTO(
         Long id,
         Long authId,
         String name,
-        String description)
+        String description,
+        String taskStatus)
 {
 }

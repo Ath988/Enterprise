@@ -90,8 +90,11 @@ public class EmployeeService {
         //Todo: Yeni çalışan eklendikten sonra, MailService üzerinden yöneticilere bilgi maili gönderilebilir.
     }
 
-    public List<AllEmployeeResponse> findAllEmployees(String token) {
+    public List<AllEmployeeResponse> findAllEmployees(String token,Optional<EState> state) {
         Employee employee = getEmployeeByToken(token);
+        if(state.isPresent()) {
+            return employeeRepository.findAllActiveEmployee(employee.getCompanyId(), state.get());
+        }
         return employeeRepository.findAllEmployee(employee.getCompanyId());
     }
 
@@ -125,7 +128,8 @@ public class EmployeeService {
                     manager.getLastName(),
                     manager.getRole().name(),
                     managerDepartment.getName(),
-                    manager.getGender()
+                    manager.getGender(),
+                    manager.getState()
             ));
 
             parentDepartmentId = managerDepartment.getParentDepartmentId();

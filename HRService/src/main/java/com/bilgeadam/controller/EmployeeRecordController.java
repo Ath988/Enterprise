@@ -6,6 +6,7 @@ import com.bilgeadam.dto.response.AllEmployeeRecordResponse;
 import com.bilgeadam.dto.response.BaseResponse;
 import com.bilgeadam.dto.response.EmployeeRecordResponse;
 import com.bilgeadam.entity.EmployeeRecord;
+import com.bilgeadam.entity.enums.EState;
 import com.bilgeadam.service.EmployeeRecordService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -17,12 +18,14 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Optional;
 
 import static com.bilgeadam.constants.RestApis.*;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(EMPLOYEE_RECORD)
+@CrossOrigin("*")
 public class EmployeeRecordController {
 
     private final EmployeeRecordService employeeRecordService;
@@ -39,10 +42,13 @@ public class EmployeeRecordController {
     }
 
     @GetMapping
-    public ResponseEntity<BaseResponse<List<AllEmployeeRecordResponse>>> getEmployeeRecord(
-            @RequestHeader(value = "Authorization", required = false) String token) {
+    public ResponseEntity<BaseResponse<List<AllEmployeeRecordResponse>>> getAllEmployeeRecord(
+            @RequestHeader(value = "Authorization", required = false) String token,
+            @RequestParam Optional<EState> state
+
+    ) {
         return ResponseEntity.ok(BaseResponse.<List<AllEmployeeRecordResponse>>builder()
-                .data(employeeRecordService.findAllEmployeeRecord(token))
+                .data(employeeRecordService.findAllEmployeeRecord(token,state))
                 .message("Bütün çalışan kayıtları getirildi.")
                 .build());
     }
@@ -63,6 +69,7 @@ public class EmployeeRecordController {
     public ResponseEntity<BaseResponse<Boolean>> updateEmployeeRecord(
             @RequestHeader(value = "Authorization", required = false) String token,
             @RequestBody UpdateEmployeeRecordRequest dto) {
+        System.out.println(dto);
         return ResponseEntity.ok(BaseResponse.<Boolean>builder()
                 .success(employeeRecordService.updateEmployeeRecord(token, dto))
                 .message("Çalışan kaydı güncellendi.")
@@ -84,11 +91,11 @@ public class EmployeeRecordController {
     @PostMapping(value = "/upload-persone-file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<BaseResponse<Boolean>> uploadPersonelFile(
             @RequestHeader(value = "Authorization", required = false) String token,
-            @RequestParam Long employeeId,
+            @RequestParam Long employeeRecordId,
             @Parameter(description = "Yüklenecek dosya", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE))
             @RequestParam("file") MultipartFile file) {
         return ResponseEntity.ok(BaseResponse.<Boolean>builder()
-                .data(employeeRecordService.uploadPersonelFile(token, employeeId, file))
+                .data(employeeRecordService.uploadPersonelFile(token, employeeRecordId, file))
                 .message("Personel özlük dosyası yüklendi.")
                 .build());
     }

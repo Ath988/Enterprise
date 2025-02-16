@@ -5,6 +5,7 @@ import com.bilgeadam.entity.Auth;
 import com.bilgeadam.entity.User;
 import com.bilgeadam.exception.EnterpriseException;
 import com.bilgeadam.exception.ErrorType;
+import com.bilgeadam.manager.LogManager;
 import com.bilgeadam.manager.MailManager;
 import com.bilgeadam.manager.NotificationManager;
 import com.bilgeadam.manager.OrganisationManagementManager;
@@ -29,6 +30,7 @@ public class AuthService {
     private final OrganisationManagementManager organisationManagementManager;
     private final AuthRepository authRepository;
     private final NotificationManager notificationManager;
+    private final LogManager logManager;
 
     public String doLogin(LoginRequestDto dto) {
         Optional<Auth> userOptional = userRepository.findByEmail(dto.email());
@@ -74,8 +76,31 @@ public class AuthService {
 
         mailManager.sendEmail(new EmailDto("enterprice@gmail.com", "enterprice@auth.com", user.getEmail(),
                 "E-posta Adresini Onayla",
-                "email adresini onaylamak icin linke tiklayiniz : http://localhost:9091/v1/dev/auth/auth-mail?auth=" + authCode));
+                "email adresini onaylamak icin linke tiklayiniz : http://localhost:8081/v1/dev/auth/auth-mail?auth=" + authCode));
         return user.getId(); //diğer Servislerden kayıt isteği gönderildiğinde authId çekebilmek için düzenlendi, msacak
+    }
+
+    public Long registerEmployee(RegisterRequestDto dto) {
+        Optional<Auth> userOptional = userRepository.findByEmail(dto.email());
+        if (userOptional.isPresent()) {
+            throw new EnterpriseException(ErrorType.REGISTER_ERROR);
+        }
+        if (!dto.password().equals(dto.rePassword())) {
+            throw new EnterpriseException(ErrorType.INVALID_PASSWORD);
+        }
+        Auth user = Auth.builder()
+                .email(dto.email())
+                .password(passwordEncoder.encode(dto.password()))
+                .authState(EAuthState.PENDING)
+                .role(ERole.MEMBER)
+                .build();
+        user = userRepository.save(user);
+        String authCode = userAuthVerifyCodeService.generateAuthCode(user.getId());
+
+        mailManager.sendEmail(new EmailDto("enterprice@gmail.com", "enterprice@auth.com", user.getEmail(),
+                "E-posta Adresini Onayla",
+                "email adresini onaylamak icin linke tiklayiniz : http://localhost:9091/v1/dev/auth/auth-mail?auth=" + authCode));
+        return user.getId();
     }
 
     public Boolean authUserRegister(String authCode) {
@@ -89,6 +114,7 @@ public class AuthService {
     public Optional<Auth> checkAuthUser(String authCode) {
         Optional<Long> userIdByAuthCode = userAuthVerifyCodeService.findUserIdByAuthCode(authCode);
         if (userIdByAuthCode.isEmpty()) {
+            logManager.logRequest(ErrorType.NOTFOUND_USER_AUTH.getMessage());
             throw new EnterpriseException(ErrorType.NOTFOUND_USER_AUTH);
         }
         Optional<Auth> userOptional = userRepository.findById(userIdByAuthCode.get());
@@ -107,7 +133,7 @@ public class AuthService {
         String authCode = userAuthVerifyCodeService.generateAuthCode(user.getId());
         mailManager.sendEmail(new EmailDto("enterprice@gmail.com", "enterprice@forgotpassword.com", user.getEmail(),
                 "Sifre Sifirlama",
-                "Sifre sifirlama linki : http://localhost:9091/v1/dev/auth/new-password?auth=" + authCode));
+                "Sifre sifirlama linki : http://localhost:8081/v1/dev/auth/new-password?auth=" + authCode));
 
         return true;
     }

@@ -49,9 +49,9 @@ public class EmployeeRecordService {
 
 
     //Todo: Kontrol et, Pagination ile getir.
-    public List<AllEmployeeRecordResponse> findAllEmployeeRecord(String token) {
+    public List<AllEmployeeRecordResponse> findAllEmployeeRecord(String token,Optional<EState> state) {
         List<AllEmployeeResponse> employeeListByOrganizationService =
-                getDataFromResponse(organisationManagementManager.getAllEmployees(token));
+                getDataFromResponse(organisationManagementManager.getAllEmployees(token,state));
 
         return employeeListByOrganizationService.stream()
                 .map(employeeResponse -> {
@@ -65,6 +65,8 @@ public class EmployeeRecordService {
                                 .employeeRecordId(employeeRecord.getEmployeeRecordId())
                                 .startDate(employeeRecord.getStartDate())
                                 .endDate(employeeRecord.getEndDate())
+                                .personelFileName(employeeRecord.getPersonelFileName())
+                                .personelFileUrl(employeeRecord.getPersonelFileUrl())
                                 .build();
                     }
                     return null;
@@ -109,9 +111,11 @@ public class EmployeeRecordService {
         throw new HRException(ErrorType.INTERNAL_SERVER_ERROR);
     }
 
-    public Boolean uploadPersonelFile(String token,Long employeeId, MultipartFile file) {
-        EmployeeRecord employeeRecord = findById(employeeId);
-        if(!getSuccessFromResponse(organisationManagementManager.checkCompanyId(token,employeeId)))
+    public Boolean uploadPersonelFile(String token,Long employeeRecordId, MultipartFile file) {
+        System.out.println("Metod çağırıldı file upload");
+        EmployeeRecord employeeRecord = findById(employeeRecordId);
+        System.out.println("emp ID : "+employeeRecord.getEmployeeId());
+        if(!getSuccessFromResponse(organisationManagementManager.checkCompanyId(token,employeeRecord.getEmployeeId())))
             throw new HRException(ErrorType.UNAUTHORIZED);
 
 

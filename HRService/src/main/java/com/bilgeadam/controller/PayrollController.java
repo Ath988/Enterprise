@@ -18,6 +18,7 @@ import static com.bilgeadam.constants.RestApis.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(PAYROLL)
+@CrossOrigin
 public class PayrollController {
     private final PayrollService payrollService;
 

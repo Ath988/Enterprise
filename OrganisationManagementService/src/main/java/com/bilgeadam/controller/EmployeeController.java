@@ -9,6 +9,7 @@ import com.bilgeadam.dto.response.BaseResponse;
 import com.bilgeadam.dto.response.EmployeeDetailResponse;
 import com.bilgeadam.dto.response.EmployeeSaveResponse;
 import com.bilgeadam.entity.Employee;
+import com.bilgeadam.entity.enums.EState;
 import com.bilgeadam.service.EmployeeService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +25,6 @@ import static com.bilgeadam.constants.RestApis.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(EMPLOYEE)
-@CrossOrigin("*")
 public class EmployeeController {
     private final EmployeeService employeeService;
 
@@ -51,9 +51,11 @@ public class EmployeeController {
     //Tüm çalışanların özet bilgilerini getirir.
     @GetMapping("/get-all-employee")
     public ResponseEntity<BaseResponse<List<AllEmployeeResponse>>> getAllEmployees(
-            @RequestHeader(value = "Authorization", required = false) String token) {
+            @RequestHeader(value = "Authorization", required = false) String token,
+            @RequestParam Optional<EState> state
+            ) {
         return ResponseEntity.ok(BaseResponse.<List<AllEmployeeResponse>>builder()
-                .data(employeeService.findAllEmployees(token))
+                .data(employeeService.findAllEmployees(token,state))
                 .message("Firma çalışanlarının listesi getirildi.")
                 .build());
     }

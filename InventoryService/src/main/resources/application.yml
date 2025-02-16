@@ -1,5 +1,5 @@
 server:
-  port: 9100
+  port: 8086
 
 spring:
   security:
@@ -13,12 +13,16 @@ spring:
     password: root
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/InventoryDB
+    url: jdbc:postgresql://localhost:5432/inventorydb
     username: postgres
-    password: 1234
+    password: root
   jpa:
     hibernate:
       ddl-auto: create-drop
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
 auth:
   secret:
     secret-key: ${JAVA_SECRET_KEY}

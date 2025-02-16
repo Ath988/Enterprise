@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 public class LoggingService {
 	
 	public void logRequest(String logMessage) {
-		log.info(logMessage);
+		log.error(logMessage);
 	}
 	
 	public void logResponse(String logMessage) {

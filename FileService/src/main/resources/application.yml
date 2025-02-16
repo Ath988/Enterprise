@@ -2,6 +2,8 @@ server:
   port: 9090
 
 spring:
+  application:
+    name: file-service
   datasource:
     driver-class-name: org.postgresql.Driver
     url: ${Database_URL}
@@ -11,9 +13,27 @@ spring:
     show-sql: false
     hibernate:
       ddl-auto: update
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
 
 minio:
   endpoint: ${MinIO_Endpoint}
   access-key: ${MinIO_AccessKey}
   secret-key: ${MinIO_SecretKey}
   bucket-name: ${MinIO_BucketName}
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    hostname: localhost
+    prefer-ip-address: false
+
+management:
+  health:
+    rabbit:
+      enabled: false

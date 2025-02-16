@@ -15,9 +15,10 @@ import java.util.List;
 @Slf4j
 public class GlobalExceptionHandler {
 
+    //HTTP STATUS OK OLARAK ÇEVRİLDİ FRONTTA HATALARI GÖSTEREBİLMEK İÇİN.
 	@ExceptionHandler(RuntimeException.class)
 	public ResponseEntity<ErrorMessage> runtimeExcepitonHandler(RuntimeException exception){
-		return  createResponseEntity(ErrorType.INTERNAL_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR, null);
+		return  createResponseEntity(ErrorType.INTERNAL_SERVER_ERROR, HttpStatus.OK, null);
 	}
 
     @ExceptionHandler(InventoryServiceException.class)
@@ -46,6 +47,6 @@ public class GlobalExceptionHandler {
                 .success(false)
                 .message(errorType.getMessage())
                 .code(errorType.getCode())
-                .build(),httpStatus);
+                .build(),HttpStatus.OK);
     }
 }

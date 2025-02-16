@@ -127,20 +127,8 @@ public class ChatService {
 		if (existingChat.isPresent()) {
 			Chat chat = existingChat.get();
 			
-			List<MessageView> lastTenMessages = messageRepository.findLastMessagesByChatId(chat.getId(),10)
-			                                                     .stream()
-			                                                     .limit(10)
-			                                                     .map(message -> new MessageView(
-					                                                     message.getId(),
-					                                                     message.getContent(),
-					                                                     message.getSenderId(),
-					                                                     userMap.getOrDefault(message.getSenderId(), new String[]{"Unknown", "Unknown"})[0],
-					                                                     userMap.getOrDefault(message.getSenderId(), new String[]{"Unknown", "Unknown"})[1],
-					                                                     message.getTimeStamp()
-			                                                     ))
-			                                                     .toList();
 			
-			return new PrivateChatResponseDto(chat.getId(), recipientName, lastTenMessages, recipientUser);
+			return new PrivateChatResponseDto(chat.getId(), recipientName, recipientUser);
 		}
 		
 		Chat newChat = Chat.builder()
@@ -159,7 +147,6 @@ public class ChatService {
 		return new PrivateChatResponseDto(
 				newChat.getId(),
 				recipientName,
-				new ArrayList<>(),
 				recipientUser
 		);
 	}
@@ -220,7 +207,7 @@ public class ChatService {
 		Optional<User> userById = userRepository.findUserById(userId);
 		if (userById.isEmpty())
 			throw new EnterpriseException(ErrorType.USER_NOT_FOUND);
-		
+		System.out.println(chatRepository.findTopChatsByUser(userId, limit));
 		return chatRepository.findTopChatsByUser(userId, limit);
 	}
 	
@@ -381,7 +368,8 @@ public class ChatService {
 						                                         message.getSenderId(),
 						                                         new Object[]{"Unknown", "Unknown", false, ""}
 				                                         )[1],
-				                                         message.getTimeStamp()
+				                                         message.getTimeStamp(),
+				                                         message.getChatId()
 		                                         ))
 		                                         .toList();
 		
@@ -454,4 +442,13 @@ public class ChatService {
 	}
 	
 	
+	public void setUserOnlineStatus(String userId, boolean status) {
+		System.out.println("metoda giriyor mu?"+userId);
+		Optional<User> userById = userRepository.findUserById(userId);
+		if(userById.isEmpty())
+			throw new EnterpriseException(ErrorType.USER_NOT_FOUND);
+		User user = userById.get();
+		user.setIsOnline(status);
+		userRepository.save(user);
+	}
 }

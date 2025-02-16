@@ -51,8 +51,13 @@ public interface ChatRepository extends JpaRepository<Chat,String> {
         CASE
             WHEN c.eChatType = 'GROUP' THEN false
             ELSE COALESCE(u2.isOnline, false)
+        END,
+        CASE
+        	WHEN c.eChatType = 'GROUP' THEN null
+        	ELSE u2.id
         END
     )
+    
     FROM Chat c
     JOIN ChatUser cu ON c.id = cu.chatId
     LEFT JOIN ChatUser cu2 ON cu2.chatId = c.id AND cu2.userId <> :userId

@@ -9,7 +9,6 @@ import java.util.List;
 public record PrivateChatResponseDto(
 		String id,
 		String recipientName,
-		List<MessageView> lastTenMessage,
 		UserView recipient
 ) {
 }

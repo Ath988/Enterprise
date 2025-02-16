@@ -10,6 +10,7 @@ public record MessageView(
 		String senderId,
 		String senderName,
 		String senderSurname,
-		LocalDateTime timeStamp
+		LocalDateTime timeStamp,
+		String chatId
 ) {
 }

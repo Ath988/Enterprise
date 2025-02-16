@@ -34,7 +34,11 @@ public class WebSocketAuthInterceptor implements ChannelInterceptor {
 		StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
 		
 		if (StompCommand.CONNECT.equals(accessor.getCommand())) {
-			String token = (String) accessor.getSessionAttributes().get("Authorization");
+			String sessionId = accessor.getSessionId();
+			System.out.println("ChannelInterceptor: sessionId=" + sessionId);
+			
+			
+			String token = accessor.getFirstNativeHeader("Authorization");
 			
 			if (token == null || !token.startsWith("Bearer ")) {
 				throw new EnterpriseException(ErrorType.USER_NOT_AUTHORIZED, "Authorization header is missing or invalid!");
@@ -42,17 +46,20 @@ public class WebSocketAuthInterceptor implements ChannelInterceptor {
 			
 			String userId = jwtManager.validateToken(token.replace("Bearer ", ""))
 			                          .orElseThrow(() -> new EnterpriseException(ErrorType.USER_NOT_AUTHORIZED));
+			System.out.println("METODA GIRIYOR MU KONTROLU!");
+			System.out.println("USER ID:" + userId);
 			
 			UsernamePasswordAuthenticationToken authentication =
 					new UsernamePasswordAuthenticationToken(userId, null, List.of());
 			
 			accessor.setUser(authentication);
-			
-			// Kullanıcıyı SecurityContext'e ekle
+			accessor.getSessionAttributes().put("userId", userId);
 			SecurityContextHolder.getContext().setAuthentication(authentication);
 		}
 		
 		return message;
 	}
+
+	
 	
 }

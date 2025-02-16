@@ -7,9 +7,12 @@
 
 3-Auth componentine bağlı olunmadığı için öncelikle postman üzerinden giriş yapılması gerekiyor.
 
-4-Postman'den dönen token'i localStorage'a (token,{token}) şeklinde kaydedin.
+4-http://localhost:5174/chat doğrudan bu adrese gidin herhangi bir auth kontrolü şuanlık yok.
 
-5-Token kaydetmeden websocket bağlantısı ve fetch işlemleri gerçekleşmeyeceği için sayfa render olmuyor, bu nedenleüstteki adımlar önemli.
+4-Postman'den dönen token'i localStorage'a (token,{token}) şeklinde kaydedin. Sayfayı yenileyin!!
+
+5-Token kaydetmeden websocket bağlantısı ve fetch işlemleri gerçekleşmeyeceği için sayfa render olmuyor, bu nedenle
+üstteki adımlar önemli.
 
 6-Frontend'de yer alan + butonu ile private ya da group chat'i oluşturabilirsiniz.
 

@@ -49,6 +49,13 @@ public class CustomerService {
 		customerRepository.delete(customer);
 	}
 	
+	public void deleteCustomers(List<Long> customerIds) {
+		if (customerIds == null || customerIds.isEmpty()) {
+			throw new CRMServiceException(ErrorType.CUSTOMER_DELETE_LIST_EMPTY);
+		}
+		customerRepository.deleteAllById(customerIds);
+	}
+	
 	/*
 	
 	public Customer getCustomerByEmail(String email) {

@@ -17,7 +17,7 @@ public record UpdateCustomerRequestDto(
 		@Email
 		String email,
 		
-		@Pattern(regexp = "^(\\+90|0)[3-5][0-9]{9}$", message = "Geçerli bir Türkiye telefon numarası giriniz. (+90XXXXXXXXXX veya 05XXXXXXXXX formatında olmalıdır.)")
+		@Pattern(regexp = "^\\d{10}$", message = "(5556667788) formatında olmalıdır.")
 		String phoneNumber,
 		
 		String address

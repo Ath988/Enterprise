@@ -7,17 +7,22 @@ import com.bilgeadam.enterprise.exception.EnterpriseException;
 import com.bilgeadam.enterprise.exception.ErrorType;
 import com.bilgeadam.enterprise.service.ChatService;
 import com.bilgeadam.enterprise.utility.MessageProducer;
+import com.bilgeadam.enterprise.view.ChatView;
+import com.bilgeadam.enterprise.view.MessageView;
 import com.bilgeadam.enterprise.view.UserView;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.*;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -26,6 +31,7 @@ import static com.bilgeadam.enterprise.constant.RestApis.*;
 @RestController
 @RequestMapping(CHAT)
 @RequiredArgsConstructor
+@CrossOrigin("*")
 public class ChatController {
 	private final ChatService chatService;
 	private final SimpMessagingTemplate messagingTemplate;
@@ -41,12 +47,23 @@ public class ChatController {
 		                                     .build());
 	}
 	
+	@GetMapping("/get-users")
+	public ResponseEntity<BaseResponse<List<UserView>>> getUsers(HttpServletRequest request){
+		String userId = (String) request.getAttribute("userId");
+		return ResponseEntity.ok(BaseResponse.<List<UserView>>builder().code(200).success(true).message("User list " +
+				                                                                                                "retrieved successfully!")
+		                                     .data(chatService.getUsers(userId)).build());
+	}
+	
+	
 	@PostMapping(CREATE_GROUP_CHAT)
 	public ResponseEntity<BaseResponse<GroupChatCreateResponseDto>> createNewGroupChat( @RequestBody @Valid CreateGroupChatRqDto chatDto,
 	                                                                                    HttpServletRequest request){
+		String userId = (String) request.getAttribute("userId");
 		return ResponseEntity.status(HttpStatus.CREATED).body(BaseResponse.<GroupChatCreateResponseDto>builder().code(200).success(true).message("Group chat created " +
 				                                                                                         "successfully!")
-		                                                             .data(chatService.createNewGroupChat(chatDto)).build());
+		                                                             .data(chatService.createNewGroupChat(chatDto,
+		                                                                                                  userId)).build());
 	}
 	
 	@PostMapping(CREATE_PRIVATE_CHAT)
@@ -165,7 +182,6 @@ public class ChatController {
 			@RequestParam @NotBlank String chatId,
 			@RequestParam int size,
 			HttpServletRequest request) {
-		//TODO: LIMIT YERINE PAGEABLE KULLAN!!!!
 		String userId = (String) request.getAttribute("userId");
 		return ResponseEntity.ok(BaseResponse.<ChatDetailResponseDto>builder()
 		                                     .code(200)
@@ -174,6 +190,34 @@ public class ChatController {
 		                                     .data(chatService.getChatDetails(size, chatId, userId))
 		                                     .build());
 	}
+	
+	@GetMapping("/get-chat-messages")
+	public ResponseEntity<BaseResponse<List<MessageView>>> getChatMessages(
+			@RequestParam @NotBlank String chatId,
+			@RequestParam(required = false) LocalDateTime lastMessageTimestamp,
+			@RequestParam(defaultValue = "10") int size,
+			HttpServletRequest request) {
+		Pageable pageable = PageRequest.of(0, size);
+		List<MessageView> messages = chatService.getChatMessagesBefore(chatId, lastMessageTimestamp, pageable);
+		return ResponseEntity.ok(
+				BaseResponse.<List<MessageView>>builder()
+				            .code(200)
+				            .message("Chat messages retrieved successfully!")
+				            .success(true)
+				            .data(messages)
+				            .build()
+		);
+	}
+	
+	@GetMapping("/get-chat-info")
+	public ResponseEntity<BaseResponse<ChatView>> getChatInfo(@RequestParam @NotBlank String chatId){
+		return ResponseEntity.ok(BaseResponse.<ChatView>builder().code(200).message("Chat info retrieved " +
+				                                                                            "successfully!")
+				                         .success(true)
+				                         .data(chatService.getChatInfo(chatId)).build());
+	}
+
+
 
 	
 	public String getTokenFromHeader(String headerToken) {

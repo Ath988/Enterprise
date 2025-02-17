@@ -19,7 +19,6 @@ import com.bilgeadam.repository.EmployeeRepository;
 import com.bilgeadam.utility.JwtManager;
 import com.bilgeadam.view.VwEmployee;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -78,8 +77,8 @@ public class EmployeeService {
                 .authId(authId)
                 .positionId(dto.positionId())
                 .email(dto.registerRequestDto().email())
-                .firstName(dto.firstName())
-                .lastName(dto.lastName())
+                .firstName(dto.firstname())
+                .lastName(dto.lastname())
                 .companyId(manager.getCompanyId())
                 .role(dto.role())
                 .gender(dto.gender())

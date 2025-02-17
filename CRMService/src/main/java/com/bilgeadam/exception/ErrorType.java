@@ -11,7 +11,9 @@ public enum ErrorType {
 	VALIDATION_ERROR(400,"girilen parametreler hatalıdır. Lütfen kontrol ederek tekrar deneyin.", HttpStatus.BAD_REQUEST),
 	CUSTOMER_NOT_FOUND(100,"Customer not found", HttpStatus.NOT_FOUND),
 	OFFER_NOT_FOUND(200,"Offer not found", HttpStatus.NOT_FOUND),
-	SUPPORT_TICKET_NOT_FOUND(600,"Support ticket not found", HttpStatus.NOT_FOUND),;
+	TICKET_NOT_FOUND(300,"Ticket not found", HttpStatus.NOT_FOUND),
+	TICKET_UPDATE_FAILED(302,"Ticket update failed", HttpStatus.BAD_REQUEST),
+	TICKET_CREATION_FAILED(304,"Ticket creation failed", HttpStatus.CONFLICT);
 	
 	int code;
 	String message;

@@ -21,10 +21,9 @@ public class OfferService {
 	/**
 	 * 📌 Yeni bir teklif (Offer) oluşturur ve veritabanına kaydeder.
 	 */
-	public List<VwOffer> createOffer(AddOfferRequestDto dto) {
+	public void createOffer(AddOfferRequestDto dto) {
 		Offer offer = OfferMapper.INSTANCE.toEntity(dto);
 		offerRepository.save(offer);
-		return offerRepository.findAllOffersWithCustomerInfo();
 	}
 	
 	public List<VwOffer> getAllOffers() {
@@ -43,7 +42,7 @@ public class OfferService {
 	/**
 	 * 📌 Teklifi günceller.
 	 */
-	public List<VwOffer> updateOffer(Long offerId, UpdateOfferRequestDto dto) {
+	public void updateOffer(Long offerId, UpdateOfferRequestDto dto) {
 		Offer offer = offerRepository.findById(offerId)
 		                             .orElseThrow(() -> new CRMServiceException(ErrorType.OFFER_NOT_FOUND));
 		
@@ -52,7 +51,6 @@ public class OfferService {
 		OfferMapper.INSTANCE.updateOfferFromDto(dto, offer); // DTO verileri mevcut entity'ye aktarılıyor.
 		
 		offerRepository.save(offer);
-		return offerRepository.findAllOffersWithCustomerInfo();
 	}
 	
 	/**

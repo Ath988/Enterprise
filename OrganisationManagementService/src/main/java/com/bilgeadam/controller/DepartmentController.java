@@ -24,7 +24,7 @@ public class DepartmentController {
     private final DepartmentService departmentService;
 
     //Yeni departman oluşturur.
-    @PostMapping
+    @PostMapping("/add-department")
     public ResponseEntity<BaseResponse<Boolean>> addDepartment(
             @RequestHeader(value = "Authorization", required = false) String token,
             @RequestBody AddNewDepartmentRequest dto) {
@@ -47,7 +47,7 @@ public class DepartmentController {
 
 
     //Departman bilgilerini günceller.
-    @PutMapping
+    @PutMapping("/update-department")
     public ResponseEntity<BaseResponse<Boolean>> updateDepartment(
             @RequestHeader(value = "Authorization", required = false) String token,
             @RequestBody UpdateDepartmentRequest dto) {
@@ -58,7 +58,7 @@ public class DepartmentController {
     }
 
     //Soft delete.
-    @DeleteMapping("{departmentId}")
+    @DeleteMapping("/delete-department/{departmentId}")
     public ResponseEntity<BaseResponse<Boolean>> deleteDepartment(
             @RequestHeader(value = "Authorization", required = false) String token,
             @PathVariable Long departmentId) {
@@ -80,7 +80,7 @@ public class DepartmentController {
     }
 
     //Firmanın tüm departmanlarını listeler.
-    @GetMapping
+    @GetMapping("/get-all-departments")
     public ResponseEntity<BaseResponse<List<AllDepartmentResponse>>> getAllDepartment(
             @RequestHeader(value = "Authorization", required = false) String token) {
         return ResponseEntity.ok(BaseResponse.<List<AllDepartmentResponse>>builder()

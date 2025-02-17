@@ -2,6 +2,7 @@ package com.bilgeadam.controller;
 
 import com.bilgeadam.dto.request.AddEmployeeRequest;
 import com.bilgeadam.dto.request.AddNewPositionRequest;
+import com.bilgeadam.dto.request.AssignPositionToEmployeeListRequest;
 import com.bilgeadam.dto.request.UpdatePositionRequest;
 import com.bilgeadam.dto.response.BaseResponse;
 import com.bilgeadam.dto.response.PositionDetailResponse;
@@ -23,7 +24,7 @@ public class PositionController {
     private final PositionService positionService;
 
 
-    @PostMapping
+    @PostMapping("/add-position")
     public ResponseEntity<BaseResponse<Boolean>> addPosition(
             @RequestHeader(value = "Authorization", required = false) String token,
             @RequestBody AddNewPositionRequest dto) {
@@ -33,7 +34,7 @@ public class PositionController {
                 .build());
     }
 
-    @PutMapping
+    @PutMapping("/update-position")
     public ResponseEntity<BaseResponse<Boolean>> updatePosition(
             @RequestHeader(value = "Authorization", required = false) String token,
             @RequestBody UpdatePositionRequest dto) {
@@ -43,7 +44,7 @@ public class PositionController {
                 .build());
     }
 
-    @DeleteMapping("{positionId}")
+    @DeleteMapping("/delete-position/{positionId}")
     public ResponseEntity<BaseResponse<Boolean>> deletePosition(
             @RequestHeader(value = "Authorization", required = false) String token,
             @PathVariable Long positionId) {
@@ -78,5 +79,15 @@ public class PositionController {
                 .build());
     }
 
+
+    @PutMapping("/assign-position-to-employees")
+    public ResponseEntity<BaseResponse<Boolean>> assignPositionToEmployees(
+            @RequestHeader(value = "Authorization", required = false) String token,
+            @RequestBody AssignPositionToEmployeeListRequest dto) {
+        return ResponseEntity.ok(BaseResponse.<Boolean>builder()
+                .success(positionService.assignPositionToEmployeeList(token, dto))
+                .message("Seçilen pozisyon listedeki çalışanlara atandı.")
+                .build());
+    }
 
 }

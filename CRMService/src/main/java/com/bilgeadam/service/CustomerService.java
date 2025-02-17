@@ -28,9 +28,28 @@ public class CustomerService {
 		return customerRepository.findAll();
 	}
 	
-	/*public Customer getCustomerById(Long id){
+	public Customer getCustomerById(Long id){
 		return customerRepository.findById(id).orElseThrow(()-> new CRMServiceException(ErrorType.CUSTOMER_NOT_FOUND));
-	}*/
+	}
+	
+	public void updateCustomer(Long customerId, UpdateCustomerRequestDto dto) {
+		Optional<Customer> optionalCustomer = customerRepository.findById(customerId);
+		if (optionalCustomer.isPresent()) {
+			Customer customer = optionalCustomer.get();
+			CustomerMapper.INSTANCE.updateCustomerFromDto(dto, customer);
+			customerRepository.save(customer);
+		} else {
+			throw new CRMServiceException(ErrorType.CUSTOMER_NOT_FOUND);
+		}
+	}
+	
+	public void deleteCustomer(Long customerId) {
+		Customer customer = customerRepository.findById(customerId)
+		                                      .orElseThrow(() -> new CRMServiceException(ErrorType.CUSTOMER_NOT_FOUND));
+		customerRepository.delete(customer);
+	}
+	
+	/*
 	
 	public Customer getCustomerByEmail(String email) {
 		return customerRepository.findByEmail(email)
@@ -100,7 +119,7 @@ public class CustomerService {
 	
 	public List<Customer> getLatestCustomers() {
 		return customerRepository.findTop10ByOrderByIdDesc();
-	}
+	}*/
 	
 	
 }

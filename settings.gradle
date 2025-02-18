@@ -8,13 +8,8 @@ include 'OrganisationManagementService'
 include 'MailService'
 include 'ProjectManagementService'
 include 'FileService'
-include 'AuthService'
 include 'NotificationService'
 include 'SubscriptionService'
-
-
-include 'AuthService'
-
 include 'LogService'
 include 'CRMService'
 include 'ChatService'
@@ -23,3 +18,5 @@ include 'InventoryService'
 include 'APIGatewayService'
 include 'FinanceService'
 include 'EurekaService'
+include 'UserManagementService'
+

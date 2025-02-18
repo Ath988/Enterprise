@@ -1,0 +1,4 @@
+dependencies {
+    implementation libs.feign_form
+    implementation libs.feign_form_spring
+}

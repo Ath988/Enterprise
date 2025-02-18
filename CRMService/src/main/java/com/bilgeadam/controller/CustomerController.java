@@ -16,13 +16,13 @@ import java.util.Optional;
 import static com.bilgeadam.constant.RestApis.*;
 
 @RestController
-@RequestMapping("/v1/dev/customer")
+@RequestMapping(CUSTOMER)
 @RequiredArgsConstructor
 
 public class CustomerController {
 	private final CustomerService customerService;
 	
-	@PostMapping("add-customer")
+	@PostMapping(ADD_CUSTOMER)
 	public ResponseEntity<BaseResponse<Boolean>> addCustomer(@RequestBody @Valid AddCustomerRequestDto dto){
 		customerService.addCustomer(dto);
 		return ResponseEntity.ok(BaseResponse.<Boolean>builder()
@@ -34,7 +34,7 @@ public class CustomerController {
 		);
 	}
 	
-	@GetMapping("/get-all-customers")
+	@GetMapping(GET_ALL_CUSTOMERS)
 	public ResponseEntity<BaseResponse<List<Customer>>> getAllCustomers() {
 		List<Customer> customers = customerService.getAllCustomers();
 		return ResponseEntity.ok(BaseResponse.<List<Customer>>builder()
@@ -46,19 +46,19 @@ public class CustomerController {
 		);
 	}
 	
-	@GetMapping("get-customer-id/{customerId}")
+	@GetMapping(GET_CUSTOMER_ID + "/{customerId}")
 	public ResponseEntity<BaseResponse<Customer>> getCustomerById(@PathVariable Long customerId) {
 		Customer customer = customerService.getCustomerById(customerId);
 		return ResponseEntity.ok(BaseResponse.<Customer>builder()
 		                                     .code(200)
-				                             .success(true)
-				                             .data(customer)
-				                             .message("Müsşteri bilgisi getirildi")
-				                             .build()
+		                                     .success(true)
+		                                     .data(customer)
+		                                     .message("Müsşteri bilgisi getirildi")
+		                                     .build()
 		);
 	}
 	
-	@PutMapping("/update-customer/{customerId}")
+	@PutMapping(UPDATE_CUSTOMER + "/{customerId}")
 	public ResponseEntity<BaseResponse<Boolean>> updateCustomer(@PathVariable Long customerId, @RequestBody @Valid UpdateCustomerRequestDto dto) {
 		customerService.updateCustomer(customerId, dto);
 		return ResponseEntity.ok(BaseResponse.<Boolean>builder()
@@ -70,16 +70,27 @@ public class CustomerController {
 		);
 	}
 	
-	@DeleteMapping("/delete-customer/{customerId}")
+	@DeleteMapping(DELETE_CUSTOMER + "/{customerId}")
 	public ResponseEntity<BaseResponse<Boolean>> deleteCustomer(@PathVariable Long customerId) {
 		customerService.deleteCustomer(customerId);
 		return ResponseEntity.ok(BaseResponse.<Boolean>builder()
-					                         .code(200)
-					                         .success(true)
-					                         .data(true)
-					                         .message("Müsteri başarıyla silindi")
-					                         .build()
+		                                     .code(200)
+		                                     .success(true)
+		                                     .data(true)
+		                                     .message("Müsteri başarıyla silindi")
+		                                     .build()
 		);
+	}
+	
+	@DeleteMapping(DELETE_CUSTOMERS)
+	public ResponseEntity<BaseResponse<Boolean>> deleteCustomers(@RequestBody List<Long> customerIds) {
+		customerService.deleteCustomers(customerIds);
+		return ResponseEntity.ok(BaseResponse.<Boolean>builder()
+		                                     .code(200)
+		                                     .success(true)
+		                                     .data(true)
+		                                     .message("Seçili müşteriler başarıyla silindi.")
+		                                     .build());
 	}
 	
 	/*@GetMapping(GETCUSTOMERBYEMAIL)

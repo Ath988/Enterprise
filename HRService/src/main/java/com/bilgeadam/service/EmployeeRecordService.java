@@ -34,9 +34,7 @@ public class EmployeeRecordService {
 
 
     public Boolean addNewEmployeeRecord(String token, AddEmployeeRecordRequest dto) {
-        System.out.println("****EMPLYOE RECORD DTO");
-        System.out.println(dto);
-        System.out.println("**********");
+
         EmployeeSaveResponse response =
                 getDataFromResponse(organisationManagementManager.addEmployee(token, dto.addEmployeeRequest()));
 

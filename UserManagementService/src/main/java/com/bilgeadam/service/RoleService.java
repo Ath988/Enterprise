@@ -7,6 +7,8 @@ import com.bilgeadam.repository.RoleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class RoleService {
@@ -15,5 +17,6 @@ public class RoleService {
     public Role findByName(String roleName) {
         return roleRepository.findByName(roleName).orElseThrow(()->new UserManagementException(ErrorType.ROLE_NOT_FOUND));
     }
+
 
 }

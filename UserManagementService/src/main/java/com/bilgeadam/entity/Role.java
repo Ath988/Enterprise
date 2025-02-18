@@ -1,10 +1,14 @@
 package com.bilgeadam.entity;
 
+import com.bilgeadam.entity.enums.Permission;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -19,4 +23,5 @@ public class Role {
     @Column(unique = true, nullable = false)
     String name;
     String description;
+
 }

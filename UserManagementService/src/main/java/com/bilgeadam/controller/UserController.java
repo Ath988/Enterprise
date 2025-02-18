@@ -1,13 +1,13 @@
 package com.bilgeadam.controller;
 
+import com.bilgeadam.dto.request.CreateMemberRequest;
 import com.bilgeadam.dto.response.BaseResponse;
-import com.bilgeadam.entity.User;
+import com.bilgeadam.dto.response.UserPermissionResponse;
+import com.bilgeadam.dto.response.UserProfileResponse;
 import com.bilgeadam.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 import static com.bilgeadam.constants.RestApis.*;
 
@@ -19,17 +19,30 @@ import static com.bilgeadam.constants.RestApis.*;
 public class UserController {
     private final UserService userService;
 
-    @PostMapping
-    public ResponseEntity<BaseResponse<Boolean>> testCreate(@RequestParam String kullanici){
+    @PostMapping(CREATE_MEMBER)
+    public ResponseEntity<BaseResponse<Boolean>> createMember(@RequestBody CreateMemberRequest dto){
         return ResponseEntity.ok(BaseResponse.<Boolean>builder()
-                        .success(userService.createCompanyOwner(kullanici))
+                        .message("Yeni üye kaydı başarı ile oluşturuldu.")
+                        .success(userService.createMember(dto))
                 .build());
     }
 
     @GetMapping
-    public ResponseEntity<BaseResponse<List<User>>> testGetAll(){
-        return ResponseEntity.ok(BaseResponse.<List<User>>builder()
-                        .data(userService.findAllTest())
+    public ResponseEntity<BaseResponse<UserProfileResponse>> getProfile(
+            @RequestHeader(value = "Authorization", required = false) String token){
+        return ResponseEntity.ok(BaseResponse.<UserProfileResponse>builder()
+                        .message("Kullanıcı profili yüklendi.")
+                        .data(userService.getUserProfile(token))
                 .build());
     }
+
+    @GetMapping("/user-permission-response")
+    public ResponseEntity<BaseResponse<UserPermissionResponse>> getUserPermission(@RequestParam Long authId){
+        return ResponseEntity.ok(BaseResponse.<UserPermissionResponse>builder()
+                        .data(userService.findUserPermissionResponse(authId))
+                .build());
+    }
+
+
+
 }

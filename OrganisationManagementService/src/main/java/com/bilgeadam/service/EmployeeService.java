@@ -48,7 +48,7 @@ public class EmployeeService {
     public Boolean createCompanyManager(CreateCompanyManagerRequest dto) {
         Employee companyManager = Employee.builder()
                 .authId(dto.authId())
-                .companyId(dto.authId()) //Geçici
+                .companyId(dto.authId())
                 .positionId(1L) // BAŞKAN Position
                 .email(dto.email())
                 .role(EmployeeRole.COMPANY_OWNER)

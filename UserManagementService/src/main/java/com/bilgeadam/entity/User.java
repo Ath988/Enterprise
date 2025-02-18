@@ -26,7 +26,7 @@ public class User extends BaseEntity {
     String firstName;
     String lastName;
     String phoneNo;
-    String tNo;
+    String tcNo;
     @Column(unique = true, nullable = false)
     String email;
     LocalDate birthDate;

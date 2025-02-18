@@ -23,14 +23,14 @@ import static com.bilgeadam.constant.RestApis.*;
 @RequestMapping(AUTH)
 @CrossOrigin("*")
 public class AuthController {
-    private final AuthService userService;
+    private final AuthService authService;
 
 
     @PostMapping(DOLOGIN)
     public ResponseEntity<BaseResponse<String>> doLogin(@RequestBody @Valid LoginRequestDto dto) {
         return ResponseEntity.ok(BaseResponse.<String>builder()
                         .code(200)
-                        .data(userService.doLogin(dto))
+                        .data(authService.doLogin(dto))
                         .message("Basariyla giris islemi tamamlanmistir!")
                         .success(true)
                 .build());
@@ -40,7 +40,7 @@ public class AuthController {
     public ResponseEntity<BaseResponse<Long>> doRegister(@RequestBody @Valid RegisterRequestDto dto) {
         return ResponseEntity.ok(BaseResponse.<Long>builder()
                         .success(true)
-                        .data(userService.doRegister(dto))
+                        .data(authService.doRegister(dto))
                         .code(200)
                         .message("Kayit olma islemi basariyla tamamlanmistir!\nHesabinizi aktiflestirmek icin e-postanizi kotrol ediniz!")
                 .build());
@@ -50,7 +50,7 @@ public class AuthController {
     public ResponseEntity<BaseResponse<Long>> registerEmployee(@RequestBody @Valid RegisterRequestDto dto) {
         return ResponseEntity.ok(BaseResponse.<Long>builder()
                 .success(true)
-                .data(userService.registerEmployee(dto))
+                .data(authService.registerEmployee(dto))
                 .code(200)
                 .message("Kayit olma islemi basariyla tamamlanmistir!\nHesabinizi aktiflestirmek icin e-postanizi kotrol ediniz!")
                 .build());
@@ -58,7 +58,7 @@ public class AuthController {
 
     @GetMapping(AUTHMAIL)
     public ResponseEntity<BaseResponse<Boolean>> authUser(@RequestParam(name = "auth") String authCode) {
-        userService.authUserRegister(authCode);
+        authService.authUserRegister(authCode);
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(URI.create("http://localhost:5173"));
         return new ResponseEntity<>(headers, HttpStatus.FOUND);
@@ -68,14 +68,14 @@ public class AuthController {
     public ResponseEntity<BaseResponse<Boolean>> forgotPasswordMail(@RequestBody ForgotPasswordRequestDto dto) {
         return ResponseEntity.ok(BaseResponse.<Boolean>builder().success(true)
                 .message("Yeni sifre olusturma linki mail adresine gonderilmistir!")
-                .data(userService.forgotPasswordMail(dto.email()))
+                .data(authService.forgotPasswordMail(dto.email()))
                 .code(200)
                 .build());
     }
 
     @GetMapping(NEW_PASSWORD)
     public RedirectView setNewPassword(@RequestParam(name = "auth") String authCode) {
-        userService.checkAuthUser(authCode);
+        authService.checkAuthUser(authCode);
 
         return new RedirectView("http://localhost:5173/set-new-password" + "?code=" + authCode);
 
@@ -90,7 +90,7 @@ public class AuthController {
         return ResponseEntity.ok(BaseResponse.<Boolean>builder()
                 .success(true)
                 .message("Yeni sifre basiriyla olsuturuldu!")
-                .data(userService.updateUserForgotPassword(dto))
+                .data(authService.updateUserForgotPassword(dto))
                 .code(200)
                 .build());
     }
@@ -101,7 +101,7 @@ public class AuthController {
                 .code(200)
                 .success(true)
                 .message("Kullanıcı bilgisi başarıyla getirildi.")
-                .data(userService.getUserProfile(token))
+                .data(authService.getUserProfile(token))
                 .build());
     }
 
@@ -111,7 +111,7 @@ public class AuthController {
                 .code(200)
                 .success(true)
                 .message("Güncelleme işlemi başarılı")
-                .data(userService.updateUserProfile(dto))
+                .data(authService.updateUserProfile(dto))
                 .build());
     }
 
@@ -121,7 +121,7 @@ public class AuthController {
                 .code(200)
                 .success(true)
                 .message("Şifre Güncelleme işlemi başarılı!")
-                .data(userService.updateUserPassword(dto))
+                .data(authService.updateUserPassword(dto))
                 .build());
 
     }

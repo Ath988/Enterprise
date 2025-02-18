@@ -9,5 +9,7 @@ public class RestApis {
 
     public static final String USER = ROOT + "/user";
 
+    public static final String CREATE_MEMBER = "/create-member";
+
 
 }

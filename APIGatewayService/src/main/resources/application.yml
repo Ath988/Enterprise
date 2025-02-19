@@ -76,6 +76,11 @@ spring:
           uri: http://localhost:8091
           predicates:
             - Path=/v1/dev/user/**
+
+        - id: ticket-service
+          uri: http://localhost:8092
+          predicates:
+            - Path=/v1/dev/ticket/**
       default-filters:
         - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials, RETAIN_FIRST
 

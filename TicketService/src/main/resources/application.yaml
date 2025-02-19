@@ -1,5 +1,5 @@
 server:
-  port: 8092
+  port: 8090
 
 spring:
   security:
@@ -7,7 +7,7 @@ spring:
       name: super_admin
       password: root
   application:
-    name: SubscriptionService
+    name: TicketService
   datasource:
     driver-class-name: org.postgresql.Driver
     url: ${DB_URL}
@@ -15,4 +15,4 @@ spring:
     password: ${DB_PASSWORD}
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop

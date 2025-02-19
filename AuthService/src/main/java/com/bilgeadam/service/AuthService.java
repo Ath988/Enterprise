@@ -8,7 +8,7 @@ import com.bilgeadam.exception.ErrorType;
 import com.bilgeadam.manager.*;
 import com.bilgeadam.repository.AuthRepository;
 import com.bilgeadam.util.enums.EAuthState;
-import com.bilgeadam.util.enums.JwtManager;
+import com.bilgeadam.util.JwtManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -75,7 +75,7 @@ public class AuthService {
 
 
 
-    public Long registerEmployee(RegisterRequestDto dto) {
+    public Long registerEmployee(String token,RegisterRequestDto dto) {
         checkCredentials(dto);
         Auth auth = Auth.builder()
                 .email(dto.email())
@@ -86,6 +86,8 @@ public class AuthService {
                 .build();
         auth = authRepository.save(auth);
         String authCode = userAuthVerifyCodeService.generateAuthCode(auth.getId());
+
+        userManager.createUser(token,new CreateMemberRequest(auth.getId(),dto.firstname(),dto.lastname(),dto.email()));
 
         mailManager.sendEmail(new EmailDto("enterprice@gmail.com", "enterprice@auth.com", auth.getEmail(),
                 "E-posta Adresini Onayla",

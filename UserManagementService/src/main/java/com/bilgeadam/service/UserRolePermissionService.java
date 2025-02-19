@@ -20,8 +20,21 @@ public class UserRolePermissionService {
         userRolePermissionRepository.save(userRolePermission);
     }
 
-    public Set<String> findAllPermissionsByUserId(Long userId){
-       List<UserRolePermission> userRolePermissions = userRolePermissionRepository.findAllByUserId(userId);
+    /**
+     * Çalışan kaydı eklendiğinde çalışana verilecek sayfa izinleri listesi. Daha sonra yönetici tarafından bu izinler
+     * genişletilip daraltılabilecek.
+     * @return
+     */
+    public Set<Permission> getPermissionsForEmployee() {
+        return Set.of(
+                Permission.ACCESS_PROFILE,
+                Permission.ACCESS_CALENDAR_AND_CHAT
+        );
+    }
+
+
+    public Set<String> findAllPermissionsByUserId(Long userId) {
+        List<UserRolePermission> userRolePermissions = userRolePermissionRepository.findAllByUserId(userId);
         return userRolePermissions.stream()
                 .map(UserRolePermission::getPermissions)
                 .flatMap(Set::stream)

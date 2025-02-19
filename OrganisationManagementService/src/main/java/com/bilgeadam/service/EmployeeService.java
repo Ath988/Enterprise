@@ -71,7 +71,7 @@ public class EmployeeService {
         }
 
         //Eklenilen çalışanı authService'e kaydediyoruz.
-        Long authId = getDataFromResponse(authManager.register(dto.registerRequestDto()));
+        Long authId = getDataFromResponse(authManager.register(token,dto.registerRequestDto()));
 
         Employee employee = Employee.builder()
                 .authId(authId)
@@ -179,7 +179,7 @@ public class EmployeeService {
 
 
     public Employee getEmployeeByToken(String token) {
-        Long authId = jwtManager.getIdFromToken(token.substring(7)).orElseThrow(() -> new OrganisationManagementException(ErrorType.INVALID_TOKEN));
+        Long authId = jwtManager.validateToken(token.substring(7)).orElseThrow(() -> new OrganisationManagementException(ErrorType.INVALID_TOKEN));
         return employeeRepository.findByAuthId(authId).orElseThrow(() -> new OrganisationManagementException(ErrorType.EMPLOYEE_NOT_FOUND));
     }
 

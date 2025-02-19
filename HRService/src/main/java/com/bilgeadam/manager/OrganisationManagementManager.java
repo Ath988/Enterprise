@@ -39,7 +39,7 @@ public interface OrganisationManagementManager {
             @RequestHeader(value = "Authorization", required = false) String token,
             @PathVariable Long employeeId);
 
-    @GetMapping("/get-all")
+    @GetMapping("/get-all-employee")
     ResponseEntity<BaseResponse<List<AllEmployeeResponse>>> getAllEmployees(
             @RequestHeader(value = "Authorization", required = false) String token,
             @RequestParam Optional<EState> state);

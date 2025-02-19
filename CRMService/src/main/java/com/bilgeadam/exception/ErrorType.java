@@ -16,7 +16,8 @@ public enum ErrorType {
 	TICKET_NOT_FOUND(300,"Ticket not found", HttpStatus.NOT_FOUND),
 	TICKET_UPDATE_FAILED(302,"Ticket update failed", HttpStatus.BAD_REQUEST),
 	TICKET_CREATION_FAILED(304,"Ticket creation failed", HttpStatus.CONFLICT),
-	EXCEL_READ_ERROR(600,"An error occurred while reading the Excel file.", HttpStatus.INTERNAL_SERVER_ERROR);
+	EXCEL_READ_ERROR(600,"An error occurred while reading the Excel file.", HttpStatus.INTERNAL_SERVER_ERROR),
+	PDF_GENERATION_FAILED(601,"An error occurred while reading the Pdf file.",HttpStatus.INTERNAL_SERVER_ERROR);
 	
 	int code;
 	String message;

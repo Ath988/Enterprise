@@ -14,6 +14,9 @@ public class RestApis {
     public static final String TICKET = ROOT + "/ticket";
 
     public static final String ADD = ROOT + "/add";
+    public static final String TICKETS_BY_TOKEN = ROOT + "/tickets-by-token";
+    public static final String ALL_TICKETS = ROOT + "/all-tickets";
+    public static final String RESPOND = ROOT + "/respond";
 
 
 

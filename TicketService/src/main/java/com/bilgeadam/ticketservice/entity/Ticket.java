@@ -18,10 +18,12 @@ import lombok.experimental.SuperBuilder;
 @Entity
 @Table(name = "Ticket")
 public class Ticket extends BaseEntity{
+    Long userId;
     TicketType ticketType;
     String title;
     String description;
+    String response;
+    Long respondingUserId;
     @Builder.Default
     TicketStatus ticketStatus = TicketStatus.PENDING;
-    Long userId;
 }

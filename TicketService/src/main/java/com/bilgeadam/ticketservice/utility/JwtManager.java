@@ -81,4 +81,15 @@ public class JwtManager {
             throw new EnterpriseException(ErrorType.INVALID_TOKEN);
         }
     }
+
+    public boolean validateSystemAdmin(String token){
+        return getRoleFromToken(token) == ERole.SYSTEM_ADMIN;
+    }
+
+    public Long getIdFromTokenIfSystemAdmin(String token){
+        Optional<Long> optSystemAdminId = getIdFromToken(token);
+        if (optSystemAdminId.isEmpty()) throw new EnterpriseException(ErrorType.INVALID_TOKEN);
+        else if (!validateSystemAdmin(token)) throw new EnterpriseException(ErrorType.UNAUTHORIZED);
+        else return optSystemAdminId.get();
+    }
 }

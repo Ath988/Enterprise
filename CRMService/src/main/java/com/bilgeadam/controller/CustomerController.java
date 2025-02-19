@@ -5,10 +5,12 @@ import com.bilgeadam.dto.request.UpdateCustomerRequestDto;
 import com.bilgeadam.dto.response.BaseResponse;
 import com.bilgeadam.entity.Customer;
 import com.bilgeadam.service.CustomerService;
+import com.bilgeadam.service.ExcelService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,6 +23,7 @@ import static com.bilgeadam.constant.RestApis.*;
 
 public class CustomerController {
 	private final CustomerService customerService;
+	private final ExcelService excelService;
 	
 	@PostMapping(ADD_CUSTOMER)
 	public ResponseEntity<BaseResponse<Boolean>> addCustomer(@RequestBody @Valid AddCustomerRequestDto dto){
@@ -91,6 +94,19 @@ public class CustomerController {
 		                                     .data(true)
 		                                     .message("Seçili müşteriler başarıyla silindi.")
 		                                     .build());
+	}
+	
+	@PostMapping(value = IMPORT_EXCEL, consumes = "multipart/form-data")
+	public ResponseEntity<BaseResponse<Boolean>> importExcel(
+			@RequestParam("file") MultipartFile file) {
+		excelService.importCustomersFromExcel(file);
+		return ResponseEntity.ok(BaseResponse.<Boolean>builder()
+		                                     .code(200)
+		                                     .success(true)
+		                                     .data(true)
+		                                     .message("Excel'den müşteriler başarıyla eklendi.")
+		                                     .build()
+		);
 	}
 	
 	/*@GetMapping(GETCUSTOMERBYEMAIL)

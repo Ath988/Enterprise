@@ -23,6 +23,13 @@ public class CustomerService {
 		customerRepository.save(customer);
 	}
 	
+	public void importCustomers(List<Customer> customers){
+		if (customers.isEmpty()){
+			throw new CRMServiceException(ErrorType.CUSTOMER_IMPORT_EMPTY);
+		}
+		customerRepository.saveAll(customers);
+	}
+	
 	public List<Customer> getAllCustomers(){
 		
 		return customerRepository.findAll();

@@ -1,6 +1,5 @@
 package com.bilgeadam.entity;
 
-import com.bilgeadam.util.enums.EAuthState;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,16 +11,16 @@ import lombok.NoArgsConstructor;
 @Builder
 @Data
 @Entity
-@Table(name = "tbl_auth")
-public class Auth {
+@Table(name = "tbl_address")
+public class Address {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private String firstname;
-    private String lastname;
-    private String email;
-    private String password;
-    private EAuthState authState;
+    Long id;
+    String country;
+    String city;
+    String street;
+    String aptNumber;
+    String postalCode;
 
 
 }

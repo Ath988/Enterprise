@@ -1,33 +1,36 @@
 package com.bilgeadam.dto.response;
 
-import com.bilgeadam.exception.EnterpriseException;
+
 import com.bilgeadam.exception.ErrorType;
+import com.bilgeadam.exception.UserManagementException;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
 import org.springframework.http.ResponseEntity;
 
-@NoArgsConstructor
+@Builder
 @AllArgsConstructor
-@SuperBuilder
+@NoArgsConstructor
 @Data
 public class BaseResponse<T> {
-    Boolean success;
+    @Builder.Default
+    Boolean success = true;
     String message;
-    Integer code;
+    @Builder.Default
+    Integer code = 200;
     T data;
 
     public static <T> T getDataFromResponse(ResponseEntity<BaseResponse<T>> response) {
         if (response.getBody() == null || response.getBody().getData() == null) {
-            throw new EnterpriseException(ErrorType.INTERNAL_SERVER_ERROR);
+            throw new UserManagementException(ErrorType.INTERNAL_SERVER_ERROR);
         }
         return response.getBody().getData();
     }
 
     public static Boolean getSuccessFromResponse(ResponseEntity<BaseResponse<Boolean>> response) {
         if (response.getBody() == null || response.getBody().getSuccess() == null) {
-            throw new EnterpriseException(ErrorType.INTERNAL_SERVER_ERROR);
+            throw new UserManagementException(ErrorType.INTERNAL_SERVER_ERROR);
         }
         return response.getBody().getSuccess();
     }

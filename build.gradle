@@ -68,6 +68,8 @@ allprojects{
 		testRuntimeOnly libs.junitPlatformLauncher
 		implementation libs.mapstruct
 		annotationProcessor libs.mapstructProcessor
+		implementation libs.apachePoi
+		implementation libs.apachePoiOoxml
 	}
 	dependencyManagement {
 		imports {

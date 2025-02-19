@@ -2,7 +2,8 @@ ext{
     versions = [
             jwt: "4.4.0",
             openapi: "2.8.4",
-            mapstruct: "1.6.2"
+            mapstruct: "1.6.2",
+            apachePoi: "5.4.0"
     ]
     libs = [
             springBootStarterAmqp : "org.springframework.boot:spring-boot-starter-amqp",
@@ -30,7 +31,9 @@ ext{
             mapstruct: "org.mapstruct:mapstruct:$versions.mapstruct",
             mapstructProcessor: "org.mapstruct:mapstruct-processor:$versions.mapstruct",
             feign_form: "io.github.openfeign.form:feign-form:3.8.0",
-            feign_form_spring: "io.github.openfeign.form:feign-form-spring:3.8.0"
+            feign_form_spring: "io.github.openfeign.form:feign-form-spring:3.8.0",
+            apachePoi: "org.apache.poi:poi:$versions.apachePoi",
+            apachePoiOoxml: "org.apache.poi:poi-ooxml:$versions.apachePoi"
 
     ]
 }

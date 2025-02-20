@@ -54,9 +54,17 @@ public class TicketService {
 
     public Ticket respondToTicket(@Valid RespondToTicketRequest dto) {
         Long systemAdminId = jwtManager.getIdFromTokenIfSystemAdmin(dto.token());
-        Ticket ticket = getTicketById(dto.ticketId());
-        ticket = TicketMapper.INSTANCE.responseToTicket(dto, ticket, systemAdminId);
-        return ticketRepository.save(ticket);
+        if (dto.ticketStatus() == TicketStatus.PENDING) {
+            throw new EnterpriseException(ErrorType.INVALID_RESPONSE_TICKET_STATUS);
+        }
+        else if (dto.ticketStatus() == TicketStatus.ANSWERED && dto.response().isBlank()){
+            throw new EnterpriseException(ErrorType.INVALID_ANSWERED_RESPONSE_TEXT);
+        }
+        else {
+            Ticket ticket = getTicketById(dto.ticketId());
+            ticket = TicketMapper.INSTANCE.responseToTicket(dto, ticket, systemAdminId);
+            return ticketRepository.save(ticket);
+        }
     }
 
     private Ticket getTicketById(String id){

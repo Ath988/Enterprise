@@ -12,7 +12,7 @@ public record RespondToTicketRequest(
         String ticketId,
         @NotNull
         TicketStatus ticketStatus,
-        @NotBlank
+        @NotNull
         String response
 ) {
 

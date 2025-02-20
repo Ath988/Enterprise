@@ -35,7 +35,7 @@ public class JwtOrganisationManagementFilter extends OncePerRequestFilter {
             String token=authHeader.substring(7);
             log.info("TOKEN : " + token);
 
-            Optional<Long> id=jwtManager.getIdFromToken(token);
+            Optional<Long> id=jwtManager.validateToken(token);
             if (id.isPresent()){
                 UserDetails userDetails= userDetail.getAuthById(id.get());
                 UsernamePasswordAuthenticationToken authenticationToken=new UsernamePasswordAuthenticationToken(

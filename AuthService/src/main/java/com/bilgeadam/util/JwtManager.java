@@ -1,4 +1,4 @@
-package com.bilgeadam.util.enums;
+package com.bilgeadam.util;
 
 
 import com.auth0.jwt.JWTVerifier;
@@ -11,7 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -54,25 +53,6 @@ public class JwtManager {
         }catch (Exception e){
             log.error("validateToken Hata!!: {}", e.getMessage());
             return Optional.empty();
-        }
-    }
-
-    public Optional<Long> getIdFromToken(String token){
-        try {
-            Algorithm algorithm=Algorithm.HMAC512(SECRETKEY);
-            JWTVerifier verifier=com.auth0.jwt.JWT.require(algorithm).withIssuer(ISSUER).build();
-            DecodedJWT decodedJWT= verifier.verify(token);
-
-            if (decodedJWT==null){
-                throw new EnterpriseException(ErrorType.INVALID_TOKEN);
-            }
-
-            Long id=decodedJWT.getClaim("id").asLong();
-            return Optional.of(id);
-
-        }catch (Exception e){
-            System.out.println(e.getMessage());
-            throw new EnterpriseException(ErrorType.INVALID_TOKEN);
         }
     }
 

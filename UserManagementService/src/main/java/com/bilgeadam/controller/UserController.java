@@ -27,6 +27,17 @@ public class UserController {
                 .build());
     }
 
+
+    @PostMapping(CREATE_USER)
+    public ResponseEntity<BaseResponse<Boolean>> createUser(
+            @RequestHeader(value = "Authorization", required = false) String token,
+            @RequestBody CreateMemberRequest dto){
+        return ResponseEntity.ok(BaseResponse.<Boolean>builder()
+                .message("Yeni çalışan kaydı başarı ile oluşturuldu.")
+                .success(userService.createUser(token,dto))
+                .build());
+    }
+
     @GetMapping
     public ResponseEntity<BaseResponse<UserProfileResponse>> getProfile(
             @RequestHeader(value = "Authorization", required = false) String token){
@@ -42,6 +53,8 @@ public class UserController {
                         .data(userService.findUserPermissionResponse(authId))
                 .build());
     }
+
+
 
 
 

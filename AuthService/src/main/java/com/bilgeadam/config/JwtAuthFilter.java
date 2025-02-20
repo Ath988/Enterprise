@@ -1,6 +1,6 @@
 package com.bilgeadam.config;
 
-import com.bilgeadam.util.enums.JwtManager;
+import com.bilgeadam.util.JwtManager;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -34,7 +34,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             String token=authHeader.substring(7);
             log.info("TOKEN : " + token);
 
-            Optional<Long> id=jwtManager.getIdFromToken(token);
+            Optional<Long> id=jwtManager.validateToken(token);
             if (id.isPresent()){
                 UserDetails userDetails= userDetail.getAuthById(id.get());
                 UsernamePasswordAuthenticationToken authenticationToken=new UsernamePasswordAuthenticationToken(

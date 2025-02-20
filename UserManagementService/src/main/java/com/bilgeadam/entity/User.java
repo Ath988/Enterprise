@@ -23,6 +23,7 @@ public class User extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
     Long authId;
+    Long companyId;
     String firstName;
     String lastName;
     String phoneNo;

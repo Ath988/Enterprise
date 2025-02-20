@@ -10,7 +10,7 @@ public record RespondToTicketRequest(
         String token,
         @NotEmpty
         String ticketId,
-        @NotEmpty
+        @NotNull
         TicketStatus ticketStatus,
         @NotBlank
         String response

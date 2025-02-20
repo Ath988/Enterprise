@@ -5,6 +5,7 @@ import com.bilgeadam.ticketservice.dto.request.RespondToTicketRequest;
 import com.bilgeadam.ticketservice.dto.response.BaseResponse;
 import com.bilgeadam.ticketservice.entity.Ticket;
 import com.bilgeadam.ticketservice.service.TicketService;
+import com.bilgeadam.ticketservice.utility.enums.ERole;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -59,6 +60,16 @@ public class TicketController {
                 .success(true)
                 .code(200)
                 .message("successsfully added a new ticket")
+                .build());
+    }
+
+    @GetMapping("delete-me")
+    public ResponseEntity<BaseResponse<String>> createToken(Long userId, ERole role){
+        return ResponseEntity.ok(BaseResponse.<String>builder()
+                .data(ticketService.createToken(userId, role))
+                .success(true)
+                .code(200)
+                .message("successfully fetched all pending tickets")
                 .build());
     }
 }

@@ -15,8 +15,8 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 public abstract class BaseEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    String id;
     @Enumerated(EnumType.STRING)
     @Builder.Default
     com.bilgeadam.ticketservice.entity.enums.EntityStatus entityStatus = EntityStatus.ACTIVE;

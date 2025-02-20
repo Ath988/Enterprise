@@ -55,12 +55,21 @@ public class TicketService {
     public Ticket respondToTicket(@Valid RespondToTicketRequest dto) {
         Long systemAdminId = jwtManager.getIdFromTokenIfSystemAdmin(dto.token());
         Ticket ticket = getTicketById(dto.ticketId());
-        ticket = TicketMapper.INSTANCE.responseToTicket(dto, ticket);
+        ticket = TicketMapper.INSTANCE.responseToTicket(dto, ticket, systemAdminId);
+        return ticketRepository.save(ticket);
     }
 
     private Ticket getTicketById(String id){
         Optional<Ticket> optTicket = ticketRepository.findById(id);
         if (optTicket.isPresent()) return optTicket.get();
         else throw new EnterpriseException(ErrorType.TICKET_NOT_FOUND);
+    }
+
+    public String createToken(Long userId, ERole role) {
+        Optional<String> optToken = jwtManager.createToken(userId, role);
+        if (optToken.isPresent()) {
+            return optToken.get();
+        }
+        else throw  new EnterpriseException(ErrorType.INTERNAL_SERVER_ERROR);
     }
 }

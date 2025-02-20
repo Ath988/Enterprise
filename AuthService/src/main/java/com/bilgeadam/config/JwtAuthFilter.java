@@ -5,7 +5,6 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -23,7 +22,6 @@ import java.util.Optional;
 @Component
 @RequiredArgsConstructor
 public class JwtAuthFilter extends OncePerRequestFilter {
-    private final JwtManager jwtManager;
     private final JwtUserDetail jwtUserDetail;
 
     @Override
@@ -31,24 +29,23 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
-        final String authHeader=request.getHeader("Authorization");
+        final String authHeader = request.getHeader("Authorization");
 
-        if (Objects.nonNull(authHeader) && authHeader.startsWith("Bearer ")){
-            String token=authHeader.substring(7);
-            log.info("TOKEN : " + token);
+        if (Objects.nonNull(authHeader) && authHeader.startsWith("Bearer ")) {
+            String token = authHeader.substring(7);
+        try{
 
-            Optional<Long> id=jwtManager.validateToken(token);
-            if (id.isPresent()){
-                UserDetails userDetails= jwtUserDetail.getAuthById(id.get());
-                UsernamePasswordAuthenticationToken authenticationToken=new UsernamePasswordAuthenticationToken(
-                        userDetails,null,userDetails.getAuthorities()
-                );
-                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-            }
-            else{
-                log.warn("Geçersiz veya süresi dolmuş token.");
-            }
+
+            UserDetails userDetails = jwtUserDetail.getAuthFromToken(token);
+            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+                    userDetails, null, userDetails.getAuthorities()
+            );
+            SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+        }catch (Exception e) {
+            log.error("JwtAuthFilter hatası: {}", e.getMessage());
         }
-        filterChain.doFilter(request,response);
+
+        }
+        filterChain.doFilter(request, response);
     }
 }

@@ -5,6 +5,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,8 +20,7 @@ import java.util.Optional;
 
 
 @Slf4j
-@Component
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class JwtAuthFilter extends OncePerRequestFilter {
     private final JwtUserDetail jwtUserDetail;
 

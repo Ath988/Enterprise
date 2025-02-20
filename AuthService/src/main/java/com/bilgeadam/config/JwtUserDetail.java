@@ -18,7 +18,6 @@ public class JwtUserDetail implements UserDetailsService {
 
     private final JwtManager jwtManager;
 
-
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return null;

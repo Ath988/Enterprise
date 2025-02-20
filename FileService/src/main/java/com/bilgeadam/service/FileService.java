@@ -190,6 +190,9 @@ public class FileService {
 			return false;
 		}
 	}
-	
-	
+
+
+	public List<FileInfo> findAllById(List<Long> fileIds) {
+		return fileInfoRepository.findAllById(fileIds);
+	}
 }

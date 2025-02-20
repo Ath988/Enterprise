@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.Optional;
+import java.util.Set;
 
 
 @Slf4j
@@ -20,7 +21,6 @@ public class JwtManager {
     private final String ISSUER ="EnterpriseApp";
 
     Algorithm algorithm = Algorithm.HMAC512(SECRETKEY);
-
 
     public Optional<Long> validateToken(String token){
         try{
@@ -35,41 +35,5 @@ public class JwtManager {
             return Optional.empty();
         }
     }
-    public Optional<Long> getIdFromToken(String token){
-        try {
-            Algorithm algorithm=Algorithm.HMAC512(SECRETKEY);
-            JWTVerifier verifier=com.auth0.jwt.JWT.require(algorithm).withIssuer(ISSUER).build();
-            DecodedJWT decodedJWT= verifier.verify(token);
 
-            if (decodedJWT==null){
-                throw new OrganisationManagementException(ErrorType.INVALID_TOKEN);
-            }
-
-            Long id=decodedJWT.getClaim("id").asLong();
-            return Optional.of(id);
-
-        }catch (Exception e){
-            System.out.println(e.getMessage());
-            throw new OrganisationManagementException(ErrorType.INVALID_TOKEN);
-        }
-    }
-    public ERole getRoleFromToken(String token){
-        try {
-            Algorithm algorithm = Algorithm.HMAC512(SECRETKEY);
-            JWTVerifier verifier = com.auth0.jwt.JWT.require(algorithm).withIssuer(ISSUER).build();
-            DecodedJWT decodedJWT = verifier.verify(token);
-
-            if (decodedJWT == null) {
-                System.out.println("Token Null ...");
-                throw new OrganisationManagementException(ErrorType.INVALID_TOKEN);
-            }
-
-            String role = decodedJWT.getClaim("role").asString();
-            return ERole.valueOf(role.toUpperCase());
-        }catch (Exception e){
-            System.out.println(e.getMessage());
-            System.out.println("yoksa bura mıı????");
-            throw new OrganisationManagementException(ErrorType.INVALID_TOKEN);
-        }
-    }
 }

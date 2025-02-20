@@ -58,7 +58,7 @@ public class EmployeeRecordController {
     public ResponseEntity<BaseResponse<EmployeeRecordResponse>> getEmployeeRecord(
             @RequestHeader(value = "Authorization", required = false) String token,
             @PathVariable Long employeeRecordId) {
-
+        
         return ResponseEntity.ok(BaseResponse.<EmployeeRecordResponse>builder()
                 .data(employeeRecordService.getEmployeeRecord(token, employeeRecordId))
                 .message("Çalışan kaydı getirildi.")

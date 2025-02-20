@@ -5,13 +5,17 @@ import com.bilgeadam.dto.request.UpdateCustomerRequestDto;
 import com.bilgeadam.dto.response.BaseResponse;
 import com.bilgeadam.entity.Customer;
 import com.bilgeadam.service.CustomerService;
+import com.bilgeadam.service.ExcelService;
+import com.bilgeadam.service.PdfService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.Optional;
 
 import static com.bilgeadam.constant.RestApis.*;
 
@@ -21,6 +25,8 @@ import static com.bilgeadam.constant.RestApis.*;
 
 public class CustomerController {
 	private final CustomerService customerService;
+	private final ExcelService excelService;
+	private final PdfService pdfService;
 	
 	@PostMapping(ADD_CUSTOMER)
 	public ResponseEntity<BaseResponse<Boolean>> addCustomer(@RequestBody @Valid AddCustomerRequestDto dto){
@@ -91,6 +97,39 @@ public class CustomerController {
 		                                     .data(true)
 		                                     .message("Seçili müşteriler başarıyla silindi.")
 		                                     .build());
+	}
+	
+	@PostMapping(value = IMPORT_EXCEL, consumes = "multipart/form-data")
+	public ResponseEntity<BaseResponse<Boolean>> importExcel(
+			@RequestParam("file") MultipartFile file) {
+		excelService.importCustomersFromExcel(file);
+		return ResponseEntity.ok(BaseResponse.<Boolean>builder()
+		                                     .code(200)
+		                                     .success(true)
+		                                     .data(true)
+		                                     .message("Excel'den müşteriler başarıyla eklendi.")
+		                                     .build()
+		);
+	}
+	
+	@GetMapping(value = EXPORT_EXCEL, produces = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+	public ResponseEntity<byte[]> exportExcel() {
+		byte[] excelBytes = excelService.exportCustomersToExcel();
+		
+		return ResponseEntity.ok()
+		                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=Musteriler.xlsx")
+		                     .contentType(MediaType.APPLICATION_OCTET_STREAM)
+		                     .body(excelBytes);
+	}
+	
+	@GetMapping(value = EXPORT_PDF, produces = "application/pdf")
+	public ResponseEntity<byte[]> exportPdf() {
+		byte[] pdfBytes = pdfService.generateCustomerPdf();
+		
+		return ResponseEntity.ok()
+		                     .contentType(MediaType.APPLICATION_PDF)
+		                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=Musteriler.pdf")
+		                     .body(pdfBytes);
 	}
 	
 	/*@GetMapping(GETCUSTOMERBYEMAIL)

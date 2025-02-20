@@ -70,6 +70,7 @@ allprojects{
 		annotationProcessor libs.mapstructProcessor
 		implementation libs.apachePoi
 		implementation libs.apachePoiOoxml
+		implementation libs.pdfbox
 	}
 	dependencyManagement {
 		imports {

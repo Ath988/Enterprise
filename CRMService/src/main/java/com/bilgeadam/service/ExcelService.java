@@ -11,6 +11,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -95,4 +96,70 @@ public class ExcelService {
 			return null;
 		}
 	}
+	
+	/**
+	 * 📌 Müşteri bilgilerini Excel formatında dışa aktarır (indirme işlemi).
+	 */
+	
+	public byte[] exportCustomersToExcel(){
+		List<Customer> customers = customerService.getAllCustomers();
+		
+		if (customers.isEmpty()) {
+			throw new CRMServiceException(ErrorType.CUSTOMER_NOT_FOUND);
+		}
+		
+		try (Workbook workbook = new XSSFWorkbook()){
+			Sheet sheet = workbook.createSheet("Müşteriler");
+			
+			// ✅ Başlık satırını oluştur
+			Row headerRow = sheet.createRow(0);
+			String[] headers = {"Sıra No", "Ad", "Soyad", "E-Posta", "Telefon", "Adres"};
+			
+			for (int i = 0; i < headers.length; i++) {
+				Cell cell = headerRow.createCell(i);
+				cell.setCellValue(headers[i]);
+				cell.setCellStyle(createHeaderStyle(workbook));
+			}
+			
+			// ✅ Müşteri verilerini yaz
+			int rowNum = 1;
+			for (Customer customer : customers) {
+				Row row = sheet.createRow(rowNum++);
+				row.createCell(0).setCellValue(row.getRowNum());
+				row.createCell(1).setCellValue(customer.getProfile().getFirstName());
+				row.createCell(2).setCellValue(customer.getProfile().getLastName());
+				row.createCell(3).setCellValue(customer.getProfile().getEmail());
+				row.createCell(4).setCellValue(customer.getProfile().getPhoneNumber());
+				row.createCell(5).setCellValue(customer.getProfile().getAddress());
+			}
+			
+			// ✅ Otomatik sütun genişliği ayarla
+			for (int i = 0; i < headers.length; i++) {
+				sheet.autoSizeColumn(i);
+			}
+			
+			// ✅ Excel dosyasını byte dizisine çevir
+			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+			workbook.write(outputStream);
+			
+			return outputStream.toByteArray();
+			
+		}
+		catch (IOException e) {
+			log.error("❌ Excel dosyası oluşturulurken hata oluştu: {}", e.getMessage());
+			throw new CRMServiceException(ErrorType.EXCEL_READ_ERROR);
+		}
+	}
+	
+	/**
+	 * 📌 Başlık hücresi için stil oluşturur.
+	 */
+	private CellStyle createHeaderStyle(Workbook workbook) {
+		CellStyle headerStyle = workbook.createCellStyle();
+		Font font = workbook.createFont();
+		font.setBold(true);
+		headerStyle.setFont(font);
+		return headerStyle;
+	}
+	
 }

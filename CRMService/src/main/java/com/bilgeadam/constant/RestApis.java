@@ -14,6 +14,8 @@ public class RestApis {
 	
 	public static final String ADD_CUSTOMER = "/add-customer";
 	public static final String IMPORT_EXCEL = "/import-excel";
+	public static final String EXPORT_EXCEL = "/export-excel";
+	public static final String EXPORT_PDF = "/export-pdf";
 	public static final String GET_ALL_CUSTOMERS = "/get-all-customers";
 	public static final String GET_CUSTOMER_ID = "/get-customer-id";
 	public static final String UPDATE_CUSTOMER = "/update-customer";

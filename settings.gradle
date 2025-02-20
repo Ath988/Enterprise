@@ -19,4 +19,5 @@ include 'APIGatewayService'
 include 'FinanceService'
 include 'EurekaService'
 include 'UserManagementService'
+include 'SurveyService'
 

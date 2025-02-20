@@ -22,9 +22,9 @@ import static com.bilgeadam.constant.RestApis.*;
 public class SubscriptionController {
     private final SubscriptionService subscriptionService;
 
-    @GetMapping(ADD_SUBSCRIPTION)
-    public ResponseEntity<BaseResponse<Subscription>> addSubscription(AddSubscriptionRequest dto) {
-        return ResponseEntity.ok(BaseResponse.<Subscription>builder()
+    @PostMapping(ADD_SUBSCRIPTION)
+    public ResponseEntity<BaseResponse<Boolean>> addSubscription(@RequestBody AddSubscriptionRequest dto) {
+        return ResponseEntity.ok(BaseResponse.<Boolean>builder()
                 .data(subscriptionService.addSubscription(dto))
                 .success(true)
                 .code(200)
@@ -79,6 +79,16 @@ public class SubscriptionController {
                 .success(true)
                 .code(200)
                 .message("active subscription fetched")
+                .build());
+    }
+
+    @GetMapping("/get-user-sub")
+    public ResponseEntity<BaseResponse<SubscriptionPlan>> getUserSubscriptionPlan(@RequestParam Long userId){
+        return ResponseEntity.ok(BaseResponse.<SubscriptionPlan>builder()
+                        .data(subscriptionService.getUserSubscriptionPlan(userId))
+                        .success(true)
+                        .code(200)
+                        .message("User subscription fetched")
                 .build());
     }
 }

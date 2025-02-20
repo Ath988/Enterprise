@@ -1,4 +1,4 @@
-package com.bilgeadam.dto.request;
+package com.bilgeadam.dto.request.otherServices;
 
 
 import com.bilgeadam.entity.enums.SubscriptionPlan;

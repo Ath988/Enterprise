@@ -1,6 +1,7 @@
 package com.bilgeadam.config;
 
 import com.bilgeadam.entity.Auth;
+import com.bilgeadam.manager.UserManager;
 import com.bilgeadam.repository.AuthRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
@@ -18,14 +19,17 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class JwtUserDetail implements UserDetailsService {
 
-    private AuthRepository authRepository;
+    private final AuthRepository authRepository;
+
+
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return null;
     }
     public UserDetails getAuthById(Long authId){
         Optional<Auth> authUser=authRepository.findOptionalById(authId);
-        if (authUser.isEmpty()) return null;
+//        if (authUser.isEmpty()) return null;
 
         List<GrantedAuthority> authorizedList=new ArrayList<>();
         authorizedList.add(new SimpleGrantedAuthority("STAFF"));

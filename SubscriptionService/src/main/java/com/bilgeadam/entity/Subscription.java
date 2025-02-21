@@ -19,6 +19,7 @@ import lombok.experimental.SuperBuilder;
 public class Subscription extends BaseEntity {
 
     Long userId;
+    Long authId; //Token doğrulama için eklendi.
     @Enumerated(EnumType.STRING)
     SubscriptionPlan subscriptionPlan;
     Long startDate;

@@ -1,7 +1,6 @@
 package com.bilgeadam.constant;
 
 public class RestApis {
-    public static final String DOMAIN = "http://localhost:9100";
 
 
     private static final String VERSION = "/v1";

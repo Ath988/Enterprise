@@ -44,7 +44,15 @@ public class AuthService {
         UserPermissionResponse upr =
                 getDataFromResponse(userManager.getUserPermission(user.getId()));
 
-        Optional<String> token = jwtManager.createToken(user.getId(),upr.roles(),upr.permissions());
+
+
+        Optional<String> token = jwtManager.createToken(user.getId(),upr.roles(),upr.permissions(),upr.subscriptionType());
+        System.out.println();
+        System.out.println();
+        System.out.println(jwtManager.getRolesAndPermissionsFromToken(token.get()));
+        System.out.println();
+        System.out.println();
+
         if (token.isPresent()) {
 //            notificationManager.notificationSender(new NotificationMessageRequestDto("Giriş bildirimi","giriş yaptınız",true));
             return token.get();

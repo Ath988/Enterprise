@@ -18,12 +18,12 @@ public class EmployeeRecord extends BaseEntity{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    //Bu alanlar OrganizationManagementService'den gelecek.
+
     @Column(nullable = false,unique = true)
     Long employeeId;
     @Column(nullable = false)
-    Long companyId; // memberId de olabilir. duruma göre güncellenicek.
-    //
+    Long companyId;
+
 
     LocalDate startDate;
     LocalDate endDate;
@@ -31,6 +31,6 @@ public class EmployeeRecord extends BaseEntity{
     @Column(length = 512)
     String perfonelFileName;
     @Column(length = 1024)
-    String perfonelFileUrl; //Gerek var mı ?
+    String perfonelFileUrl;
 
 }

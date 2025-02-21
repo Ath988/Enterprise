@@ -1,4 +1,4 @@
-package com.bilgeadam.dto.response;
+package com.bilgeadam.dto.response.otherServices;
 
 import java.util.Set;
 

@@ -1,8 +1,10 @@
 package com.bilgeadam.config;
 
 
+import com.bilgeadam.dto.response.otherServices.UserPermissionResponse;
 import com.bilgeadam.entity.Employee;
 import com.bilgeadam.repository.EmployeeRepository;
+import com.bilgeadam.utility.JwtManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -11,32 +13,32 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
 public class JwtUserDetail implements UserDetailsService {
 
-    private EmployeeRepository employeeRepository;
+    private final JwtManager jwtManager;
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return null;
     }
-    public UserDetails getAuthById(Long authId){
-        Optional<Employee> employee=employeeRepository.findOptionalById(authId);
-        if (employee.isEmpty()) return null;
+    public UserDetails getAuthFromToken(String token){
+        UserPermissionResponse urp = jwtManager.getRolesAndPermissionsFromToken(token);
+        Set<String> roles = urp.roles();
+        Set<String> permissions = urp.permissions();
+        String subscriptionType = urp.subscriptionType();
 
-        List<GrantedAuthority> authorizedList=new ArrayList<>();
-        authorizedList.add(new SimpleGrantedAuthority("PERSONAL")); //personal
-        authorizedList.add(new SimpleGrantedAuthority("USER")); //user
-        authorizedList.add(new SimpleGrantedAuthority("SYSTEM_MANAGEMENT")); //sistem yöneticisi
+        Set<GrantedAuthority> authorizedList=new HashSet<>();
 
-
+        roles.forEach(role -> {authorizedList.add(new SimpleGrantedAuthority("ROLE_"+role));}); //hasRole ile kontrol edilecek. ör: hasRole("MEMBER")
+        permissions.forEach(permission -> {authorizedList.add(new SimpleGrantedAuthority(permission));});//bu ve subscription hasAuthority ile ör: hasAuthority("ENTERPRISE")
+        authorizedList.add(new SimpleGrantedAuthority(subscriptionType));
 
         return org.springframework.security.core.userdetails.User.builder()
-                .username(employee.get().getEmail())
+                .username("user@ornek.com")
                 .password("")
                 .accountLocked(false)
                 .accountExpired(false)

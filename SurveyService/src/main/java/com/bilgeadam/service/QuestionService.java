@@ -19,4 +19,8 @@ public class QuestionService {
 	public List<Question> findAllByIdIn(List<String> ids){
 		return questionRepository.findAllByIdIn(ids);
 	}
+	
+	public List<Question> findAllBySurveyId(String surveyId) {
+		return questionRepository.findAllBySurveyId(surveyId);
+	}
 }

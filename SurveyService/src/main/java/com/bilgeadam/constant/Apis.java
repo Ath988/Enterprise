@@ -14,6 +14,8 @@ public class Apis {
 	public static final String CREATE_SURVEY="/create-survey";
 	public static final String GET_ACTIVE_SURVEYS="/get-active-surveys";
 	public static final String GET_SURVEY_DETAILS="/get-survey-details";
+	public static final String DELETE_SURVEY="/delete-survey";
+	public static final String UPDATE_SURVEY="/update-survey";
 	
 	//SURVEY RESPONSE CONTROLLER
 	public static final String SUBMIT_SURVEY_RESPONSE="/submit-survey-response";

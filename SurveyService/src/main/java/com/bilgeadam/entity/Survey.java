@@ -22,7 +22,6 @@ public class Survey extends BaseEntity{
 	String description;
 	LocalDateTime expirationDate;
 	Long createdBy;
-	
 	@ElementCollection
 	List<String> questionIds;
 

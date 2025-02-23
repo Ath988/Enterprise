@@ -8,4 +8,5 @@ import java.util.List;
 public interface OptionRepository extends JpaRepository<Option, String> {
 	
 	List<Option> findAllByIdIn(List<String> ids);
+	List<Option> findAllByQuestionId(String questionId);
 }

@@ -8,4 +8,5 @@ import java.util.List;
 public interface QuestionRepository extends JpaRepository<Question, String> {
 	
 	List<Question> findAllByIdIn(List<String> ids);
+	List<Question> findAllBySurveyId(String surveyId);
 }

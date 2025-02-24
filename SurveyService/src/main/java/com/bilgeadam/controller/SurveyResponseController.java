@@ -22,32 +22,32 @@ public class SurveyResponseController {
 	private final SurveyResponseService surveyResponseService;
 	
 	@PostMapping(SUBMIT_SURVEY_RESPONSE)
-	public ResponseEntity<BaseResponse<SurveyResponse>> submitSurveyResponse(@Valid @RequestBody SubmitSurveyRequestDto dto){
-		return ResponseEntity.ok(BaseResponse.<SurveyResponse>builder()
+	public ResponseEntity<BaseResponse<Boolean>> submitSurveyResponse(@RequestHeader("token") String token,@Valid @RequestBody SubmitSurveyRequestDto dto){
+		return ResponseEntity.ok(BaseResponse.<Boolean>builder()
 				                         .code(200)
 				                         .success(true)
 				                         .message("Yanıt başarıyla gönderildi.")
-				                         .data(surveyResponseService.submitSurveyResponse(dto))
+				                         .data(surveyResponseService.submitSurveyResponse(token,dto))
 		                                     .build());
 	}
 	
-	@GetMapping(GET_USER_RESPONSES+"/{userId}")
-	public ResponseEntity<BaseResponse<List<SurveyResponse>>> getUserSurveyResponse(@PathVariable Long userId){
-		return ResponseEntity.ok(BaseResponse.<List<SurveyResponse>>builder()
+	@GetMapping(GET_USER_RESPONSES)
+	public ResponseEntity<BaseResponse<List<SurveyResponseDetailDto>>> getUserSurveyResponse(@RequestHeader("token") String token){
+		return ResponseEntity.ok(BaseResponse.<List<SurveyResponseDetailDto>>builder()
 				                         .code(200)
 				                         .success(true)
 				                         .message("Kullanıcının anket yanıtları getirildi.")
-				                         .data(surveyResponseService.getUserResponses(userId))
+				                         .data(surveyResponseService.getUserSurveyResponses(token))
 		                                     .build());
 	}
 	
-	@GetMapping(GET_RESPONSE_DETAILS+"/{responseId}")
-	public ResponseEntity<BaseResponse<SurveyResponseDetailDto>> getResponseWithDetails(@PathVariable String responseId){
-		return ResponseEntity.ok(BaseResponse.<SurveyResponseDetailDto>builder()
+	@GetMapping(GET_RESPONSE_DETAILS+"/{surveyId}")
+	public ResponseEntity<BaseResponse<List<SurveyResponseDetailDto>>> getResponseWithDetails(@RequestHeader("token") String token,@PathVariable String surveyId){
+		return ResponseEntity.ok(BaseResponse.<List<SurveyResponseDetailDto>>builder()
 				                         .code(200)
 				                         .success(true)
 				                         .message("Anket yanıtları detaylıca getirildi.")
-				                         .data(surveyResponseService.getResponseWithDetails(responseId))
+				                         .data(surveyResponseService.getSurveyResponses(token,surveyId))
 		                                     .build());
 	}
 }

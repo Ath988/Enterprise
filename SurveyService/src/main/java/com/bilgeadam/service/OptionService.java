@@ -19,4 +19,8 @@ public class OptionService {
 	public List<Option> findAllByIdIn(List<String> ids) {
 		return optionRepository.findAllByIdIn(ids);
 	}
+	
+	public List<Option> findAllByQuestionId(String id) {
+		return optionRepository.findAllByQuestionId(id);
+	}
 }

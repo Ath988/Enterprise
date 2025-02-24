@@ -18,4 +18,8 @@ public class AnswerService {
 	public List<Answer> findAllByIdIn(List<String> ids) {
 		return answerRepository.findAllByIdIn(ids);
 	}
+	
+	public List<Answer> findAllByIds(List<String> answerIds) {
+		return answerRepository.findAllByIdIn(answerIds);
+	}
 }

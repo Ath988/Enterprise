@@ -23,32 +23,54 @@ public class SurveyController {
 	
 	
 	@PostMapping(CREATE_SURVEY)
-	public ResponseEntity<BaseResponse<Survey>> createSurvey(@Valid @RequestBody CreateSurveyRequestDto createSurveyRequestDto) {
-		return ResponseEntity.ok(BaseResponse.<Survey>builder()
+	public ResponseEntity<BaseResponse<Boolean>> createSurvey(@RequestHeader("token") String token
+			,@Valid @RequestBody CreateSurveyRequestDto createSurveyRequestDto) {
+		return ResponseEntity.ok(BaseResponse.<Boolean>builder()
 				                         .code(200)
 				                         .message("Anket başarıyla kaydedildi.")
 				                         .success(true)
-				                         .data(surveyService.createSurvey(createSurveyRequestDto))
+				                         .data(surveyService.createSurvey(token,createSurveyRequestDto))
 		                                     .build());
 	}
 	
 	@GetMapping(GET_ACTIVE_SURVEYS)
-	public ResponseEntity<BaseResponse<List<Survey>>> getActiveSurveys() {
-		return ResponseEntity.ok(BaseResponse.<List<Survey>>builder()
+	public ResponseEntity<BaseResponse<List<SurveyDetailDto>>> getActiveSurveys(@RequestHeader("token") String token) {
+		return ResponseEntity.ok(BaseResponse.<List<SurveyDetailDto>>builder()
 				                         .code(200)
 				                         .message("Anket listesi getirildi")
 				                         .success(true)
-				                         .data(surveyService.getActiveSurveys())
+				                         .data(surveyService.getAllSurveys(token))
 		                                     .build());
 	}
 	
 	@GetMapping(GET_SURVEY_DETAILS+"/{surveyId}")
-	public ResponseEntity<BaseResponse<SurveyDetailDto>> getSurveyWithDetails(@PathVariable String surveyId) {
+	public ResponseEntity<BaseResponse<SurveyDetailDto>> getSurveyWithDetails(@RequestHeader("token") String token,@PathVariable String surveyId) {
 		return ResponseEntity.ok(BaseResponse.<SurveyDetailDto>builder()
 				                         .code(200)
 				                         .message("Anket detayları getirildi")
 				                         .success(true)
-				                         .data(surveyService.getSurveyWithDetails(surveyId))
+				                         .data(surveyService.getSurveyDetail(token,surveyId))
+		                                     .build());
+	}
+	
+	@DeleteMapping(DELETE_SURVEY+"/{surveyId}")
+	public ResponseEntity<BaseResponse<Boolean>> deleteSurvey(@RequestHeader("token") String token,@PathVariable String surveyId) {
+		return ResponseEntity.ok(BaseResponse.<Boolean>builder()
+				                         .code(200)
+				                         .message("Anket başarıyla silindi.")
+				                         .success(true)
+				                         .data(surveyService.deleteSurvey(token,surveyId))
+		                                     .build());
+	}
+	
+	@PutMapping(UPDATE_SURVEY+"/{surveyId}")
+	public ResponseEntity<BaseResponse<Boolean>> updateSurvey(@RequestHeader("token") String token,
+	                                                          @PathVariable String surveyId,@RequestBody CreateSurveyRequestDto dto){
+		return ResponseEntity.ok(BaseResponse.<Boolean>builder()
+				                         .code(200)
+				                         .message("Anket başarıyla güncellendi.")
+				                         .success(true)
+				                         .data(surveyService.updateSurvey(token,surveyId,dto))
 		                                     .build());
 	}
 }

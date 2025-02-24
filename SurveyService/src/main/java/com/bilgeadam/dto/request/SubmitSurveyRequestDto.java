@@ -13,6 +13,5 @@ import java.util.List;
 @AllArgsConstructor
 public class SubmitSurveyRequestDto {
 	private String surveyId;
-	private Long userId;
 	private List<AnswerRequestDto> answers;
 }

@@ -18,6 +18,5 @@ public class CreateSurveyRequestDto {
 	private String description;
 	@JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
 	private LocalDateTime expirationDate;
-	private Long createdBy;
 	private List<QuestionDto> questions;
 }

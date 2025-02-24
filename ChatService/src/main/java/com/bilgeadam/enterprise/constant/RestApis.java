@@ -25,5 +25,7 @@ public class RestApis {
 	public static final String GET_USERS_IN_CHAT = "/get-users-in-chat";
 	public static final String UPDATE_CHAT_DETAILS = "/update-chat-details";
 	public static final String GET_CHAT_DETAILS = "/get-chat-details";
+
+	public static final String DO_LOGIN = "/do-login";
 	
 }

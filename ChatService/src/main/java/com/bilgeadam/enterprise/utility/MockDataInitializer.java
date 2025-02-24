@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 import java.util.*;
 
-//@Component
+@Component
 @RequiredArgsConstructor
 public class MockDataInitializer implements ApplicationRunner {
 	
@@ -24,19 +24,25 @@ public class MockDataInitializer implements ApplicationRunner {
 	
 	@Override
 	public void run(ApplicationArguments args) {
-		List<User> users = createMockUsers();
-		userRepository.saveAll(users);
-		
-	//	List<Chat> chats = createMockChats();
-	//	chatRepository.saveAll(chats);
-		
-	//	List<ChatUser> chatUsers = createMockChatUsers(chats, users);
-	//	chatUserRepository.saveAll(chatUsers);
-		
-	//	List<Message> messages = createMockMessages(chats, chatUsers);
-	//	messageRepository.saveAll(messages);
-		
-		System.out.println("Mock data initialized successfully!");
+		if (userRepository.findAll().stream().count() == 0 &&
+		chatRepository.findAll().stream().count() == 0 &&
+		chatUserRepository.findAll().stream().count() == 0 &&
+		messageRepository.findAll().stream().count() == 0) {
+
+			List<User> users = createMockUsers();
+			userRepository.saveAll(users);
+			List<Chat> chats = createMockChats();
+			chatRepository.saveAll(chats);
+
+			List<ChatUser> chatUsers = createMockChatUsers(chats, users);
+			chatUserRepository.saveAll(chatUsers);
+
+			List<Message> messages = createMockMessages(chats, chatUsers);
+			messageRepository.saveAll(messages);
+			System.out.println("Mock data initialized successfully!");
+		}
+
+		else System.out.println("Mock data not initialized!");
 	}
 	
 	private List<User> createMockUsers() {

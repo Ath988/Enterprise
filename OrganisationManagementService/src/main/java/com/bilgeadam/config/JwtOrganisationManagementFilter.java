@@ -21,29 +21,30 @@ import java.util.Optional;
 @Slf4j
 @AllArgsConstructor
 public class JwtOrganisationManagementFilter extends OncePerRequestFilter {
-    private JwtManager jwtManager;
-    private JwtUserDetail userDetail;
+    private final JwtUserDetail jwtUserDetail;
+
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
+        final String authHeader = request.getHeader("Authorization");
 
-        final String authHeader=request.getHeader("Authorization");
+        if (Objects.nonNull(authHeader) && authHeader.startsWith("Bearer ")) {
+            String token = authHeader.substring(7);
+            try{
 
-        if (Objects.nonNull(authHeader) && authHeader.startsWith("Bearer ")){
-            String token=authHeader.substring(7);
-            log.info("TOKEN : " + token);
 
-            Optional<Long> id=jwtManager.validateToken(token);
-            if (id.isPresent()){
-                UserDetails userDetails= userDetail.getAuthById(id.get());
-                UsernamePasswordAuthenticationToken authenticationToken=new UsernamePasswordAuthenticationToken(
-                        userDetails,null,userDetails.getAuthorities()
+                UserDetails userDetails = jwtUserDetail.getAuthFromToken(token);
+                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+                        userDetails, null, userDetails.getAuthorities()
                 );
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+            }catch (Exception e) {
+                log.error("JwtAuthFilter hatası: {}", e.getMessage());
             }
+
         }
-        filterChain.doFilter(request,response);
+        filterChain.doFilter(request, response);
     }
 }

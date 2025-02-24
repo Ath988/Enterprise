@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -28,12 +27,13 @@ public class SubscriptionService {
     private final JwtManager jwtManager = new JwtManager();
 
     private Long tokenToUserId(String token){
-        Optional<Long> optUserId = jwtManager.validateToken(token);
-        if (optUserId.isEmpty()) {
+        Optional<Long> optAuthId = jwtManager.validateToken(token);
+        if (optAuthId.isEmpty()) {
             throw new EnterpriseException(ErrorType.INVALID_TOKEN);
         }
-        return optUserId.get();
+        return subscriptionRepository.findUserIdFromAuthId(optAuthId.get());
     }
+
 
     @Scheduled(cron= "0 0 0 * * *")
     private void updateSubscriptionStatus(){
@@ -45,18 +45,29 @@ public class SubscriptionService {
         }).toList());
     }
 
-    public Subscription addSubscription(AddSubscriptionRequest dto) {
-        Long userId = tokenToUserId(dto.token());
+    public Boolean addSubscription(AddSubscriptionRequest dto) {
+        Long authId = jwtManager.validateToken(dto.token())
+                .orElseThrow(() -> new EnterpriseException(ErrorType.INVALID_TOKEN));
 
         Subscription subscription = Subscription.builder()
                 .subscriptionType(SubscriptionType.DEFAULT)
                 .subscriptionStatus(SubscriptionStatus.ACTIVE)
                 .subscriptionPlan(dto.subscriptionPlan())
-                .userId(userId)
+                .userId(dto.userId())
+                .authId(authId)
                 .startDate(System.currentTimeMillis()) // right now
                 .estimatedEndDate(System.currentTimeMillis() + SUBSCRIPTION_PERIOD) // 30 days later
                 .build();
-        return subscriptionRepository.save(subscription);
+         subscriptionRepository.save(subscription);
+         return true;
+    }
+
+    //UserManagement için yazıldı.
+    public SubscriptionPlan getUserSubscriptionPlan(Long userId){
+        Subscription subscription = subscriptionRepository
+                .findTopByUserIdAndStatusAndEstimatedEndDateGreaterThanEqual(userId,EntityStatus.ACTIVE,System.currentTimeMillis())
+                .orElseThrow(()->new EnterpriseException(ErrorType.NO_ACTIVE_SUBSCRIPTION));
+        return subscription.getSubscriptionPlan();
     }
 
 
@@ -117,7 +128,6 @@ public class SubscriptionService {
         subscriptionRepository.save(currentSubscription);
 
         return newSubscription;
-
     }
 
     public Subscription cancelSubscription(String token) {

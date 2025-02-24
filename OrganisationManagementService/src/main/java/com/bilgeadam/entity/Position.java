@@ -19,5 +19,6 @@ public class Position extends BaseEntity {
     Long departmentId;
     String title;
     String description;
+    Long parentPositionId;
 
 }

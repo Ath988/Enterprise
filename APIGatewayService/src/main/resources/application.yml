@@ -85,11 +85,6 @@ spring:
         - id: file-service
           uri: http://localhost:8093
           predicates:
-            - Path=/v1/dev/file/**, /v1/dev/folder/**
-
-        - id: file-service
-          uri: http://localhost:8094
-          predicates:
             - Path=/v1/dev/file/**
       default-filters:
         - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials, RETAIN_FIRST

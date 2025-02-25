@@ -12,6 +12,7 @@ public class RestApis {
     private static final String ROOT = VERSION + DEVELOPER;
 
     public static final String SUBSCRIPTION = ROOT + "/subscription";
+    public static final String PRICING_PLAN = ROOT + "/pricing-plan";
 
     public static final String ADD_SUBSCRIPTION = "/add";
     public static final String GET_CURRENT_SUBSCRIPTION = "/current";
@@ -19,6 +20,8 @@ public class RestApis {
     public static final String UPDATE_SUBSCRIPTION = "/update";
     public static final String CANCEL_SUBSCRIPTION = "/cancel";
     public static final String GET_ACTIVE_SUBSCRIPTION = "/active";
+    public static final String GET_ALL_PLANS = "/all-plans";
+    public static final String UPDATE_PLAN = "/update-plan";
 
 
 }

@@ -137,5 +137,10 @@ public class ProductService
         return newList;
     }
 
+    public List<Product> findAllByMinimumStockLevelAndStatus(EStatus status)
+    {
+        return productRepository.findAllByMinimumStockLevelAndStatus(status);
+    }
+
 
 }

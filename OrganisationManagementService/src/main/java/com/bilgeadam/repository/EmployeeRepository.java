@@ -45,10 +45,10 @@ public interface EmployeeRepository extends JpaRepository<Employee,Long> {
     @Query("SELECT CONCAT(e.firstName,' ',e.lastName) FROM Employee e WHERE e.companyId = ?1 AND e.role = com.bilgeadam.entity.enums.EmployeeRole.COMPANY_OWNER")
     Optional<String> findCEOByCompanyId(Long companyId);
 
-    @Query("SELECT NEW com.bilgeadam.view.VwEmployee(e.id,CONCAT(e.firstName,' ',e.lastName),p.title) FROM Employee e JOIN Position p ON p.id = e.positionId JOIN Department d ON p.departmentId = d.id WHERE d.managerId = e.id AND d.id = ?1")
+    @Query("SELECT NEW com.bilgeadam.view.VwEmployee(e.id,CONCAT(e.firstName,' ',e.lastName)) FROM Employee e JOIN Position p ON p.id = e.positionId JOIN Department d ON p.departmentId = d.id WHERE d.managerId = e.id AND d.id = ?1")
     Optional<VwEmployee> findVwManagerByDepartmentId(Long departmentId);
 
-    @Query("SELECT NEW com.bilgeadam.view.VwEmployee(e.id,CONCAT(e.firstName,' ',e.lastName),p.title) FROM Employee e JOIN Position p ON p.id = e.positionId JOIN Department d ON d.id = p.departmentId " +
+    @Query("SELECT NEW com.bilgeadam.view.VwEmployee(e.id,CONCAT(e.firstName,' ',e.lastName)) FROM Employee e JOIN Position p ON p.id = e.positionId JOIN Department d ON d.id = p.departmentId " +
             "WHERE d.id = ?1 AND e.role = com.bilgeadam.entity.enums.EmployeeRole.EMPLOYEE AND e.state = com.bilgeadam.entity.enums.EState.ACTIVE ORDER BY e.updateAt DESC")
     List<VwEmployee> findAllVwEmployeesByDepartmentId(Long departmentId);
 
@@ -61,5 +61,8 @@ public interface EmployeeRepository extends JpaRepository<Employee,Long> {
 
     @Query("SELECT e.id,CONCAT(e.firstName,' ',e.lastName) FROM Employee e WHERE e.id IN ?1 ORDER BY e.updateAt DESC")
     List<Object[]> findAllEmployeeNamesFromEmployeeIdList(List<Long> employeeIdList);
-
+    
+    @Query("SELECT NEW com.bilgeadam.view.VwEmployee(e.id,CONCAT(e.firstName,' ',e.lastName)) FROM Employee e JOIN " +
+            "Position p ON p.id = e.positionId where e.positionId = ?1")
+    List<VwEmployee> findAllEmployeeByPositionId(Long positionId);
 }

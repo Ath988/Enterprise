@@ -2,6 +2,7 @@ package com.bilgeadam.repository;
 
 import com.bilgeadam.dto.response.PositionDetailResponse;
 import com.bilgeadam.entity.Position;
+import com.bilgeadam.view.VwPosition;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -24,4 +25,6 @@ public interface PositionRepository extends JpaRepository<Position, Long> {
 
     @Query("SELECT p.title FROM Position p WHERE p.departmentId = ?1 AND p.state = com.bilgeadam.entity.enums.EState.ACTIVE")
     List<String> findAllPositionNamesByDepartmentId(Long departmentId);
+    @Query("SELECT NEW com.bilgeadam.view.VwPosition(p.id,p.title) FROM Position p WHERE p.parentPositionId = ?1")
+    List<VwPosition> findAllVwPositionsByParentPositionId(Long parentPositionId);
 }

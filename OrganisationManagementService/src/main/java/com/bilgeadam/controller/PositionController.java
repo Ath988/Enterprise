@@ -5,7 +5,9 @@ import com.bilgeadam.dto.request.AddNewPositionRequest;
 import com.bilgeadam.dto.request.AssignPositionToEmployeeListRequest;
 import com.bilgeadam.dto.request.UpdatePositionRequest;
 import com.bilgeadam.dto.response.BaseResponse;
+import com.bilgeadam.dto.response.OrganizationTreeResponse;
 import com.bilgeadam.dto.response.PositionDetailResponse;
+import com.bilgeadam.dto.response.PositionTreeResponse;
 import com.bilgeadam.entity.Position;
 import com.bilgeadam.service.PositionService;
 import lombok.RequiredArgsConstructor;
@@ -89,5 +91,12 @@ public class PositionController {
                 .message("Seçilen pozisyon listedeki çalışanlara atandı.")
                 .build());
     }
-
+    
+    @GetMapping("/{companyId}/organization-tree")
+    public ResponseEntity<BaseResponse<PositionTreeResponse>> getPositionTree(@PathVariable Long companyId) {
+        return ResponseEntity.ok(BaseResponse.<PositionTreeResponse>builder()
+                                             .data(positionService.getPositionTree(companyId))
+                                             .message("Şirket organizasyon şeması position'a göre getirildi.")
+                                             .build());
+    }
 }

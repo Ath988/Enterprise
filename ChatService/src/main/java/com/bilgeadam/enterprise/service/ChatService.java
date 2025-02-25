@@ -96,6 +96,8 @@ public class ChatService {
 		userIds.add(dto.recipientId());
 		userIds.add(userId);
 
+		System.out.println(userIds);
+
 		List<Object[]> userResults = userRepository.findUserNamesByIds(userIds);
 		Map<String, String[]> userMap = userResults.stream()
 		                                           .collect(Collectors.toMap(
@@ -126,8 +128,7 @@ public class ChatService {
 		
 		if (existingChat.isPresent()) {
 			Chat chat = existingChat.get();
-			
-			
+
 			return new PrivateChatResponseDto(chat.getId(), recipientName, recipientUser);
 		}
 		

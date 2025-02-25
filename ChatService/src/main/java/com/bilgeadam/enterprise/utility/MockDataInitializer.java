@@ -47,6 +47,24 @@ public class MockDataInitializer implements ApplicationRunner {
 	
 	private List<User> createMockUsers() {
 		List<User> users = new ArrayList<>();
+		User vehbi = User.builder()
+				.name("Vehbi")
+				.surname("Çok")
+				.email("vehbi@test.com")
+				.isOnline(false)
+				.password("Sifre123**")
+				.build();
+
+		User hasan = User.builder()
+				.name("Hasan")
+				.surname("Sanan")
+				.email("hasan@test.com")
+				.isOnline(true)
+				.password("Sifre123**")
+				.build();
+
+		users.add(vehbi);
+		users.add(hasan);
 		for (int i = 1; i <= 5; i++) {
 			users.add(User.builder()
 			              .email("user" + i + "@example.com")
@@ -56,6 +74,8 @@ public class MockDataInitializer implements ApplicationRunner {
 			              .isOnline(i % 2 == 0)
 			              .build());
 		}
+
+
 		return users;
 	}
 	

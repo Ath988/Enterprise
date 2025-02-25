@@ -103,7 +103,6 @@ public class ChatController {
 		
 		String userId = (String) request.getAttribute("userId");
 		List<ChatListViewDto> chatList = chatService.getUsersChats(userId, limit);
-		
 		return ResponseEntity.ok(BaseResponse.<List<ChatListViewDto>>builder()
 		                                     .code(200)
 		                                     .message("Chat list retrieved successfully!")

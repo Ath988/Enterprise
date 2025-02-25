@@ -61,6 +61,7 @@ public class MockDataInitializer implements ApplicationRunner {
 				.email("hasan@test.com")
 				.isOnline(true)
 				.password("Sifre123**")
+				.isSupport(true)
 				.build();
 
 		users.add(vehbi);

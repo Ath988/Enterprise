@@ -96,22 +96,20 @@ public class ChatService {
 		userIds.add(dto.recipientId());
 		userIds.add(userId);
 
-		System.out.println(userIds);
-
 		List<Object[]> userResults = userRepository.findUserNamesByIds(userIds);
+
 		Map<String, String[]> userMap = userResults.stream()
 		                                           .collect(Collectors.toMap(
 				                                           row -> (String) row[0],
 				                                           row -> new String[]{(String) row[1], (String) row[2]}
 		                                           ));
-		
+
 		String recipientName = userMap.entrySet().stream()
 		                              .filter(entry -> !entry.getKey().equals(userId))
 		                              .map(entry -> entry.getValue()[0] + " " + entry.getValue()[1])
 		                              .findFirst()
 		                              .orElse("Unknown");
-		
-		
+
 		Optional<String> recipientIdOptional = userMap.keySet().stream()
 		                                              .filter(id -> !id.equals(userId))
 		                                              .findFirst();
@@ -119,30 +117,30 @@ public class ChatService {
 		String recipientId = recipientIdOptional.orElseThrow(() ->
 				                                                     new EnterpriseException(ErrorType.USER_NOT_PARTICIPANT)
 		);
-		
+
 		User userById = userRepository.findUserById(recipientId).orElseThrow(()->new EnterpriseException(ErrorType.USER_NOT_FOUND));
-		
+
 		UserView recipientUser = new UserView(userById.getId(), userById.getName(), userById.getSurname(), userById.getIsOnline(), userById.getProfilePicture());
-		
+
 		Optional<Chat> existingChat = chatRepository.findPrivateChatByUsers(userIds, userIds.size(), EChatType.PRIVATE);
-		
+
 		if (existingChat.isPresent()) {
 			Chat chat = existingChat.get();
 
 			return new PrivateChatResponseDto(chat.getId(), recipientName, recipientUser);
 		}
 		
-		Chat newChat = Chat.builder()
+		Chat newChat = chatRepository.save(Chat.builder()
 		                   .eChatType(EChatType.PRIVATE)
-		                   .build();
-		chatRepository.save(newChat);
-		
+		                   .build());
+
 		List<ChatUser> chatUsers = userIds.stream()
 		                                  .map(userIdVal -> ChatUser.builder()
 		                                                            .chatId(newChat.getId())
 		                                                            .userId(userIdVal)
 		                                                            .build())
 		                                  .toList();
+
 		chatUserRepository.saveAll(chatUsers);
 		
 		return new PrivateChatResponseDto(
@@ -335,7 +333,9 @@ public class ChatService {
 	public ChatDetailResponseDto getChatDetails(int size, String chatId, String userId) {
 		Chat chat = chatRepository.findChatById(chatId)
 		                          .orElseThrow(() -> new EnterpriseException(ErrorType.CHAT_NOT_FOUND));
-		
+		System.out.println("istenen chatUSERS: " + chatUserRepository.findAllByChatIdAndUserId(chat.getId(), userId));
+		System.out.println("istenen chat: " + chat.getId());
+		System.out.println("istenen userId: " + userId);
 		if (!chatUserRepository.existsByChatIdAndUserId(chat.getId(), userId)) {
 			throw new EnterpriseException(ErrorType.USER_NOT_PARTICIPANT);
 		}
@@ -451,5 +451,21 @@ public class ChatService {
 		User user = userById.get();
 		user.setIsOnline(status);
 		userRepository.save(user);
+	}
+
+	@Transactional
+	public PrivateChatResponseDto createSupportChat(String userId) {
+		List<User> allSupport = userRepository.findAllByIsSupport(true);
+
+		if (allSupport.isEmpty()) {
+			throw new EnterpriseException(ErrorType.SUPPORT_NOT_FOUND);
+		}
+
+		// get a random support from the list
+		int randomNumber = (int) Math.random()*allSupport.size();
+		User randomSupport = allSupport.get(randomNumber);
+		CreatePrivateChatRqDto createPrivateChatRqDto = new CreatePrivateChatRqDto(randomSupport.getId());
+
+		return createPrivateChat(createPrivateChatRqDto, userId);
 	}
 }

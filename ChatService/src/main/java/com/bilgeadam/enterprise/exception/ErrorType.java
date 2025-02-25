@@ -17,7 +17,8 @@ public enum ErrorType {
 	MESSAGE_NOT_FOUND(3001,"Message not found!",HttpStatus.NOT_FOUND),
 	INVALID_CHAT_TYPE(2006,"Invalid chat type", HttpStatus.BAD_REQUEST),
 	INTERNAL_SERVER_ERROR(5000, "An unexpected error occurred.", HttpStatus.INTERNAL_SERVER_ERROR),
-	VALIDATION_ERROR(4000, "Validation error occurred.", HttpStatus.BAD_REQUEST);
+	VALIDATION_ERROR(4000, "Validation error occurred.", HttpStatus.BAD_REQUEST),
+	SUPPORT_NOT_FOUND(6000,"No support personnel is registered in the system" ,HttpStatus.NOT_FOUND ),;
 	
 	
 	private final int code;

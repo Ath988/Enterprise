@@ -46,6 +46,11 @@ public class BuyOrderService
         Product product = productService.findByIdAndAuthId(dto.productId());
         Supplier supplier = supplierService.findById(dto.supplierId());
         product.setStockCount(product.getStockCount() + dto.quantity());
+        if (product.getStockCount() >= product.getMinimumStockLevel())
+        {
+            //Tekrar bildirim gidebilmesi için false olarak ayarlandı.
+            product.setIsNotified(false);
+        }
         productService.save(product);
 
         BuyOrder order = BuyOrder

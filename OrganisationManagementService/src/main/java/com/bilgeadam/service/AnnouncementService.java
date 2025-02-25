@@ -24,20 +24,22 @@ public class AnnouncementService {
 	private final EmployeeService employeeService;
 	private final AnnouncementRepository announcementRepository;
 	private final JwtManager jwtManager;
-
 	
 	
 	public Boolean createAnnouncement(String token, AnnouncementRequestDto dto) {
 		Employee employee = employeeService.getEmployeeByToken(token);
 		
-	
 		Announcement announcement =
 				Announcement.builder().title(dto.title()).content(dto.content()).creationDate(LocalDate.now())
 				            .companyId(employee.getCompanyId()).build();
-		
 		announcementRepository.save(announcement);
 		
-		
 		return true;
+	}
+	
+	public List<Announcement> getAnnouncements(String token) {
+		Employee employee = employeeService.getEmployeeByToken(token); // Kullanıcıyı bul
+		Long companyId = employee.getCompanyId(); // Şirket ID'sini al
+		return announcementRepository.findByCompanyId(companyId); // Aynı şirkete ait duyuruları getir
 	}
 }

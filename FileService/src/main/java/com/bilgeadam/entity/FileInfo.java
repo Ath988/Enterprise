@@ -12,13 +12,11 @@ import java.util.UUID;
 @SuperBuilder
 @Data
 @Entity
-@Table(name = "file_info")
+@Table(name = "tbl_file_info")
 public class FileInfo extends BaseEntity {
 	@Column(length = 2048)
 	String fileName;
 	@Column(length = 2048)
 	String url;
 	Long size;
-	
-	
 }

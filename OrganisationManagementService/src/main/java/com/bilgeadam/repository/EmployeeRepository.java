@@ -8,6 +8,7 @@ import com.bilgeadam.entity.enums.EmployeeRole;
 import com.bilgeadam.view.VwEmployee;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
@@ -70,5 +71,7 @@ public interface EmployeeRepository extends JpaRepository<Employee,Long> {
     @Query("SELECT NEW com.bilgeadam.view.VwEmployee(e.id,CONCAT(e.firstName,' ',e.lastName)) FROM Employee e " +
             "WHERE e.positionId=?1")
     List<VwEmployee> findAllEmployeeByPositionId(Long positionId);
-
+    
+    @Query("SELECT e.companyId FROM Employee e WHERE e.authId = :authId")
+    Long findCompanyIdByAuthId(@Param("authId") Long authId);
 }

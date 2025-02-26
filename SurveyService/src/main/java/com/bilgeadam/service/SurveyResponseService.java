@@ -4,7 +4,6 @@ import com.bilgeadam.dto.request.SubmitSurveyRequestDto;
 import com.bilgeadam.dto.response.SurveyResponseDetailDto;
 import com.bilgeadam.entity.SurveyResponse;
 import com.bilgeadam.entity.Answer;
-import com.bilgeadam.repository.AnswerRepository;
 import com.bilgeadam.repository.SurveyResponseRepository;
 import com.bilgeadam.exception.SurveyServiceException;
 import com.bilgeadam.exception.ErrorType;
@@ -38,30 +37,38 @@ public class SurveyResponseService {
         
         return userId;
     }
-    
+    private void checkIfUserAlreadySubmitted(Long userId, String surveyId) {
+        boolean exists = surveyResponseRepository.existsByUserIdAndSurveyId(userId, surveyId);
+        if (exists) {
+            throw new SurveyServiceException(ErrorType.SURVEY_ALREADY_SUBMITTED);
+        }
+    }
     @Transactional
     public Boolean submitSurveyResponse(String token, SubmitSurveyRequestDto dto) {
         try {
-            // Anketi member ve staff rolleri cevaplanıdrabiliyor. (Sadece Staff da yapılabilir.)
             Long userId = validateTokenAndCheckRole(token, "MEMBER", "STAFF");
             
+            // Kullanıcının bu anketi daha önce cevaplayıp cevaplamadığını kontrol ediyorum
+            checkIfUserAlreadySubmitted(userId, dto.getSurveyId());
+            
             SurveyResponse surveyResponse = SurveyResponse.builder()
-                                                          .userId(userId)
-                                                          .surveyId(dto.getSurveyId())
-                                                          .submissionDate(LocalDateTime.now())
-                                                          .build();
+                    .userId(userId)
+                    .surveyId(dto.getSurveyId())
+                    .submissionDate(LocalDateTime.now())
+                    .build();
+            surveyResponseRepository.save(surveyResponse);
             
             List<String> answerIds = new ArrayList<>();
             
             dto.getAnswers().forEach(answerDto -> {
                 Answer answer = Answer.builder()
-                                      .questionId(answerDto.getQuestionId())
-                                      .answerText(answerDto.getAnswerText())
-                                      .selectedOptionId(answerDto.getSelectedOptionId())
-                                      .surveyResponseId(surveyResponse.getId())
-                                      .build();
+                        .questionId(answerDto.getQuestionId())
+                        .answerText(answerDto.getAnswerText())
+                        .selectedOptionId(answerDto.getSelectedOptionId())
+                        .surveyResponseId(surveyResponse.getId())
+                        .build();
                 
-                answerService.save(answer);
+                answer = answerService.save(answer);
                 answerIds.add(answer.getId());
             });
             

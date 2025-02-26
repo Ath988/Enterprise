@@ -181,6 +181,12 @@ public class EmployeeController {
                         .message("Çalışan izinleri başarı ile güncellendi.")
                 .build());
     }
-
+    
+    @GetMapping("get-company-id/{authId}")
+    public ResponseEntity<BaseResponse<Long>> getCompanyIdByAuthId(@PathVariable Long authId){
+        return ResponseEntity.ok(BaseResponse.<Long>builder()
+                                         .data(employeeService.getCompanyIdByAuthId(authId))
+                                             .build());
+    }
 
 }

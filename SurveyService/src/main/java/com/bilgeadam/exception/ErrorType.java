@@ -16,7 +16,8 @@ public enum ErrorType {
     COMPANY_NOTFOUND(103,"Şirket Bulunamadı!", HttpStatus.NOT_FOUND),
     SURVEY_ALREADY_SUBMITTED(104,"Anket zaten çözülmüş.", HttpStatus.BAD_REQUEST),
     SURVEY_CREATE_ERROR(105,"Anket oluşturulamıyor.", HttpStatus.BAD_REQUEST),
-    SURVEY_SUBMIT_ERROR(106,"Anket gönderilemedi!" ,HttpStatus.BAD_REQUEST );
+    SURVEY_SUBMIT_ERROR(106,"Anket gönderilemedi!" ,HttpStatus.BAD_REQUEST ),
+    COMPANY_ID_NOT_FOUND(107,"Şirket ID'si bulunamadı!" , HttpStatus.NOT_FOUND );
    
 
 

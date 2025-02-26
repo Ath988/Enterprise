@@ -16,6 +16,8 @@ public enum ErrorType {
     POSITION_NOT_FOUND(3001,"Pozisyon bulunamadı",HttpStatus.BAD_REQUEST),
     INVALID_TOKEN(9001,"Geçersiz token bilgisi.",HttpStatus.BAD_REQUEST),
     INVALID_PASSWORD(9002,"Kullanıcı adı ya da şifre bilgisi hatalı.",HttpStatus.BAD_REQUEST),
+    NOT_FOUND_ANNOUNCEMENT(4003,"Duyuru bulunamadı.",HttpStatus.BAD_REQUEST),
+    CANNOT_DELETE_ANNOUNCEMENT(4004,"Duyuruyu silme yetkiniz bulunmamaktadır..",HttpStatus.BAD_REQUEST),
 
     ;
 

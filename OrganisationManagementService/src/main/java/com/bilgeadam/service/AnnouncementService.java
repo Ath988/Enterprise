@@ -42,4 +42,18 @@ public class AnnouncementService {
 		Long companyId = employee.getCompanyId(); // Şirket ID'sini al
 		return announcementRepository.findByCompanyId(companyId); // Aynı şirkete ait duyuruları getir
 	}
+	
+	public Boolean deleteAnnouncement(String token, Long announcementId) {
+		Employee employee = employeeService.getEmployeeByToken(token); // Kullanıcıyı bul
+		Optional<Announcement> announcement = announcementRepository.findById(announcementId);
+		
+		if (announcement.isEmpty()) {
+			throw new OrganisationManagementException(ErrorType.NOT_FOUND_ANNOUNCEMENT);
+		}
+		if (!announcement.get().getEmployeeId().equals(employee.getId())) {
+			throw new OrganisationManagementException(ErrorType.CANNOT_DELETE_ANNOUNCEMENT);
+		}
+		announcementRepository.delete((announcement.get()));
+		return true;
+	}
 }

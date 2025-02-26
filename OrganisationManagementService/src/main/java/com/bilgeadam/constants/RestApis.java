@@ -17,4 +17,12 @@ public class RestApis {
     public static final String DELETE_ANNOUNCEMENT = "/delete-announcement";
     public static final String GETALLANNOUNCEMENT = "/get-all-announcement";
     public static final String DOREGISTER = "/do-register";
+
+    public static final String REQUEST = "/request";
+    public static final String SHIFT = "/shift";
+    public static final String CREATE = "/create";
+    public static final String GETBYID = "/get-by-id";
+    public static final String GETALL = "/get-all";
+    public static final String UPDATE = "/update";
+    public static final String DELETE = "/delete";
 }

@@ -64,8 +64,8 @@ public class DemoDataGenerator
     public void addProducts(){
         productService.save(new ProductSaveRequestDTO(1L, 1L, "Masa", "Dört ayaklı masa", BigDecimal.valueOf(2500), 100, 50));
         productService.save(new ProductSaveRequestDTO(2L, 1L, "Sandalye", "Ahşap sandalye", BigDecimal.valueOf(750), 200, 30));
-        productService.save(new ProductSaveRequestDTO(3L, 2L, "Dolap", "İki kapaklı dolap", BigDecimal.valueOf(4200), 50, 20));
-        productService.save(new ProductSaveRequestDTO(4L, 2L, "Kitaplık", "Beş raflı kitaplık", BigDecimal.valueOf(1800), 80, 40));
+        productService.save(new ProductSaveRequestDTO(3L, 2L, "Dolap", "İki kapaklı dolap", BigDecimal.valueOf(4200), 50, 200));
+        productService.save(new ProductSaveRequestDTO(4L, 2L, "Kitaplık", "Beş raflı kitaplık", BigDecimal.valueOf(1800), 80, 200));
         productService.save(new ProductSaveRequestDTO(5L, 3L, "Sehpa", "Cam yüzeyli sehpa", BigDecimal.valueOf(950), 120, 25));
         productService.save(new ProductSaveRequestDTO(6L, 5L, "TV Ünitesi", "Modern TV ünitesi", BigDecimal.valueOf(3700), 60, 15));
         productService.save(new ProductSaveRequestDTO(7L, 4L, "Çalışma Masası", "Geniş çalışma masası", BigDecimal.valueOf(3200), 70, 35));

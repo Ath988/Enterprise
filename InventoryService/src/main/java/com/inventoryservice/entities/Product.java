@@ -28,4 +28,6 @@ public class Product extends BaseEntity
     BigDecimal price;
     Integer stockCount;
     Integer minimumStockLevel;
+    @Builder.Default
+    Boolean isNotified = false;
 }

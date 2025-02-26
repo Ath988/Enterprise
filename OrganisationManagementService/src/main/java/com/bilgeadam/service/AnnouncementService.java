@@ -30,7 +30,7 @@ public class AnnouncementService {
 		Employee employee = employeeService.getEmployeeByToken(token);
 		
 		Announcement announcement =
-				Announcement.builder().title(dto.title()).content(dto.content()).creationDate(LocalDate.now())
+				Announcement.builder().title(dto.title()).content(dto.content()).creationDate(LocalDate.now()).employeeId(employee.getId())
 				            .companyId(employee.getCompanyId()).build();
 		announcementRepository.save(announcement);
 		

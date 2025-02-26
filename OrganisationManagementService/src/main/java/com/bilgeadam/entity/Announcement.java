@@ -22,4 +22,5 @@ public class Announcement extends BaseEntity {
 	String content;
 	LocalDate creationDate;
 	Long companyId;
+	Long employeeId;
 }

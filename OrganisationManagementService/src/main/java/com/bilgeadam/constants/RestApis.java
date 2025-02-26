@@ -10,7 +10,7 @@ public class RestApis {
     public static final String EMPLOYEE = ROOT + "/employee";
     public static final String DEPARTMENT = ROOT + "/department";
     public static final String POSITION = ROOT + "/position";
-    public static final String ANNOUNCEMENT = ROOT + "/position";
+    public static final String ANNOUNCEMENT = ROOT + "/announcement";
 
     public static final String CREATE_COMPANY_MANAGER = "/create-company-manager";
     public static final String CREATE_ANNOUNCEMENT = "/create-announcement";

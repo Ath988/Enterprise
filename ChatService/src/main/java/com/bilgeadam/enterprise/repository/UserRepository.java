@@ -33,5 +33,7 @@ public interface UserRepository extends JpaRepository<User, String> {
     WHERE u.id IN :userIds
 """)
 	List<Object[]> findUserNamesByIds(@Param("userIds") Set<String> userIds);
-	
+
+
+	List<User> findAllByIsSupport(boolean isSupport);
 }

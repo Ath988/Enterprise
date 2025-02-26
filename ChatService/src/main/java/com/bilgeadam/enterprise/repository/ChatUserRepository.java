@@ -21,4 +21,5 @@ public interface ChatUserRepository extends JpaRepository<ChatUser, String> {
 	@Query("SELECT cu.userId FROM ChatUser cu WHERE cu.chatId = :chatId")
 	List<String> findUserIdsByChatId(@Param("chatId") String chatId);
 
+	List<ChatUser> findAllByChatIdAndUserId(String id, String userId);
 }

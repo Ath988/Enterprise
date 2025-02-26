@@ -1,5 +1,6 @@
 package com.bilgeadam.repository;
 
+import com.bilgeadam.dto.response.UserProfileResponse;
 import com.bilgeadam.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -15,5 +16,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
             "JOIN UserRolePermission urp ON urp.user = u2 " +
             "WHERE u1.id = ?1 AND urp.role.name = ?2")
     Optional<Long> findMemberIdByUserId(Long userId, String roleName);
+
+    @Query("SELECT NEW com.bilgeadam.dto.response.UserProfileResponse(u.id,u.authId,u.firstName,u.lastName,u.phoneNo,u.tcNo,u.email,u.birthDate,u.avatarUrl) FROM User u WHERe u.id = ?1")
+    UserProfileResponse findUserProfileById(Long id);
 
 }

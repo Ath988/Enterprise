@@ -4,6 +4,7 @@ import com.bilgeadam.dto.response.AllDepartmentResponse;
 import com.bilgeadam.dto.response.DepartmentDetailResponse;
 import com.bilgeadam.entity.Department;
 import com.bilgeadam.entity.enums.EState;
+import com.bilgeadam.view.VwDepartmendAndPosition;
 import com.bilgeadam.view.VwDepartment;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -35,6 +36,8 @@ public interface DepartmentRepository extends JpaRepository<Department,Long> {
     List<VwDepartment> findAllVwDepartmentByCompanyId(Long companyId);
 
 
-
+    @Query("SELECT NEW com.bilgeadam.view.VwDepartmendAndPosition(d.name,p.title) FROM Department d JOIN Position p ON p.departmentId=d.id " +
+            "JOIN Employee e ON e.positionId = p.id WHERE e.authId = ?1")
+    Optional<VwDepartmendAndPosition> findVwDepartmentAndPositionNamesByAuthId(Long authId);
 
 }

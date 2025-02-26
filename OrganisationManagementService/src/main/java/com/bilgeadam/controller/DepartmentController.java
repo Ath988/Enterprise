@@ -8,6 +8,7 @@ import com.bilgeadam.dto.response.BaseResponse;
 import com.bilgeadam.dto.response.DepartmentDetailResponse;
 import com.bilgeadam.dto.response.OrganizationTreeResponse;
 import com.bilgeadam.service.DepartmentService;
+import com.bilgeadam.view.VwDepartmendAndPosition;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -138,7 +139,14 @@ public class DepartmentController {
                 .build());
     }
 
-    //Todo: Departman istatistikleri için endpoint, frontend ihtiyaçlarına göre oluşturulcak.
+    @GetMapping("/other-services/get-department-and-position")
+    public ResponseEntity<BaseResponse<VwDepartmendAndPosition>> getPositionAndDepartmentName(
+            @RequestHeader(value = "Authorization", required = false) String token){
+        return ResponseEntity.ok(BaseResponse.<VwDepartmendAndPosition>builder()
+                        .data(departmentService.findDepartmentAndPositionNameByAuthId(token))
+                .build());
+    }
+
 
 
 }

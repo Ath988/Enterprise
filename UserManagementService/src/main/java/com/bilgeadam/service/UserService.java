@@ -5,6 +5,8 @@ import com.bilgeadam.dto.request.otherServices.AddSubscriptionRequest;
 import com.bilgeadam.dto.request.otherServices.ManageEmployeePermissionsRequest;
 import com.bilgeadam.dto.response.UserPermissionResponse;
 import com.bilgeadam.dto.response.UserProfileResponse;
+import com.bilgeadam.dto.response.otherServices.VwDepartmendAndPosition;
+import com.bilgeadam.entity.Address;
 import com.bilgeadam.entity.Role;
 import com.bilgeadam.entity.User;
 import com.bilgeadam.entity.UserRolePermission;
@@ -12,7 +14,9 @@ import com.bilgeadam.entity.enums.Permission;
 import com.bilgeadam.entity.enums.SubscriptionPlan;
 import com.bilgeadam.exception.ErrorType;
 import com.bilgeadam.exception.UserManagementException;
+import com.bilgeadam.manager.DepartmentManager;
 import com.bilgeadam.manager.SubscriptionManager;
+import com.bilgeadam.repository.AddressRepository;
 import com.bilgeadam.repository.UserRepository;
 import com.bilgeadam.utility.JwtManager;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +36,8 @@ public class UserService {
     private final UserRolePermissionService userRolePermissionService;
     private final JwtManager jwtManager;
     private final SubscriptionManager subscriptionManager;
+    private final AddressRepository addressRepository;
+    private final DepartmentManager departmentManager;
 
     /*
        Siteye ilk defa üye olan kişi için.
@@ -75,6 +81,8 @@ public class UserService {
 
         User manager = getUserByToken(token);
         Role role = roleService.findByName("STAFF"); //Çalışan rolü için
+        Address address = Address.builder().build();
+        addressRepository.save(address);
 
         User user = User.builder()
                 .authId(dto.authId())
@@ -84,10 +92,8 @@ public class UserService {
                 .email(dto.email())
                 .roles(Set.of(role))
                 .build();
+        user.getAddressList().add(address);
         userRepository.save(user);
-
-
-
 
         Set<Permission> permissions = userRolePermissionService.getPermissionsForEmployee();
 
@@ -102,16 +108,15 @@ public class UserService {
     }
 
 
-    //Todo: Geliştirilecek.
+    //Todo: Address kısmı sonra eklenicek.
     public UserProfileResponse getUserProfile(String token) {
         User user = getUserByToken(token);
-        UserProfileResponse response = UserProfileResponse.builder()
-                .id(user.getId())
-                .authId(user.getAuthId())
-                .email(user.getEmail())
-                .firstName(user.getFirstName())
-                .lastName(user.getLastName())
-                .build();
+        UserProfileResponse response = userRepository.findUserProfileById(user.getId());
+
+        VwDepartmendAndPosition vwDepartmendAndPosition =
+                getDataFromResponse(departmentManager.getPositionAndDepartmentName(token));
+        response.setDepartmentName(vwDepartmendAndPosition.departmentName());
+        response.setPositionName(vwDepartmendAndPosition.positionName());
 
         return response;
     }

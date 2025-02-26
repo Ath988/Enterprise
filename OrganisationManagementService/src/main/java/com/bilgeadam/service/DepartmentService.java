@@ -13,6 +13,7 @@ import com.bilgeadam.entity.enums.EmployeeRole;
 import com.bilgeadam.exception.ErrorType;
 import com.bilgeadam.exception.OrganisationManagementException;
 import com.bilgeadam.repository.DepartmentRepository;
+import com.bilgeadam.view.VwDepartmendAndPosition;
 import com.bilgeadam.view.VwDepartment;
 import com.bilgeadam.view.VwEmployee;
 import lombok.RequiredArgsConstructor;
@@ -193,6 +194,13 @@ public class    DepartmentService {
         }
         response.setDepartments(vwDepartments);
         return response;
+    }
+
+    public VwDepartmendAndPosition findDepartmentAndPositionNameByAuthId(String token){
+       Employee employee = employeeService.getEmployeeByToken(token);
+        System.out.println("auth id =  "+employee.getAuthId());
+        return departmentRepository.findVwDepartmentAndPositionNamesByAuthId(employee.getAuthId())
+                .orElseThrow(() -> new OrganisationManagementException(ErrorType.EMPLOYEE_NOT_FOUND));
     }
 
 

@@ -18,7 +18,7 @@ public enum ErrorType {
     INVALID_PASSWORD(9002,"Kullanıcı adı ya da şifre bilgisi hatalı.",HttpStatus.BAD_REQUEST),
     NOT_FOUND_ANNOUNCEMENT(4003,"Duyuru bulunamadı.",HttpStatus.BAD_REQUEST),
     CANNOT_DELETE_ANNOUNCEMENT(4004,"Duyuruyu silme yetkiniz bulunmamaktadır..",HttpStatus.BAD_REQUEST),
-
+    SHIFT_NOT_FOUND(5000,"Vardiya Bulunamadı",HttpStatus.NOT_FOUND),
     ;
 
     int code;

@@ -18,7 +18,7 @@ import static com.bilgeadam.constant.RestApis.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(PRICING_PLAN)
+@RequestMapping(SUBSCRIPTION)
 @CrossOrigin("*")
 public class PricingPlanController {
 	private final PricingPlanService pricingPlanService;

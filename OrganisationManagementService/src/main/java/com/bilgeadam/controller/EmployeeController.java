@@ -1,9 +1,6 @@
 package com.bilgeadam.controller;
 
-import com.bilgeadam.dto.request.AddEmployeeRequest;
-import com.bilgeadam.dto.request.AssignEmployeesToDepartmentRequest;
-import com.bilgeadam.dto.request.CreateCompanyManagerRequest;
-import com.bilgeadam.dto.request.UpdateEmployeeRequest;
+import com.bilgeadam.dto.request.*;
 import com.bilgeadam.dto.response.AllEmployeeResponse;
 import com.bilgeadam.dto.response.BaseResponse;
 import com.bilgeadam.dto.response.EmployeeDetailResponse;
@@ -172,6 +169,16 @@ public class EmployeeController {
     public ResponseEntity<BaseResponse<Map<Long,String>>> getAllEmployeeNames(@RequestBody List<Long> employeeIdList) {
         return ResponseEntity.ok(BaseResponse.<Map<Long,String>>builder()
                         .data(employeeService.findAllEmployeeNamesByEmployeeIdList(employeeIdList))
+                .build());
+    }
+
+    @PostMapping("/manage-employee-permissions")
+    public ResponseEntity<BaseResponse<Boolean>> manageEmployeePermissions(
+            @RequestHeader(value = "Authorization", required = false) String token,
+            @RequestBody ManageEmployeePermissionsRequest dto){
+        return ResponseEntity.ok(BaseResponse.<Boolean>builder()
+                        .success(employeeService.updateEmployeePermissions(token,dto))
+                        .message("Çalışan izinleri başarı ile güncellendi.")
                 .build());
     }
 

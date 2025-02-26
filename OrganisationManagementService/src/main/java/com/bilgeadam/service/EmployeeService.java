@@ -2,6 +2,7 @@ package com.bilgeadam.service;
 
 import com.bilgeadam.dto.request.AddEmployeeRequest;
 import com.bilgeadam.dto.request.CreateCompanyManagerRequest;
+import com.bilgeadam.dto.request.ManageEmployeePermissionsRequest;
 import com.bilgeadam.dto.request.UpdateEmployeeRequest;
 import com.bilgeadam.dto.response.AllEmployeeResponse;
 import com.bilgeadam.dto.response.BaseResponse;
@@ -15,6 +16,7 @@ import com.bilgeadam.entity.enums.EmployeeRole;
 import com.bilgeadam.exception.ErrorType;
 import com.bilgeadam.exception.OrganisationManagementException;
 import com.bilgeadam.manager.AuthManager;
+import com.bilgeadam.manager.UserManager;
 import com.bilgeadam.repository.EmployeeRepository;
 import com.bilgeadam.utility.JwtManager;
 import com.bilgeadam.view.VwEmployee;
@@ -22,6 +24,8 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import static com.bilgeadam.dto.response.BaseResponse.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -34,13 +38,15 @@ public class EmployeeService {
     private final PositionService positionService;
     private final JwtManager jwtManager;
     private final AuthManager authManager;
+    private final UserManager userManager;
 
-    public EmployeeService(EmployeeRepository employeeRepository, @Lazy DepartmentService departmentService, PositionService positionService, JwtManager jwtManager, AuthManager authManager) {
+    public EmployeeService(EmployeeRepository employeeRepository, @Lazy DepartmentService departmentService, PositionService positionService, JwtManager jwtManager, AuthManager authManager, UserManager userManager) {
         this.employeeRepository = employeeRepository;
         this.departmentService = departmentService;
         this.positionService = positionService;
         this.jwtManager = jwtManager;
         this.authManager = authManager;
+        this.userManager = userManager;
     }
 
 
@@ -71,7 +77,7 @@ public class EmployeeService {
         }
 
         //Eklenilen çalışanı authService'e kaydediyoruz.
-        Long authId = getDataFromResponse(authManager.register(token,dto.registerRequestDto()));
+        Long authId = getDataFromResponse(authManager.register(token, dto.registerRequestDto()));
 
         Employee employee = Employee.builder()
                 .authId(authId)
@@ -89,9 +95,9 @@ public class EmployeeService {
         //Todo: Yeni çalışan eklendikten sonra, MailService üzerinden yöneticilere bilgi maili gönderilebilir.
     }
 
-    public List<AllEmployeeResponse> findAllEmployees(String token,Optional<EState> state) {
+    public List<AllEmployeeResponse> findAllEmployees(String token, Optional<EState> state) {
         Employee employee = getEmployeeByToken(token);
-        if(state.isPresent()) {
+        if (state.isPresent()) {
             return employeeRepository.findAllActiveEmployee(employee.getCompanyId(), state.get());
         }
         return employeeRepository.findAllEmployee(employee.getCompanyId());
@@ -223,12 +229,6 @@ public class EmployeeService {
                 .orElseThrow(() -> new OrganisationManagementException(ErrorType.EMPLOYEE_NOT_FOUND));
     }
 
-    private <T> T getDataFromResponse(ResponseEntity<BaseResponse<T>> response) {
-        if (response.getBody() == null || response.getBody().getData() == null) {
-            throw new OrganisationManagementException(ErrorType.INTERNAL_SERVER_ERROR);
-        }
-        return response.getBody().getData();
-    }
 
     public String getEmployeeNameByToken(String token, Optional<Long> employeeId) {
         Employee manager = getEmployeeByToken(token);
@@ -264,4 +264,20 @@ public class EmployeeService {
     }
 
 
+    public Boolean updateEmployeePermissions(String token, ManageEmployeePermissionsRequest dto) {
+        Employee manager = getEmployeeByToken(token);
+        Long companyId = manager.getCompanyId();
+        String organization = dto.organization().toLowerCase();
+        List<Long> employeeAuthIdList = switch (organization) {
+            case "department" ->
+                    employeeRepository.findAllEmployeeAuthIdByDepartmentIdListAndCompanyIdAndState(dto.idList(), companyId, EState.ACTIVE);
+            case "position" ->
+                    employeeRepository.findAllEmployeeAuthIdByPositionIdAndCompanyIdListAndState(dto.idList(), companyId, EState.ACTIVE);
+            default -> throw new OrganisationManagementException(ErrorType.VALIDATION_ERROR);
+        };
+
+        getSuccessFromResponse(userManager.manageUserPermissions(new ManageEmployeePermissionsRequest(null, employeeAuthIdList, dto.grantedPermissions())));
+
+        return true;
+    }
 }

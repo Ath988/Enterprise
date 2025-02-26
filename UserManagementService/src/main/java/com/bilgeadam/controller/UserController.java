@@ -1,6 +1,7 @@
 package com.bilgeadam.controller;
 
 import com.bilgeadam.dto.request.CreateMemberRequest;
+import com.bilgeadam.dto.request.otherServices.ManageEmployeePermissionsRequest;
 import com.bilgeadam.dto.response.BaseResponse;
 import com.bilgeadam.dto.response.UserPermissionResponse;
 import com.bilgeadam.dto.response.UserProfileResponse;
@@ -53,6 +54,15 @@ public class UserController {
                         .data(userService.findUserPermissionResponse(authId))
                 .build());
     }
+
+    @PostMapping("/manage-user-permissions")
+    public ResponseEntity<BaseResponse<Boolean>> manageUserPermissions(@RequestBody ManageEmployeePermissionsRequest dto){
+        return ResponseEntity.ok(BaseResponse.<Boolean>builder()
+                        .success(userService.updateUserPermissionsByAuthIdList(dto))
+                        .message("Çalışan sayfa görüntüleme izin yetkileri başarı ile güncellendi.")
+                .build());
+    }
+
 
 
 

@@ -2,6 +2,7 @@ package com.bilgeadam.service;
 
 import com.bilgeadam.dto.request.CreateMemberRequest;
 import com.bilgeadam.dto.request.otherServices.AddSubscriptionRequest;
+import com.bilgeadam.dto.request.otherServices.ManageEmployeePermissionsRequest;
 import com.bilgeadam.dto.response.UserPermissionResponse;
 import com.bilgeadam.dto.response.UserProfileResponse;
 import com.bilgeadam.entity.Role;
@@ -129,11 +130,13 @@ public class UserService {
                 .orElseThrow(() -> new UserManagementException(ErrorType.USER_NOT_FOUND));
         Set<String> userRolePermission = userRolePermissionService.findAllPermissionsByUserId(user.getId());
         Set<String> roles = user.getRoles().stream().map(Role::getName).collect(Collectors.toSet());
-        System.out.println(roles);
+
         String subscriptionType = getSubscriptionType(user.getId());
 
         return new UserPermissionResponse(roles, userRolePermission, subscriptionType);
     }
+
+
 
     private String getSubscriptionType(Long userId) {
         Long memberId = getMemberIdFromUserId(userId);
@@ -144,6 +147,20 @@ public class UserService {
     private Long getMemberIdFromUserId(Long userId) {
        return userRepository.findMemberIdByUserId(userId,"MEMBER")
                .orElseThrow(()->new UserManagementException(ErrorType.MEMBER_NOT_FOUND));
+    }
+
+    @Transactional
+    public Boolean updateUserPermissionsByAuthIdList(ManageEmployeePermissionsRequest dto){
+        List<UserRolePermission> permissionsList = userRolePermissionService.findByAuthIdList(dto.idList());
+        List<String> grandtedPermissions = dto.grantedPermissions(); //bu string değerler front endden enumlara uygun olacak şekilde gelecek.
+        Set<Permission> grantedPermissionEnums = grandtedPermissions.stream().map(Permission::valueOf).collect(Collectors.toSet());
+        grantedPermissionEnums.addAll(Set.of(Permission.ACCESS_PROFILE,Permission.ACCESS_CALENDAR_AND_CHAT)); // Her halükarda bunlar eklensin.
+        for (UserRolePermission userRolePermission : permissionsList) {
+            userRolePermission.setPermissions(grantedPermissionEnums);
+        }
+        userRolePermissionService.saveAll(permissionsList);
+        return true;
+
     }
 
 

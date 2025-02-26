@@ -42,4 +42,7 @@ public class User extends BaseEntity {
     @Builder.Default
     @ManyToMany(fetch = FetchType.EAGER)
     Set<Role> roles = new HashSet<>();
+
+
+
 }

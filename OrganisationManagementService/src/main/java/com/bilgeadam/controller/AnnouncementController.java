@@ -45,4 +45,15 @@ public class AnnouncementController {
 				                         .message("Duyurular başarıyla listelendi.")
 				                         .build());
 	}
+	
+	@DeleteMapping(DELETE_ANNOUNCEMENT)
+	public ResponseEntity<BaseResponse<Boolean>> deleteAnnouncement (@RequestHeader(value = "Authorization", required =
+			false) String token, Long announcementId) {
+		return  ResponseEntity.ok(BaseResponse.<Boolean>builder().code(200)
+				                          .data(announcementService.deleteAnnouncement(token, announcementId))
+				                          .success(true)
+				                          .message("Duyuru başarıyla silindi.")
+				                          .build());
+		
+	}
 }

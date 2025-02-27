@@ -65,13 +65,14 @@ public interface EmployeeRepository extends JpaRepository<Employee,Long> {
             "WHERE d.id IN ?1 AND e.companyId = ?2 AND e.state=?3 ")
     List<Long> findAllEmployeeAuthIdByDepartmentIdListAndCompanyIdAndState(List<Long> idList,Long companyId, EState state);
 
+    @Query("SELECT NEW com.bilgeadam.view.VwEmployee(e.id,CONCAT(e.firstName,' ',e.lastName)) FROM Employee e JOIN Position p ON p.id = e.positionId where e.positionId = ?1")
+    List<VwEmployee> findAllEmployeeByPositionId(Long positionId);
     @Query("SELECT e.authId From Employee e JOIN Position p ON e.positionId = p.id WHERE p.id  IN ?1 AND e.companyId = ?2 AND e.state = ?3")
     List<Long> findAllEmployeeAuthIdByPositionIdAndCompanyIdListAndState(List<Long> idList,Long companyId, EState eState);
 
-    @Query("SELECT NEW com.bilgeadam.view.VwEmployee(e.id,CONCAT(e.firstName,' ',e.lastName)) FROM Employee e " +
-            "WHERE e.positionId=?1")
-    List<VwEmployee> findAllEmployeeByPositionId(Long positionId);
-    
     @Query("SELECT e.companyId FROM Employee e WHERE e.authId = :authId")
     Long findCompanyIdByAuthId(@Param("authId") Long authId);
+
 }
+
+

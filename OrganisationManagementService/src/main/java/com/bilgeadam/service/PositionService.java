@@ -155,7 +155,7 @@ public class PositionService {
             VwPosition currentPosition = positionQueue.poll();
             
             
-            currentPosition.setEmployees(employeeRepository.findAllEmployeeByPositionId(currentPosition.getPositionId()));
+            //currentPosition.setEmployees(employeeRepository.findAllEmployeeByPositionId(currentPosition.getPositionId()));
             
             
             List<VwPosition> subPositions = positionRepository.findAllVwPositionsByParentPositionId(currentPosition.getPositionId());
@@ -169,7 +169,7 @@ public class PositionService {
                 
                 
                 for (VwPosition subPosition : subPositions) {
-                    subPosition.setEmployees(employeeRepository.findAllEmployeeByPositionId(subPosition.getPositionId()));
+                    //subPosition.setEmployees(employeeRepository.findAllEmployeeByPositionId(subPosition.getPositionId()));
                 }
             }
         }

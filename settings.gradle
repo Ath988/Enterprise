@@ -21,4 +21,5 @@ include 'EurekaService'
 include 'UserManagementService'
 include 'TicketService'
 include 'SurveyService'
+include 'DashboardService'
 

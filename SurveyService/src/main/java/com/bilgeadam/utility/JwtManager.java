@@ -3,6 +3,7 @@ package com.bilgeadam.utility;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 
 import com.bilgeadam.exception.ErrorType;
@@ -40,7 +41,10 @@ public class JwtManager {
             claims.put("roles", roles);
             claims.put("permissions", permissions);
             claims.put("subscriptionType", decodedJWT.getClaim("SUBSCRIPTION_TYPE").asString());
-            
+            Claim companyIdClaim = decodedJWT.getClaim("companyId");
+            if (!companyIdClaim.isNull()) {
+            claims.put("companyId", companyIdClaim.asLong());
+            }
             return claims;
         } catch (Exception e) {
             log.error("Token doğrulama hatası: ", e);

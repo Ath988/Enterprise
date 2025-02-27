@@ -24,5 +24,5 @@ public class Survey extends BaseEntity{
 	Long createdBy;
 	@ElementCollection
 	List<String> questionIds;
-
+	Long companyId;
 }

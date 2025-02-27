@@ -9,8 +9,7 @@ import com.bilgeadam.entity.Survey;
 import com.bilgeadam.entity.enums.EState;
 import com.bilgeadam.exception.ErrorType;
 import com.bilgeadam.exception.SurveyServiceException;
-import com.bilgeadam.repository.OptionRepository;
-import com.bilgeadam.repository.QuestionRepository;
+import com.bilgeadam.manager.OrganisationManager;
 import com.bilgeadam.repository.SurveyRepository;
 import com.bilgeadam.utility.JwtManager;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,6 +30,7 @@ public class SurveyService {
     private final QuestionService questionService;
     private final OptionService optionService;
     private final JwtManager jwtManager;
+    private final OrganisationManager organisationManager;
     
     private Long validateTokenAndCheckRole(String token, String... expectedRoles) {
         token = token.replace("Bearer ", "");
@@ -51,12 +52,18 @@ public class SurveyService {
             // Sadece MEMBER rolü anket oluşturabilir
             Long authId = validateTokenAndCheckRole(token, "MEMBER");
             
+            Long companyId = organisationManager.getCompanyIdByAuthId(authId)
+                                               .getBody().getData();
+            if (companyId == null) {
+                throw new SurveyServiceException(ErrorType.COMPANY_ID_NOT_FOUND);
+            }
             Survey survey = Survey.builder()
                                   .title(dto.getTitle())
                                   .description(dto.getDescription())
                                   .expirationDate(dto.getExpirationDate())
                                   .createdBy(authId)
                                   .state(EState.ACTIVE)
+                                  .companyId(companyId)
                                   .build();
             
             surveyRepository.save(survey);
@@ -102,7 +109,7 @@ public class SurveyService {
                                         .orElseThrow(() -> new SurveyServiceException(ErrorType.SURVEY_NOTFOUND));
         
         List<Question> questions = questionService.findAllBySurveyId(surveyId);
-        
+        System.out.println(surveyId);
         List<QuestionDetailDto> questionDetails = questions.stream()
                                                            .map(question -> {
                                                                List<Option> options = optionService.findAllByQuestionId(question.getId());
@@ -120,13 +127,24 @@ public class SurveyService {
     }
     
     public List<SurveyDetailDto> getAllSurveys(String token) {
-        validateTokenAndCheckRole(token, "MEMBER", "STAFF");
+        // Token'ı doğrula ve rolleri kontrol et
+        Long authId = validateTokenAndCheckRole(token, "MEMBER", "STAFF");
         
-        return surveyRepository.findAllByState(EState.ACTIVE)
-                               .stream()
-                               .map(survey -> getSurveyDetail(token, survey.getId()))
-                               .collect(Collectors.toList());
+        
+        Long companyId = organisationManager.getCompanyIdByAuthId(authId)
+                                            .getBody().getData();
+        if (companyId == null) {
+            throw new SurveyServiceException(ErrorType.COMPANY_ID_NOT_FOUND);
+        }
+        
+        // Şirkete ait aktif anketleri getir
+        return surveyRepository.findAllByCompanyIdAndState(companyId, EState.ACTIVE)
+                .stream()
+                .map(survey -> getSurveyDetail(token, survey.getId()))
+                .collect(Collectors.toList());
     }
+    
+
     
     @Transactional
     public Boolean deleteSurvey(String token, String surveyId) {

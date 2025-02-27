@@ -171,16 +171,24 @@ public class EmployeeController {
                         .data(employeeService.findAllEmployeeNamesByEmployeeIdList(employeeIdList))
                 .build());
     }
-
+    
     @PostMapping("/manage-employee-permissions")
     public ResponseEntity<BaseResponse<Boolean>> manageEmployeePermissions(
             @RequestHeader(value = "Authorization", required = false) String token,
             @RequestBody ManageEmployeePermissionsRequest dto){
         return ResponseEntity.ok(BaseResponse.<Boolean>builder()
-                        .success(employeeService.updateEmployeePermissions(token,dto))
-                        .message("Çalışan izinleri başarı ile güncellendi.")
-                .build());
+                                             .success(employeeService.updateEmployeePermissions(token,dto))
+                                             .message("Çalışan izinleri başarı ile güncellendi.")
+                                             .build());
     }
-
+    
+    
+    
+    @GetMapping("get-company-id/{authId}")
+    public ResponseEntity<BaseResponse<Long>> getCompanyIdByAuthId(@PathVariable Long authId){
+        return ResponseEntity.ok(BaseResponse.<Long>builder()
+                                         .data(employeeService.getCompanyIdByAuthId(authId))
+                                             .build());
+    }
 
 }

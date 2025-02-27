@@ -7,7 +7,7 @@ spring:
       name: super_admin
       password: root
   application:
-    name: TicketService
+    name: LiveSupportService
   datasource:
     driver-class-name: org.postgresql.Driver
     url: ${DB_URL}

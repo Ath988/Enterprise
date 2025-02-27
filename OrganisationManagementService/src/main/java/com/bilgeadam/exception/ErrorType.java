@@ -17,6 +17,8 @@ public enum ErrorType {
     INVALID_TOKEN(9001,"Geçersiz token bilgisi.",HttpStatus.BAD_REQUEST),
     INVALID_PASSWORD(9002,"Kullanıcı adı ya da şifre bilgisi hatalı.",HttpStatus.BAD_REQUEST),
 
+    ASSET_NOT_FOUND(4000, "Varlık Bulunamadı...", HttpStatus.NOT_FOUND),
+    MAINTENANCE_NOT_FOUND(4000, "Bakım talebi Bulunamadı...", HttpStatus.NOT_FOUND),
     ;
 
     int code;

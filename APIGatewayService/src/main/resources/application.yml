@@ -82,6 +82,11 @@ spring:
           predicates:
             - Path=/v1/dev/ticket/**
 
+        - id: survey-service
+          uri: http://localhost:8094
+          predicates:
+            - Path=/v1/dev/survey/**, /v1/dev/survey-response/**
+
         - id: file-service
           uri: http://localhost:8093
           predicates:

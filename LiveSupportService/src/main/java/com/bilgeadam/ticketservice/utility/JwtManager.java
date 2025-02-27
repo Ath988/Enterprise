@@ -73,7 +73,7 @@ public class JwtManager {
                 throw new EnterpriseException(ErrorType.INVALID_TOKEN);
             }
 
-            String role = decodedJWT.getClaim("role").asString();
+            String role = decodedJWT.getClaim("ROLE").asArray(String.class)[0];
             return ERole.valueOf(role.toUpperCase());
         }catch (Exception e){
             System.out.println(e.getMessage());

@@ -2,10 +2,7 @@ package com.bilgeadam.entity;
 
 import com.bilgeadam.entity.enums.ECurrency;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import java.math.BigDecimal;
@@ -22,11 +19,16 @@ public class Account extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
+    String accountName;
+    String accountNumber;
+    ECurrency currency;
 
-        String companyName;
-        String bankName;
-        String accountNumber;
-        @Enumerated(EnumType.STRING)
-        ECurrency currency; //Para Birimi
-        BigDecimal balance;
+    @Builder.Default
+    BigDecimal balance = BigDecimal.ZERO;
+
+
+
+
+
+
 }

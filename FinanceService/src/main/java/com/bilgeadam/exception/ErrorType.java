@@ -20,7 +20,10 @@ public enum ErrorType {
     INVOICE_NOT_FOUND(1004,"Fatura Bulunamadı",HttpStatus.UNAUTHORIZED),
     FINANCIAL_REPORT_NOT_FOUND(1005,"Finansal Rapor Bulunamadı",HttpStatus.UNAUTHORIZED),
     PAYMENT_NOT_FOUND(1006,"Odeme Bulunamadı",HttpStatus.UNAUTHORIZED),
-    TAX_RECORD_NOT_FOUND(1007,"VergiKaydı Bulunamadı",HttpStatus.UNAUTHORIZED);
+    TAX_RECORD_NOT_FOUND(1007,"VergiKaydı Bulunamadı",HttpStatus.UNAUTHORIZED),
+    DEPARTMENT_NOT_FOUND(1008,"Departman Bulunamadı",HttpStatus.UNAUTHORIZED),
+    BUDGET_NOT_FOUND(1009,"Bğtçe Bulunamadı",HttpStatus.UNAUTHORIZED),
+    INSUFFICIENT_BUDGET(1010,"Bütçe aşıldı" , HttpStatus.UNAUTHORIZED);
 
     int code;
     String message;

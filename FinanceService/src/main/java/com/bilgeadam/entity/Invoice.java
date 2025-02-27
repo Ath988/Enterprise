@@ -1,6 +1,6 @@
 package com.bilgeadam.entity;
 
-import com.bilgeadam.entity.enums.EInvoiceStatus;
+
 import feign.Param;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -25,8 +25,7 @@ public class Invoice extends BaseEntity{
     private Long id;
 
     String taxNo;            // Vergi Numarası ya da TC numarası da girilebilir.
-    String companyName;      // Şirket Adı
-    String companyAdress;    // Şirket  Adres Bilgisi
+    Long companyId;
     String buyerEmail;       // Alıcı Email Bilgisi
     String buyerPhone;       // Alıcı Telefon Bilgisi
     Long productId;          // Satılan ürün/hizmet ID

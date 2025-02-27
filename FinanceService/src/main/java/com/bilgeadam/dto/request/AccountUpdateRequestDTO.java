@@ -6,10 +6,11 @@ import java.math.BigDecimal;
 
 public record AccountUpdateRequestDTO(
         Long id,
-        String companyName,
-        String bankName,
+        BigDecimal balance,
         String accountName,
         String accountNumber,
-        ECurrency currency,
-        BigDecimal balance) {
+        ECurrency currency
+        ) {
+
+
 }

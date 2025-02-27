@@ -135,45 +135,30 @@ public class PositionService {
         String companyName = "KOÇ HOLDİNG";
         String CEO = employeeService.findCeoNameByCompanyId(companyId);
         
-        
         PositionTreeResponse response = PositionTreeResponse.builder()
                                                             .companyId(companyId)
                                                             .companyName(companyName)
                                                             .CEO(CEO)
                                                             .positions(new ArrayList<>())
                                                             .build();
-        
-        
         List<VwPosition> rootPositions = positionRepository.findAllVwPositionsByParentPositionId(1L);
         response.getPositions().addAll(rootPositions);
         
-        
         Queue<VwPosition> positionQueue = new LinkedList<>(rootPositions);
-        
         
         while (!positionQueue.isEmpty()) {
             VwPosition currentPosition = positionQueue.poll();
             
-            
             currentPosition.setEmployees(employeeRepository.findAllEmployeeByPositionId(currentPosition.getPositionId()));
-            
-            
             List<VwPosition> subPositions = positionRepository.findAllVwPositionsByParentPositionId(currentPosition.getPositionId());
-            
             if (!subPositions.isEmpty()) {
-                
                 currentPosition.setSubPositions(new ArrayList<>(subPositions));
-                
-                
                 positionQueue.addAll(subPositions);
-                
-                
                 for (VwPosition subPosition : subPositions) {
                     subPosition.setEmployees(employeeRepository.findAllEmployeeByPositionId(subPosition.getPositionId()));
                 }
             }
         }
-        
         return response;
     }
     

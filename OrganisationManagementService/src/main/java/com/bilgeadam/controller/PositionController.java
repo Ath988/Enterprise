@@ -92,7 +92,7 @@ public class PositionController {
                 .build());
     }
     
-    @GetMapping("/{companyId}/organization-tree")
+    @GetMapping("/position-tree/{companyId}")
     public ResponseEntity<BaseResponse<PositionTreeResponse>> getPositionTree(@PathVariable Long companyId) {
         return ResponseEntity.ok(BaseResponse.<PositionTreeResponse>builder()
                                              .data(positionService.getPositionTree(companyId))

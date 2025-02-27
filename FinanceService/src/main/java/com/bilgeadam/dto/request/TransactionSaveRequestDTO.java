@@ -12,10 +12,13 @@ import java.time.LocalDate;
 public record TransactionSaveRequestDTO(
         Long accountId,
         Long invoiceId,
+        Long budgetId,
         ETransactionType transactionType,
         EExpenseCategory expenseCategory,
         EIncomeCategory incomeCategory,
         BigDecimal amount,
         String description,
-        LocalDate transactionDate) {
+        LocalDate transactionDate,
+        Long departmentId
+) {
 }

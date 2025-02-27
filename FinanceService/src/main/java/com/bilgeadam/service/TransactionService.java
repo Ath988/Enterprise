@@ -1,7 +1,12 @@
 package com.bilgeadam.service;
 
+import com.bilgeadam.dto.request.AccountUpdateRequestDTO;
+import com.bilgeadam.dto.request.BudgetUpdateRequestDTO;
 import com.bilgeadam.dto.request.TransactionSaveRequestDTO;
 import com.bilgeadam.dto.request.TransactionUpdateRequestDTO;
+import com.bilgeadam.dto.response.DepartmentResponseDTO;
+import com.bilgeadam.entity.Account;
+import com.bilgeadam.entity.Budget;
 import com.bilgeadam.entity.Transaction;
 import com.bilgeadam.entity.enums.EExpenseCategory;
 import com.bilgeadam.entity.enums.EIncomeCategory;
@@ -9,6 +14,7 @@ import com.bilgeadam.entity.enums.EStatus;
 import com.bilgeadam.entity.enums.ETransactionType;
 import com.bilgeadam.exception.ErrorType;
 import com.bilgeadam.exception.FinanceServiceException;
+import com.bilgeadam.manager.IDepartmentClient;
 import com.bilgeadam.repository.TransactionRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
@@ -23,26 +29,75 @@ import java.util.List;
 public class TransactionService {
     private final TransactionRepository transactionRepository;
     private final AccountService accountService;
-    private final InvoiceService invoiceService;
+    private final BudgetService budgetService;
+    private final IDepartmentClient departmentClient;
+
+
+
 
     /*Buradaki save metodu kaydın önce gelir mi gider olduğuna bakılarak çalışır.
       Gelir ya da gider olarak seçildikten sonra kayıt işlemi yapar. -validate(doğrulama metodu)
    */
+
     @Operation(summary = "TRANSACTION SAVE")
     public Boolean save(TransactionSaveRequestDTO dto) {
-        validateTransactionCategory(dto.transactionType(), dto.expenseCategory(), dto.incomeCategory());
-        transactionRepository.save(
-                Transaction.builder()
-                        .accountId(dto.accountId())
-                        .invoiceId(dto.invoiceId())
-                        .transactionType(dto.transactionType())
-                        .expenseCategory(dto.expenseCategory())
-                        .incomeCategory(dto.incomeCategory())
-                        .amount(dto.amount())
-                        .description(dto.description())
-                        .transactionDate(dto.transactionDate())
-                        .build()
-        );
+
+        Account account = accountService.findById(dto.accountId());
+        Budget budget = budgetService.findById(dto.budgetId());
+
+        // Eğer Gider ise Department ve Bütçe kontrolü yapılıyor
+        if (dto.transactionType() == ETransactionType.EXPENSE) {
+            DepartmentResponseDTO department = departmentClient.getDepartmentById(dto.departmentId());
+
+            if (department == null) {
+                throw new FinanceServiceException(ErrorType.DEPARTMENT_NOT_FOUND);
+            }
+
+            BigDecimal remainingBudget = budget.getAllocatedAmount().subtract(budget.getSpentAmount());
+            if (dto.amount().compareTo(remainingBudget) > 0) {
+                throw new FinanceServiceException(ErrorType.INSUFFICIENT_BUDGET);
+            }
+
+            budget.setSpentAmount(budget.getSpentAmount().add(dto.amount()));
+            budgetService.update(new BudgetUpdateRequestDTO(
+                    budget.getId(),
+                    budget.getYear(),
+                    budget.getMonth(),
+                    budget.getDepartmentId(),
+                    budget.getBudgetCategory(),
+                    budget.getDescription(),
+                    budget.getAllocatedAmount(),
+                    budget.getSpentAmount()
+
+            ));
+        }
+
+        // Eğer Gelir ise sadece hesap bakiyesi güncellenir
+        if (dto.transactionType() == ETransactionType.INCOME) {
+            account.setBalance(account.getBalance().add(dto.amount()));
+
+            // Account'u AccountUpdateRequestDTO'ya dönüştürüyoruz
+            AccountUpdateRequestDTO accountUpdateRequestDTO = new AccountUpdateRequestDTO(
+                    account.getId(),
+                    account.getBalance(),
+                    account.getAccountName(),
+                    account.getAccountNumber(),
+                    account.getCurrency());
+
+            accountService.updateAccount(accountUpdateRequestDTO);
+        }
+
+        // Transaction'ı oluşturuyoruz
+        Transaction transaction = Transaction.builder()
+                .accountId(account.getId())
+                .budgetId(budget.getId())
+                .transactionType(dto.transactionType())
+                .amount(dto.amount())
+                .description(dto.description())
+                .date(dto.transactionDate())
+                .build();
+
+        transactionRepository.save(transaction);
         return true;
     }
 
@@ -56,56 +111,29 @@ public class TransactionService {
 
     @Operation(summary = "TRANSACTION UPDATE")
     public Boolean update(TransactionUpdateRequestDTO dto) {
-        Transaction transaction = transactionRepository.findById(dto.id()).orElseThrow(() -> new FinanceServiceException(ErrorType.TRANSACTION_NOT_FOUND));
-        validateTransactionCategory(dto.transactionType(), dto.expenseCategory(), dto.incomeCategory());
-        transaction.setInvoiceId(dto.invoiceId());
-        transaction.setAccountId(dto.accountId());
+        // Mevcut Transaction'ı bul
+        Transaction transaction = transactionRepository.findById(dto.id())
+                .orElseThrow(() -> new FinanceServiceException(ErrorType.TRANSACTION_NOT_FOUND));
+
+        // Account ve Budget'ı service katmanları üzerinden bul
+        Account account = accountService.findById(dto.accountId());
+        Budget budget = budgetService.findById(dto.budgetId());
+
+        // Transaction'ı güncelle
+        transaction.setAccountId(account.getId());  // accountId ile set ediliyor
+        transaction.setBudgetId(budget.getId());     // budgetId ile set ediliyor
         transaction.setTransactionType(dto.transactionType());
-        transaction.setExpenseCategory(dto.expenseCategory());
-        transaction.setIncomeCategory(dto.incomeCategory());
         transaction.setAmount(dto.amount());
         transaction.setDescription(dto.description());
-        transaction.setTransactionDate(dto.transactionDate());
+        transaction.setDate(dto.transactionDate());
 
+        transactionRepository.save(transaction);
         return true;
-    }
-
-    // Gider kategorisine göre sıralama
-    @Operation(summary = "Gider Kategorisine Göre Sıralama")
-    public List<Transaction> getSortedTransactionsByCategory(ETransactionType type, EExpenseCategory category, boolean ascending) {
-        if (ascending) {
-            return transactionRepository.findByTransactionTypeAndExpenseCategoryOrderByExpenseCategoryAsc(type, category);
-        } else {
-            return transactionRepository.findByTransactionTypeAndExpenseCategoryOrderByExpenseCategoryDesc(type, category);
-        }
-    }
-
-    /**
-     * Gelir ve gider işlemleri için kategori doğrulaması yapar.
-     *
-     * @param transactionType İşlem tipi (Gelir veya Gider).
-     * @param expenseCategory Eğer işlem giderse, bu parametre dolu olmalıdır.
-     * @param incomeCategory  Eğer işlem gelirse, bu parametre dolu olmalıdır.
-     */
-    private void validateTransactionCategory(ETransactionType transactionType,
-                                             EExpenseCategory expenseCategory,
-                                             EIncomeCategory incomeCategory) {
-        if (transactionType == ETransactionType.INCOME && incomeCategory == null) {
-            throw new IllegalArgumentException("Gelir işlemi için Sadece GELİR kategorisi belirtilmelidir.");
-        }
-        if (transactionType == ETransactionType.EXPENSE && expenseCategory == null) {
-            throw new IllegalArgumentException("Gider işlemi için Sadece HARCAMA kategorisi belirtilmelidir.");
-        }
     }
 
     @Operation(summary = "Hesap Numarasına Göre Gelir-Gider Bulma")
     public List<Transaction> getTransactionsByAccountId(Long accountId) {
         return transactionRepository.findByAccountId(accountId);
-    }
-
-    @Operation(summary = "İki Tarih Aralığındaki Gelir-Giderler")
-    public List<Transaction> getTransactionsByDateRange(LocalDate startDate, LocalDate endDate) {
-        return transactionRepository.findByTransactionDateBetween(startDate, endDate);
     }
 
     @Operation(summary = "İşlem Türüne(Gelir-Gider) Göre Kayıt Bulma")
@@ -134,4 +162,22 @@ public class TransactionService {
 
         return getTotalIncome().subtract(getTotalExpense());
     }
+
+//    /**
+//     * Gelir ve gider işlemleri için kategori doğrulaması yapar.
+//     *
+//     * @param transactionType İşlem tipi (Gelir veya Gider).
+//     * @param expenseCategory Eğer işlem giderse, bu parametre dolu olmalıdır.
+//     * @param incomeCategory  Eğer işlem gelirse, bu parametre dolu olmalıdır.
+//     */
+//    private void validateTransactionCategory(ETransactionType transactionType,
+//                                             EExpenseCategory expenseCategory,
+//                                             EIncomeCategory incomeCategory) {
+//        if (transactionType == ETransactionType.INCOME && incomeCategory == null) {
+//            throw new IllegalArgumentException("Gelir işlemi için Sadece GELİR kategorisi belirtilmelidir.");
+//        }
+//        if (transactionType == ETransactionType.EXPENSE && expenseCategory == null) {
+//            throw new IllegalArgumentException("Gider işlemi için Sadece HARCAMA kategorisi belirtilmelidir.");
+//        }
+//    }
 }

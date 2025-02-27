@@ -6,8 +6,11 @@ import com.bilgeadam.dto.request.AccountSaveRequestDTO;
 import com.bilgeadam.dto.request.AccountUpdateRequestDTO;
 import com.bilgeadam.dto.request.PageRequestDTO;
 import com.bilgeadam.dto.response.AccountResponseDTO;
+import com.bilgeadam.dto.response.ResponseDTO;
 import com.bilgeadam.entity.Account;
 import com.bilgeadam.entity.enums.ECurrency;
+import com.bilgeadam.exception.ErrorType;
+import com.bilgeadam.exception.FinanceServiceException;
 import com.bilgeadam.service.AccountService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -28,8 +31,13 @@ import static com.bilgeadam.constant.RestApis.*;
 
         @PostMapping(SAVE_ACCOUNT)
         @Operation(summary = "Creates New Account")
-        public ResponseEntity<Boolean> save(@RequestBody AccountSaveRequestDTO dto) {
-            return ResponseEntity.ok(accountService.saveAccount(dto));
+        public ResponseEntity<ResponseDTO<Boolean>> save(@RequestBody AccountSaveRequestDTO dto) {
+            return ResponseEntity.ok(ResponseDTO
+                    .<Boolean>builder()
+                    .data(accountService.saveAccount(dto))
+                    .message("Success")
+                    .code(200)
+                    .build());
         }
 
         @DeleteMapping(DELETE_ACCOUNT + "/{id}")
@@ -43,43 +51,67 @@ import static com.bilgeadam.constant.RestApis.*;
             return ResponseEntity.ok(accountService.updateAccount(dto));
         }
 
-        @GetMapping(GET_ALL_ACCOUNTS)
-        public ResponseEntity<List<Account>> findAll(@RequestBody PageRequestDTO dto){
-
-            return ResponseEntity.ok(accountService.findAll(dto));
+        @PostMapping(GET_ALL_ACCOUNTS)
+        public ResponseEntity<ResponseDTO<List<Account>>> findAll(@RequestBody PageRequestDTO dto) {
+            return ResponseEntity.ok(ResponseDTO
+                    .<List<Account>>builder()
+                    .data(accountService.findAll(dto))
+                    .message("Success")
+                    .code(200)
+                    .build());
         }
 
-        @GetMapping(GET_ACCOUNT_BY_ID + "/{id}")
+
+        @PostMapping(GET_ACCOUNT_BY_ID + "/{id}")
         @Operation(summary = "Get account by ID")
         public ResponseEntity<Account> findById(@PathVariable Long id) {
             return ResponseEntity.ok(accountService.findById(id));
         }
 
+
+
         @GetMapping(GET_ACCOUNT_BY_ACCOUNT_NUMBER + "/{accountNumber}")
         @Operation(summary = "Get account by account number")
-        public ResponseEntity<AccountResponseDTO> getByAccountNumber(@PathVariable String accountNumber) {
-            Account account = accountService.findByAccountNumber(accountNumber);
-            return ResponseEntity.ok(new AccountResponseDTO(account));
+        public ResponseEntity<AccountResponseDTO> findByAccountNumberContainingIgnoreCase(@PathVariable String accountNumber) {
+            Account account = accountService.findByAccountNumberContainingIgnoreCase(accountNumber);
+
+            if (account == null) {
+                throw new FinanceServiceException(ErrorType.ACCOUNT_NOT_FOUND); // Eğer account bulunamazsa, hata fırlatıyoruz
+            }
+
+            // Account nesnesinden gelen bilgileri AccountResponseDTO'ya çeviriyoruz
+            AccountResponseDTO accountResponseDTO = new AccountResponseDTO(
+                    account.getId(),
+                    account.getAccountName(),
+                    account.getAccountNumber(),
+                    account.getCurrency(),
+                    account.getBalance()
+            );
+
+            return ResponseEntity.ok(accountResponseDTO);
         }
 
-        @GetMapping(GET_ACCOUNT_BY_COMPANY_NAME + "/{companyName}")
-        @Operation(summary = "Get account by company name")
-        public ResponseEntity<AccountResponseDTO> getByCompanyName(@PathVariable String companyName) {
-            Account account = accountService.findByCompanyName(companyName);
-            return ResponseEntity.ok(new AccountResponseDTO(account));
+        @GetMapping(GET_ACCOUNT_BY_ACCOUNT_NAME + "/{accountName}")
+        @Operation(summary = "Get account by account name")
+        public ResponseEntity<AccountResponseDTO> findByAccountNameContainingIgnoreCase(@PathVariable String accountName) {
+            Account account = accountService.findByAccountNameContainingIgnoreCase(accountName);
+
+            if (account == null) {
+                throw new FinanceServiceException(ErrorType.ACCOUNT_NOT_FOUND); // Eğer account bulunamazsa, hata fırlatıyoruz
+            }
+
+            // Account nesnesinden gelen bilgileri AccountResponseDTO'ya çeviriyoruz
+            AccountResponseDTO accountResponseDTO = new AccountResponseDTO(
+                    account.getId(),
+                    account.getAccountName(),
+                    account.getAccountNumber(),
+                    account.getCurrency(),
+                    account.getBalance()
+            );
+
+            return ResponseEntity.ok(accountResponseDTO);
         }
 
-        @GetMapping("/by-currency-balance")
-        @Operation(summary = "Get accounts by currency and balance")
-        public ResponseEntity<List<AccountResponseDTO>> getByCurrencyAndBalance(
-                @RequestParam ECurrency currency,
-                @RequestParam BigDecimal balance) {
-            List<Account> accounts = accountService.findByCurrencyAndBalanceGreaterThan(currency, balance);
-            List<AccountResponseDTO> response = accounts.stream()
-                    .map(AccountResponseDTO::new)
-                    .toList();
-            return ResponseEntity.ok(response);
-        }
     }
 
 

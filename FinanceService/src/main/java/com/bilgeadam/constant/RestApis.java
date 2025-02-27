@@ -16,6 +16,7 @@ public class RestApis {
     public static final String PAYMENT = ROOT + "/payment";
     public static final String INVOICE = ROOT + "/invoice";
     public static final String FINANCIAL_REPORT = ROOT + "/financial-report";
+    public static final String BUDGET = ROOT + "/department";
 
 //*********************************************************************************
 
@@ -25,7 +26,7 @@ public class RestApis {
     public static final String GET_ALL_ACCOUNTS = "/get-all-accounts";
     public static final String GET_ACCOUNT_BY_ID ="/get-account-by-id";
     public static final String GET_ACCOUNT_BY_ACCOUNT_NUMBER =  "/get-account-by-account-number";
-    public static final String GET_ACCOUNT_BY_COMPANY_NAME = "/get-account-by-company-name";
+    public static final String GET_ACCOUNT_BY_ACCOUNT_NAME = "/get-account-by-account-name";
 
 //************************************************************************************
 
@@ -80,4 +81,16 @@ public class RestApis {
     public static final String GET_FINANCIAL_REPORT_BY_ID =  "/get-financial-report-by-id";
     public static final String FIND_BY_ACCOUNT_ID_BETWEEN_DATE ="/reports/{accountId}/between";
     public static final String FIND_BY_ACCOUNT_ID ="/reports/{accountId}";
+
+//************************************************************************************
+    public static final String GET_DEPARTMENTS = "/get-departments";
+
+    //************************************************************************************
+    public static final String SAVE_BUDGET = "/add-budget";
+    public static final String DELETE_BUDGET ="/delete-budget";
+    public static final String UPDATE_BUDGET =  "/update-budget";
+    public static final String GET_ALL_BUDGETS = "/get-all-budgets";
+    public static final String GET_BUDGET_BY_ID ="/get-account-by-id";
+    public static final String GET_ALL_CATEGORIES ="/get-all-categories";
+    public static final String FIND_ALL_BY_DEPARTMENT_NAME ="/get-all-by-department-name";
 }

@@ -23,8 +23,7 @@ public class InvoiceService {
     public Boolean save(InvoiceSaveRequestDTO dto) {
         Invoice invoice = Invoice.builder()
                 .taxNo(dto.taxNo())
-                .companyName(dto.companyName())
-                .companyAdress(dto.companyAdress())
+                .companyId(dto.companyId())
                 .buyerEmail(dto.buyerEmail())
                 .buyerPhone(dto.buyerPhone())
                 .productId(dto.productId())
@@ -42,8 +41,7 @@ public class InvoiceService {
     public Boolean update(InvoiceUpdateRequestDTO dto) {
         Invoice invoice = invoiceRepository.findById(dto.id()).orElseThrow(() -> new FinanceServiceException(ErrorType.INVOICE_NOT_FOUND));
         invoice.setTaxNo(dto.taxNo());
-        invoice.setCompanyName(dto.companyName());
-        invoice.setCompanyAdress(dto.companyAdress());
+        invoice.setCompanyId(dto.companyId());
         invoice.setBuyerEmail(dto.buyerEmail());
         invoice.setBuyerPhone(dto.buyerPhone());
         invoice.setProductId(dto.productId());

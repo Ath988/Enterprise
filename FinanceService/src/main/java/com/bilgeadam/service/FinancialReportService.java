@@ -60,7 +60,6 @@ public class FinancialReportService {
         return financialReportRepository.findByAccountIdAndStartDateBetween(accountId, start, end);
     }
 
-
     public FinancialReport findById(Long id) {
         return financialReportRepository.findById(id).orElseThrow(() -> new FinanceServiceException(ErrorType.ACCOUNT_NOT_FOUND));
     }

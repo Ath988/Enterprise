@@ -11,6 +11,7 @@ public record TransactionUpdateRequestDTO(
         Long id,
         Long accountId,
         Long invoiceId,
+        Long budgetId,
         ETransactionType transactionType,
         EExpenseCategory expenseCategory,
         EIncomeCategory incomeCategory,

@@ -11,6 +11,8 @@ public class RestApis {
     public static final String DEPARTMENT = ROOT + "/department";
     public static final String POSITION = ROOT + "/position";
     public static final String ANNOUNCEMENT = ROOT + "/announcement";
+    public static final String QUESTION = ROOT + "/question";
+    public static final String REPLY = ROOT + "/reply";
     public static final String ASSET = ROOT + "/asset";
     public static final String MAINTENANCE = ROOT + "/maintenance";
 
@@ -27,4 +29,10 @@ public class RestApis {
     public static final String GETALL = "/get-all";
     public static final String UPDATE = "/update";
     public static final String DELETE = "/delete";
+
+    public static final String GET_ALL_QUESTION = "/get-all-question";
+    public static final String GET_QUESTION = "/get-question";
+    public static final String ADD_QUESTION = "/add-question";
+
+    public static final String ADD_REPLY = "/add-reply";
 }

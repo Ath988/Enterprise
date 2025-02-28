@@ -284,4 +284,18 @@ public class EmployeeService {
     public Long getCompanyIdByAuthId(Long authId) {
         return employeeRepository.findCompanyIdByAuthId(authId);
     }
+
+
+    public String getEmployeeFullNameById(Long employeeId) {
+        // EmployeeRepository üzerinden veritabanından çalışan bilgilerini alıyoruz
+        Employee employee = employeeRepository.findById(employeeId).orElse(null); // Optional kullanarak null kontrolü yapıyoruz
+
+        if (employee != null) {
+            // Employee bilgileri bulunduysa, isim ve soyisim bilgisini döndürüyoruz
+            return employee.getFirstName() + " " + employee.getLastName();
+        } else {
+            // Employee bulunamazsa "Unknown" döndürüyoruz
+            return "Unknown";
+        }
+    }
 }

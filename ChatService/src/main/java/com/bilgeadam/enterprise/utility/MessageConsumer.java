@@ -20,7 +20,7 @@ public class MessageConsumer {
 	public void consumePrivateMessage(String jsonMessage) {
 		try {
 			NewMessageResponseDto messageDto = objectMapper.readValue(jsonMessage, NewMessageResponseDto.class);
-			System.out.println("📥 Private Mesaj Alındı: " + messageDto.content());
+			System.out.println("Private Mesaj Alındı: " + messageDto.content());
 			messagingTemplate.convertAndSend("/topic/private/" + messageDto.chatId(), messageDto);
 		} catch (JsonProcessingException e) {
 			System.err.println("❌ JSON parse hatası (Private): " + e.getMessage());
@@ -31,7 +31,7 @@ public class MessageConsumer {
 	public void consumeGroupMessage(String jsonMessage) {
 		try {
 			NewMessageResponseDto messageDto = objectMapper.readValue(jsonMessage, NewMessageResponseDto.class);
-			System.out.println("📥 Group Mesaj Alındı: " + messageDto.content());
+			System.out.println("Group Mesaj Alındı: " + messageDto.content());
 			messagingTemplate.convertAndSend("/topic/group/" + messageDto.chatId(), messageDto);
 		} catch (JsonProcessingException e) {
 			System.err.println("❌ JSON parse hatası (Group): " + e.getMessage());

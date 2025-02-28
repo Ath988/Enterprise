@@ -22,7 +22,7 @@ public class MessageProducer {
 		try {
 			String jsonMessage = objectMapper.writeValueAsString(messageDto);
 			rabbitTemplate.convertAndSend(MESSAGE_EXCHANGE, routingKey, jsonMessage);
-			System.out.println("✅ RabbitMQ'ya JSON mesaj gönderildi: " + messageDto.content());
+			System.out.println("JSON mesaj gönderildi: " + messageDto.content());
 		} catch (JsonProcessingException e) {
 			throw new RuntimeException("❌ JSON dönüşüm hatası: " + e.getMessage(), e);
 		}

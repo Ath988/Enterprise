@@ -23,7 +23,7 @@ public class TokenValidationAspect {
 	@Before("execution(* com.bilgeadam.enterprise.controller.*.*(..)) && !execution(* com.bilgeadam.enterprise" +
 			".controller.ChatController.login(..)) && !execution(* com.bilgeadam.enterprise.controller" +
 			".ChatController.sendPrivateMessage(..)) && !execution(* com.bilgeadam.enterprise.controller" +
-			".ChatController.sendGroupMessage(..))")
+			".ChatController.sendGroupMessage(..)) && !execution(* com.bilgeadam.enterprise.controller.WebRtcController.*(..))")
 	public void validateToken() {
 		String headerToken = httpServletRequest.getHeader("Authorization");
 		

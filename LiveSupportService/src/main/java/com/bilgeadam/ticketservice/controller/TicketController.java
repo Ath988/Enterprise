@@ -59,7 +59,7 @@ public class TicketController {
                 .data(ticketService.respondToTicket(dto))
                 .success(true)
                 .code(200)
-                .message("successsfully added a new ticket")
+                .message("successsfully responded to the ticket")
                 .build());
     }
 

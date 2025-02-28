@@ -13,6 +13,8 @@ public class RestApis {
     public static final String ANNOUNCEMENT = ROOT + "/announcement";
     public static final String QUESTION = ROOT + "/question";
     public static final String REPLY = ROOT + "/reply";
+    public static final String ASSET = ROOT + "/asset";
+    public static final String MAINTENANCE = ROOT + "/maintenance";
 
     public static final String CREATE_COMPANY_MANAGER = "/create-company-manager";
     public static final String CREATE_ANNOUNCEMENT = "/create-announcement";

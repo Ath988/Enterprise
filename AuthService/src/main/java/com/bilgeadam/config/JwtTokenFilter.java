@@ -1,6 +1,5 @@
 package com.bilgeadam.config;
 
-import com.bilgeadam.util.JwtManager;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,15 +19,15 @@ import java.util.Optional;
 
 
 @Slf4j
-@AllArgsConstructor
-public class JwtAuthFilter extends OncePerRequestFilter {
+@Component
+@RequiredArgsConstructor
+public class JwtTokenFilter extends OncePerRequestFilter {
     private final JwtUserDetail jwtUserDetail;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
-
         final String authHeader = request.getHeader("Authorization");
 
         if (Objects.nonNull(authHeader) && authHeader.startsWith("Bearer ")) {

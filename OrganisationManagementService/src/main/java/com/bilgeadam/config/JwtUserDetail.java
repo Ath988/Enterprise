@@ -1,9 +1,5 @@
 package com.bilgeadam.config;
 
-
-import com.bilgeadam.dto.response.otherServices.UserPermissionResponse;
-import com.bilgeadam.entity.Employee;
-import com.bilgeadam.repository.EmployeeRepository;
 import com.bilgeadam.utility.JwtManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
@@ -13,7 +9,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -26,7 +23,7 @@ public class JwtUserDetail implements UserDetailsService {
         return null;
     }
     public UserDetails getAuthFromToken(String token){
-        UserPermissionResponse urp = jwtManager.getRolesAndPermissionsFromToken(token);
+        com.bilgeadam.dto.response.otherServices.UserPermissionResponse urp = jwtManager.getRolesAndPermissionsFromToken(token);
         Set<String> roles = urp.roles();
         Set<String> permissions = urp.permissions();
         String subscriptionType = urp.subscriptionType();
@@ -37,8 +34,9 @@ public class JwtUserDetail implements UserDetailsService {
         permissions.forEach(permission -> {authorizedList.add(new SimpleGrantedAuthority(permission));});//bu ve subscription hasAuthority ile ör: hasAuthority("ENTERPRISE")
         authorizedList.add(new SimpleGrantedAuthority(subscriptionType));
 
+
         return org.springframework.security.core.userdetails.User.builder()
-                .username("user@ornek.com")
+                .username("user@ornek.com") //Todo: Belki bu da tokendan claim ile çekilebilir.
                 .password("")
                 .accountLocked(false)
                 .accountExpired(false)

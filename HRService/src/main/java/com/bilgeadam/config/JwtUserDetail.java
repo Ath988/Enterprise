@@ -32,8 +32,8 @@ public class JwtUserDetail implements UserDetailsService {
 
         Set<GrantedAuthority> authorizedList=new HashSet<>();
 
-        roles.forEach(role -> {authorizedList.add(new SimpleGrantedAuthority("ROLE_"+role));}); //hasRole ile kontrol edilecek. ör: hasRole("MEMBER")
-        permissions.forEach(permission -> {authorizedList.add(new SimpleGrantedAuthority(permission));});//bu ve subscription hasAuthority ile ör: hasAuthority("ENTERPRISE")
+        roles.forEach(role -> authorizedList.add(new SimpleGrantedAuthority("ROLE_"+role))); //hasRole ile kontrol edilecek. ör: hasRole("MEMBER")
+        permissions.forEach(permission -> authorizedList.add(new SimpleGrantedAuthority(permission)));//bu ve subscription hasAuthority ile ör: hasAuthority("ENTERPRISE")
         authorizedList.add(new SimpleGrantedAuthority(subscriptionType));
 
 

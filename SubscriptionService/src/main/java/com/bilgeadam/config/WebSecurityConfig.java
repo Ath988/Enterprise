@@ -24,16 +24,14 @@ public class WebSecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class);
         http
-                .cors(cors -> cors.configurationSource(new CorsConfig().corsConfigurationSource()))
+                .cors(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(req -> req
-                        .requestMatchers("v1/dev/department/**").hasAnyRole("STAFF","MEMBER","SYSTEM_ADMIN")
                         .anyRequest().permitAll()
                 );
-        
+
         return http.build();
     }
-    
     
     @Bean
     public PasswordEncoder passwordEncoder() {

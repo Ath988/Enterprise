@@ -40,6 +40,15 @@ public class StockMovementService
         {
             throw new InventoryServiceException(ErrorType.STOCK_NOT_ENOUGH);
         }
+        product.setStockCount(product.getStockCount() - dto.quantity());
+
+        //Ürün stok miktarı düşükse bildirim gönderiliyor.
+        if (!product.getIsNotified())
+        {
+            notificationManager.notificationSender(new NotificationMessageRequestDto("Düşük Stok",product.getName() + " adlı ürünün kalan stok miktarı: " + product.getStockCount(),true));
+            product.setIsNotified(true);
+        }
+
         stockMovementRepository.save(StockMovement
                 .builder()
                 .authId(1L)
@@ -49,14 +58,6 @@ public class StockMovementService
                 .type(dto.type())
                 .build());
 
-        product.setStockCount(product.getStockCount() - dto.quantity());
-
-        //Ürün stok miktarı düşükse bildirim gönderiliyor.
-        if (!product.getIsNotified())
-        {
-            notificationManager.notificationSender(new NotificationMessageRequestDto("Düşük Stok",product.getName() + " adlı ürünün kalan stok miktarı: " + product.getStockCount(),true));
-            product.setIsNotified(true);
-        }
         productService.save(product);
         return true;
     }

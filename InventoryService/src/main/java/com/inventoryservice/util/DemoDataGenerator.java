@@ -1,13 +1,9 @@
 package com.inventoryservice.util;
 
-import com.inventoryservice.dto.request.BuyOrderSaveRequestDTO;
-import com.inventoryservice.dto.request.ProductSaveRequestDTO;
-import com.inventoryservice.dto.request.SupplierSaveRequestDTO;
-import com.inventoryservice.dto.request.WareHouseSaveRequestDTO;
-import com.inventoryservice.services.BuyOrderService;
-import com.inventoryservice.services.ProductService;
-import com.inventoryservice.services.SupplierService;
-import com.inventoryservice.services.WareHouseService;
+import com.inventoryservice.dto.request.*;
+import com.inventoryservice.entities.StockMovement;
+import com.inventoryservice.entities.enums.EStockMovementType;
+import com.inventoryservice.services.*;
 import jakarta.annotation.PostConstruct;
 import jakarta.persistence.PrePersist;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +19,7 @@ public class DemoDataGenerator
     private final SupplierService supplierService;
     private final ProductService productService;
     private final BuyOrderService buyOrderService;
+    private final StockMovementService stockMovementService;
 
     @PostConstruct
     public void generator(){
@@ -30,6 +27,7 @@ public class DemoDataGenerator
         addSuppliers();
         addProducts();
         addBuyOrders();
+        addStockMovements();
     }
     public void addWarehouses(){
         String[] warehouseNames = {
@@ -86,6 +84,20 @@ public class DemoDataGenerator
         buyOrderService.save(new BuyOrderSaveRequestDTO(8L,8L,88));
         buyOrderService.save(new BuyOrderSaveRequestDTO(9L,9L,99));
         buyOrderService.save(new BuyOrderSaveRequestDTO(10L,10L,100));
+
+    }
+
+    public void addStockMovements(){
+        stockMovementService.save(new StockMovementSaveRequestDTO("Ürün Satışı", 1L, 10 , EStockMovementType.SELL));
+        stockMovementService.save(new StockMovementSaveRequestDTO("Ürün Satışı", 2L, 15 , EStockMovementType.SELL));
+        stockMovementService.save(new StockMovementSaveRequestDTO("Hasarlı ürün", 3L, 17 , EStockMovementType.DAMAGE));
+        stockMovementService.save(new StockMovementSaveRequestDTO("Iade", 4L, 15 , EStockMovementType.RETURN));
+        stockMovementService.save(new StockMovementSaveRequestDTO("Iade", 5L, 12 , EStockMovementType.RETURN));
+        stockMovementService.save(new StockMovementSaveRequestDTO("Promosyon için verildi", 6L, 10 , EStockMovementType.PROMOTION));
+        stockMovementService.save(new StockMovementSaveRequestDTO("Kayıp", 7L, 20 , EStockMovementType.LOST));
+        stockMovementService.save(new StockMovementSaveRequestDTO("Fire verildi", 8L, 5 , EStockMovementType.WASTAGE));
+        stockMovementService.save(new StockMovementSaveRequestDTO("Ürün Satışı", 9L, 10 , EStockMovementType.SELL));
+        stockMovementService.save(new StockMovementSaveRequestDTO("Ürün Satışı", 10L, 15 , EStockMovementType.SELL));
 
     }
 }

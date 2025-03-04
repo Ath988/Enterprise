@@ -7,6 +7,7 @@ import com.bilgeadam.dto.response.BaseResponse;
 import com.bilgeadam.dto.response.UserPermissionResponse;
 import com.bilgeadam.dto.response.UserProfileResponse;
 import com.bilgeadam.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -65,7 +66,8 @@ public class UserController {
                 .build());
     }
 
-    @GetMapping("/test")
+    @Operation(summary = "Bütün servislerdeki yetki işlemlerini rol,permission ve subscripton mapi olarak döner.")
+    @GetMapping("/get-all-authorizations")
     public ResponseEntity<BaseResponse<AuthUtil>> test(){
         return ResponseEntity.ok(BaseResponse.<AuthUtil>builder()
                         .data(authUtil)

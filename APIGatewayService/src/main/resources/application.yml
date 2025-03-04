@@ -25,7 +25,7 @@
           - id: auth-service
             uri: http://localhost:8081
             predicates:
-              - Path=/v1/dev/auth/**, /v1/dev/user/**
+              - Path=/v1/dev/auth/**
 
           - id: chat-service
             uri: http://localhost:8082

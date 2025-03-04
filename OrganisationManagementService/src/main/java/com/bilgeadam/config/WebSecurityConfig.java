@@ -1,43 +1,54 @@
 package com.bilgeadam.config;
 
-import com.bilgeadam.utility.JwtManager;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.authorization.AuthorizationDecision;
+import org.springframework.security.authorization.AuthorizationManager;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.intercept.RequestAuthorizationContext;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import java.util.function.Supplier;
 
 @Configuration
 @RequiredArgsConstructor
 @EnableMethodSecurity
+@Slf4j
 public class WebSecurityConfig {
-    private final JwtManager jwtManager;
 
-    @Bean
-    public JwtUserDetail jwtUserDetail(){
-        return new JwtUserDetail(jwtManager);
-    }
+    private final JwtTokenFilter jwtTokenFilter;
 
-    @Bean
-    public JwtOrganisationManagementFilter jwtTokenFilter(){
-        return new JwtOrganisationManagementFilter(jwtUserDetail());
-    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-
-        http.authorizeHttpRequests(req->req
-                .requestMatchers("/**").permitAll());
-
-
-        http.csrf(AbstractHttpConfigurer::disable);
-        http.cors(AbstractHttpConfigurer::disable);
-        http.addFilterBefore(jwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class);
+        http
+                .cors(AbstractHttpConfigurer::disable)
+                .csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(req -> req
+                        .requestMatchers("/v1/dev/department/**")
+                        .hasAnyRole("SYSTEM_ADMIN", "MEMBER","STAFF") //Test amaçlı eklendi.
+                        .anyRequest().permitAll()
+                );
 
         return http.build();
     }
 
+
+
+
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 }

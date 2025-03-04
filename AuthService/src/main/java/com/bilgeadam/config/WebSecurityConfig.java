@@ -19,26 +19,18 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 @EnableMethodSecurity
 @Slf4j
-public class EnterpriseSecurityConfig {
-    private final JwtManager jwtManager;
+public class WebSecurityConfig {
 
-    public JwtUserDetail jwtUserDetail(){
-        return new JwtUserDetail(jwtManager);
-    }
+    private final JwtTokenFilter jwtTokenFilter;
 
-    @Bean
-    public JwtAuthFilter jwtAuthFilter() {
-        return new JwtAuthFilter(jwtUserDetail());
-    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.addFilterBefore(jwtAuthFilter(), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class);
         http
-                .cors(cors -> cors.configurationSource(new CorsConfig().corsConfigurationSource()))
+                .cors(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(req -> req
-                        .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll() // OPTIONS isteklerine izin ver
                         .anyRequest().permitAll()
                 );
         

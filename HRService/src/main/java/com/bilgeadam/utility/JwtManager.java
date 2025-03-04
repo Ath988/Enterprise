@@ -4,9 +4,9 @@ package com.bilgeadam.utility;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.bilgeadam.dto.response.UserPermissionResponse;
+import com.bilgeadam.dto.response.otherServices.UserPermissionResponse;
 import com.bilgeadam.exception.ErrorType;
-import com.bilgeadam.exception.UserManagementException;
+import com.bilgeadam.exception.HRException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -21,8 +21,8 @@ public class JwtManager {
 
     Algorithm algorithm = Algorithm.HMAC512(SECRETKEY);
 
-    //subscription servise tokenli istek atabilmek için yaratıldı.
-    public Optional<String> createTokenForSubscription (Long authId, Set<String> roles, Set<String> permissions){
+
+    public Optional<String> createToken (Long authId, Set<String> roles,Set<String> permissions,String subscriptionType){
         Date createdDate = new Date(System.currentTimeMillis());
         long EXDATE = 1000L * 60 * 60;
         Date expirationDate = new Date(System.currentTimeMillis() + EXDATE);
@@ -32,6 +32,7 @@ public class JwtManager {
                     .withClaim("id", authId)
                     .withArrayClaim("ROLE", roles.toArray(new String[0]))
                     .withArrayClaim("PERMISSION", permissions.toArray(new String[0]))
+                    .withClaim("SUBSCRIPTION_TYPE", subscriptionType)
                     .withIssuer(ISSUER)
                     .withIssuedAt(createdDate)
                     .withExpiresAt(expirationDate)
@@ -41,7 +42,6 @@ public class JwtManager {
             return Optional.empty();
         }
     }
-
     public Optional<Long> validateToken(String token){
         try{
             JWTVerifier verifier = com.auth0.jwt.JWT.require(algorithm).withIssuer(ISSUER).build();
@@ -56,6 +56,7 @@ public class JwtManager {
         }
     }
 
+
     public UserPermissionResponse getRolesAndPermissionsFromToken(String token){
 
         try{
@@ -69,10 +70,8 @@ public class JwtManager {
 
         }catch (Exception e){
             log.error("getRolesAndPermissionsFromToken Hata!!: {}", e.getMessage());
-            throw new UserManagementException(ErrorType.INVALID_TOKEN);
+            throw new HRException(ErrorType.INVALID_TOKEN);
         }
     }
-
-
 
 }

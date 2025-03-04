@@ -6,6 +6,8 @@ import com.bilgeadam.repository.UserRolePermissionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -41,6 +43,7 @@ public class UserRolePermissionService {
                 .collect(Collectors.toSet());
     }
 
+
     public List<UserRolePermission> findByAuthIdList(List<Long> authId) {
         return userRolePermissionRepository.findUserRolePermissionsByAuthIdList(authId);
 
@@ -49,4 +52,6 @@ public class UserRolePermissionService {
     public void saveAll(List<UserRolePermission> permissionsList) {
         userRolePermissionRepository.saveAll(permissionsList);
     }
+
+
 }

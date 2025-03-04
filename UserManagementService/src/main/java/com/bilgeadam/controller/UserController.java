@@ -2,6 +2,7 @@ package com.bilgeadam.controller;
 
 import com.bilgeadam.dto.request.CreateMemberRequest;
 import com.bilgeadam.dto.request.otherServices.ManageEmployeePermissionsRequest;
+import com.bilgeadam.utility.AuthUtil;
 import com.bilgeadam.dto.response.BaseResponse;
 import com.bilgeadam.dto.response.UserPermissionResponse;
 import com.bilgeadam.dto.response.UserProfileResponse;
@@ -19,6 +20,7 @@ import static com.bilgeadam.constants.RestApis.*;
 
 public class UserController {
     private final UserService userService;
+    private final AuthUtil authUtil;
 
     @PostMapping(CREATE_MEMBER)
     public ResponseEntity<BaseResponse<Boolean>> createMember(@RequestBody CreateMemberRequest dto){
@@ -60,6 +62,13 @@ public class UserController {
         return ResponseEntity.ok(BaseResponse.<Boolean>builder()
                         .success(userService.updateUserPermissionsByAuthIdList(dto))
                         .message("Çalışan sayfa görüntüleme izin yetkileri başarı ile güncellendi.")
+                .build());
+    }
+
+    @GetMapping("/test")
+    public ResponseEntity<BaseResponse<AuthUtil>> test(){
+        return ResponseEntity.ok(BaseResponse.<AuthUtil>builder()
+                        .data(authUtil)
                 .build());
     }
 

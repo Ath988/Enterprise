@@ -30,7 +30,8 @@ public enum ErrorType
 
     VALUE_CAN_NOT_BE_BELOW_ZERO( 9010,"Value can not be below zero",HttpStatus.BAD_REQUEST),
 
-    SUPPLIER_EMAIL_ALREADY_EXISTS( 9011,"Supplier Email Already Exists",HttpStatus.BAD_REQUEST);
+    SUPPLIER_EMAIL_ALREADY_EXISTS( 9011,"Supplier Email Already Exists",HttpStatus.BAD_REQUEST),
+    STOCK_NOT_ENOUGH( 9012, "Stock Not Enough" , HttpStatus.BAD_REQUEST);
 
     int code;
     String message;

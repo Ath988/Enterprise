@@ -8,10 +8,12 @@ import jakarta.validation.constraints.Size;
 public record AddCustomerRequestDto(
 		@NotNull
 		@Size(min = 3, max = 50)
+		@Pattern(regexp = "^(?!\\s+$)[a-zA-ZçÇğĞıİöÖşŞüÜ\\s]+$", message = "Ad sadece harf ve boşluk içerebilir, boş olamaz ve en az 3 harf içermelidir.")
 		String firstName,
 		
 		@NotNull
 		@Size(min = 3, max = 50)
+		@Pattern(regexp = "^(?!\\s+$)[a-zA-ZçÇğĞıİöÖşŞüÜ\\s]+$", message = "Soyad sadece harf ve boşluk içerebilir, boş olamaz ve en az 3 harf içermelidir.")
 		String lastName,
 		
 		@NotNull

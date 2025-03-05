@@ -1,6 +1,7 @@
 package com.bilgeadam.controller;
 
 import com.bilgeadam.dto.request.AddCustomerRequestDto;
+import com.bilgeadam.dto.response.ImportResultWithFile;
 import com.bilgeadam.dto.request.UpdateCustomerRequestDto;
 import com.bilgeadam.dto.response.BaseResponse;
 import com.bilgeadam.entity.Customer;
@@ -100,17 +101,23 @@ public class CustomerController {
 	}
 	
 	@PostMapping(value = IMPORT_EXCEL, consumes = "multipart/form-data")
-	public ResponseEntity<BaseResponse<Boolean>> importExcel(
-			@RequestParam("file") MultipartFile file) {
-		excelService.importCustomersFromExcel(file);
-		return ResponseEntity.ok(BaseResponse.<Boolean>builder()
-		                                     .code(200)
-		                                     .success(true)
-		                                     .data(true)
-		                                     .message("Excel'den müşteriler başarıyla eklendi.")
-		                                     .build()
-		);
+	public ResponseEntity<byte[]> importExcel(@RequestParam("file") MultipartFile file) {
+		ImportResultWithFile result = excelService.importCustomersFromExcel(file);
+		
+		if (result.errorFile().length > 0) {
+			return ResponseEntity.ok()
+			                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=Hatalar.xlsx")
+			                     .contentType(MediaType.APPLICATION_OCTET_STREAM)
+			                     .body(result.errorFile());
+		} else {
+			// Bu durumda bile bir boş dosya dönebilirsin
+			return ResponseEntity.ok()
+			                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=Hatalar.xlsx")
+			                     .contentType(MediaType.APPLICATION_OCTET_STREAM)
+			                     .body(new byte[0]);
+		}
 	}
+	
 	
 	@GetMapping(value = EXPORT_EXCEL, produces = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 	public ResponseEntity<byte[]> exportExcel() {

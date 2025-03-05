@@ -16,6 +16,9 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Getter
 public class AuthUtil {
+    /*
+        Sistemde kayıtlı bütün izinleri dönen sınıf.
+     */
 
     @JsonIgnore
     private final RoleRepository roleRepository;

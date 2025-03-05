@@ -19,6 +19,17 @@ public class CustomerService {
 	private final CustomerRepository customerRepository;
 	
 	public void addCustomer(AddCustomerRequestDto dto){
+		String trimmedFirstName = dto.firstName().trim();
+		String trimmedLastName = dto.lastName().trim();
+		
+		if (trimmedFirstName.length() < 3 || trimmedLastName.length() < 3) {
+			throw new CRMServiceException(ErrorType.INVALID_CUSTOMER_NAME);
+		}
+		
+		customerRepository.findByProfileEmail(dto.email())
+		                  .ifPresent(c -> {
+			                  throw new CRMServiceException(ErrorType.EMAIL_ALREADY_EXISTS);
+		                  });
 		Customer customer = CustomerMapper.INSTANCE.fromAddCustomer(dto);
 		customerRepository.save(customer);
 	}
@@ -28,6 +39,14 @@ public class CustomerService {
 			throw new CRMServiceException(ErrorType.CUSTOMER_IMPORT_EMPTY);
 		}
 		customerRepository.saveAll(customers);
+	}
+	
+	public boolean isEmailExists(String email) {
+		return customerRepository.findByProfileEmail(email).isPresent();
+	}
+	
+	public boolean isPhoneNumberExists(String phoneNumber) {
+		return customerRepository.findByProfilePhoneNumber(phoneNumber).isPresent();
 	}
 	
 	public List<Customer> getAllCustomers(){

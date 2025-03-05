@@ -20,6 +20,7 @@ public class Endpoints
     public static final String SUPPLIER = "/supplier";
     public static final String WAREHOUSE = "/ware-house";
     public static final String BUYORDER = "/buy-order";
+    public static final String STOCKMOVEMENT = "/stock-movement";
 
     public static final String NOTIFICATIONSENDER = "/notificationSender";
 

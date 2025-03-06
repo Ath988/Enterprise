@@ -90,7 +90,7 @@ public class ChatService {
 	
 	
 	@Transactional
-	public PrivateChatResponseDto createPrivateChat(CreatePrivateChatRqDto dto, String userId) {
+	public PrivateChatResponseDto createPrivateChat(CreatePrivateChatRqDto dto, String userId, boolean isSupportChat) {
 		
 		Set<String> userIds = new HashSet<>();
 		userIds.add(dto.recipientId());
@@ -127,11 +127,12 @@ public class ChatService {
 		if (existingChat.isPresent()) {
 			Chat chat = existingChat.get();
 
-			return new PrivateChatResponseDto(chat.getId(), recipientName, recipientUser);
+			return new PrivateChatResponseDto(chat.getId(), recipientName, recipientUser, chat.isSupportChat());
 		}
 		
 		Chat newChat = chatRepository.save(Chat.builder()
 		                   .eChatType(EChatType.PRIVATE)
+						.isSupportChat(isSupportChat)
 		                   .build());
 
 		List<ChatUser> chatUsers = userIds.stream()
@@ -146,7 +147,8 @@ public class ChatService {
 		return new PrivateChatResponseDto(
 				newChat.getId(),
 				recipientName,
-				recipientUser
+				recipientUser,
+				isSupportChat
 		);
 	}
 	
@@ -466,6 +468,6 @@ public class ChatService {
 		User randomSupport = allSupport.get(randomNumber);
 		CreatePrivateChatRqDto createPrivateChatRqDto = new CreatePrivateChatRqDto(randomSupport.getId());
 
-		return createPrivateChat(createPrivateChatRqDto, userId);
+		return createPrivateChat(createPrivateChatRqDto, userId, true);
 	}
 }

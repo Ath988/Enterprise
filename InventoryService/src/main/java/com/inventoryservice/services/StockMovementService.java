@@ -43,7 +43,7 @@ public class StockMovementService
         product.setStockCount(product.getStockCount() - dto.quantity());
 
         //Ürün stok miktarı düşükse bildirim gönderiliyor.
-        if (!product.getIsNotified())
+        if (!product.getIsNotified() && (product.getStockCount() < product.getMinimumStockLevel()))
         {
             notificationManager.notificationSender(new NotificationMessageRequestDto("Düşük Stok",product.getName() + " adlı ürünün kalan stok miktarı: " + product.getStockCount(),true));
             product.setIsNotified(true);
@@ -120,7 +120,7 @@ public class StockMovementService
 
         for (StockMovement stockMovement : stockMovements)
         {
-            newlist.add(new StockMovementResponseDTO(stockMovement.getId(), stockMovement.getAuthId(),stockMovement.getProduct().getName(),stockMovement.getQuantity(),stockMovement.getProduct().getPrice(),stockMovement.getTotal(),stockMovement.getCreatedAt(),stockMovement.getUpdatedAt(),stockMovement.getStatus()));
+            newlist.add(new StockMovementResponseDTO(stockMovement.getId(), stockMovement.getAuthId(),stockMovement.getProduct().getName(),stockMovement.getQuantity(),stockMovement.getProduct().getPrice(),stockMovement.getTotal(),stockMovement.getType(),stockMovement.getDescription(),stockMovement.getCreatedAt(),stockMovement.getUpdatedAt(),stockMovement.getStatus()));
         }
 
         return newlist;

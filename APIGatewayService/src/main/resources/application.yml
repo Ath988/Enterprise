@@ -90,7 +90,7 @@
           - id: file-service
             uri: http://localhost:8093
             predicates:
-              - Path=/v1/dev/file/**
+              - Path=/v1/dev/file/**, /v1/dev/folder/**
         default-filters:
           - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials, RETAIN_FIRST
 

@@ -187,7 +187,7 @@ public class    DepartmentService {
         for (VwDepartment department : vwDepartments) {
             Optional<VwEmployee> vwManagerOpt = employeeService.findVwManagerByDepartmentId(department.getDepartmentId());
             //Departmanın yöneticisi yoksa.
-            VwEmployee vwManager = vwManagerOpt.orElseGet(() -> new VwEmployee(-1L,  "-"));
+            VwEmployee vwManager = vwManagerOpt.orElseGet(() -> new VwEmployee(-1L,  "-","avatar"));
             department.setManager(vwManager);
             List<VwEmployee> vwEmployees = employeeService.findAllVwEmployeesByDepartmentId(department.getDepartmentId());
             department.setEmployees(vwEmployees);

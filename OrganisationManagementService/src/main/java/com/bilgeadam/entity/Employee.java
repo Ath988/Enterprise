@@ -31,7 +31,7 @@ public class Employee extends BaseEntity {
     EmployeeRole role;
     @Enumerated(EnumType.STRING)
     EGender gender;
-
+    String avatarUrl;
 
 
 }

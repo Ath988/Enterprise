@@ -22,4 +22,6 @@ public class PositionTreeResponse {
 	String CEO;
 	@JsonProperty("positions")
 	List<VwPosition> positions;
+	@JsonProperty("avatarUrl")
+	String avatarUrl;
 }

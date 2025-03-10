@@ -8,6 +8,7 @@ import com.bilgeadam.dto.response.DepartmentDetailResponse;
 import com.bilgeadam.dto.response.OrganizationTreeResponse;
 import com.bilgeadam.entity.Department;
 import com.bilgeadam.entity.Employee;
+import com.bilgeadam.entity.enums.EGender;
 import com.bilgeadam.entity.enums.EState;
 import com.bilgeadam.entity.enums.EmployeeRole;
 import com.bilgeadam.exception.ErrorType;
@@ -187,7 +188,8 @@ public class    DepartmentService {
         for (VwDepartment department : vwDepartments) {
             Optional<VwEmployee> vwManagerOpt = employeeService.findVwManagerByDepartmentId(department.getDepartmentId());
             //Departmanın yöneticisi yoksa.
-            VwEmployee vwManager = vwManagerOpt.orElseGet(() -> new VwEmployee(-1L,  "-","avatar"));
+            VwEmployee vwManager = vwManagerOpt.orElseGet(() -> new VwEmployee(-1L, "-", "avatar", "@",
+                                                                               EmployeeRole.EMPLOYEE, EGender.MALE));
             department.setManager(vwManager);
             List<VwEmployee> vwEmployees = employeeService.findAllVwEmployeesByDepartmentId(department.getDepartmentId());
             department.setEmployees(vwEmployees);

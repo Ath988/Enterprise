@@ -20,6 +20,7 @@ import com.bilgeadam.manager.UserManager;
 import com.bilgeadam.repository.EmployeeRepository;
 import com.bilgeadam.utility.JwtManager;
 import com.bilgeadam.view.VwEmployee;
+import com.rabbitmq.client.Return;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -297,5 +298,9 @@ public class EmployeeService {
             // Employee bulunamazsa "Unknown" döndürüyoruz
             return "Unknown";
         }
+    }
+
+    public List<Employee> getEmployeesByCompanyId(Long companyId) {
+        return  employeeRepository.findAllByCompanyId(companyId);
     }
 }

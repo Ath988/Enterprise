@@ -35,4 +35,7 @@ public class RestApis {
     public static final String ADD_QUESTION = "/add-question";
 
     public static final String ADD_REPLY = "/add-reply";
+
+    public static final String NOTIFICATIONSENDER = "/notificationSender";
+    public static final String SEND_MAIL = "/send-mail";
 }

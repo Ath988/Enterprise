@@ -1,6 +1,7 @@
 package com.bilgeadam.ticketservice.service;
 
 import com.bilgeadam.ticketservice.dto.request.AddTicketRequest;
+import com.bilgeadam.ticketservice.dto.request.CancelMyTicketRequest;
 import com.bilgeadam.ticketservice.dto.request.RespondToTicketRequest;
 import com.bilgeadam.ticketservice.entity.Ticket;
 import com.bilgeadam.ticketservice.entity.enums.EntityStatus;
@@ -79,5 +80,14 @@ public class TicketService {
             return optToken.get();
         }
         else throw  new EnterpriseException(ErrorType.INTERNAL_SERVER_ERROR);
+    }
+
+    public Ticket cancelMyTicket(@Valid CancelMyTicketRequest dto, Long userId) {
+        Ticket ticket = getTicketById(dto.ticketId());
+        if (!ticket.getUserId().equals(userId)) throw new EnterpriseException(ErrorType.USER_TICKET_CONFLICT);
+        else{
+            ticket.setTicketStatus(TicketStatus.CANCELLED_BY_USER);
+            return ticketRepository.save(ticket);
+        }
     }
 }

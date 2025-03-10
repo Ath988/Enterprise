@@ -17,7 +17,7 @@ public class RestApis {
     public static final String TICKETS_BY_TOKEN =  "/tickets-by-token";
     public static final String ALL_TICKETS = "/all-tickets";
     public static final String RESPOND = "/respond";
-
+    public static final String CANCEL_MY_TICKET = "/cancel-my-ticket";
 
 
 }

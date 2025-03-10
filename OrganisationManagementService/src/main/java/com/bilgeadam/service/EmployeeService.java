@@ -303,4 +303,17 @@ public class EmployeeService {
     public List<Employee> getEmployeesByCompanyId(Long companyId) {
         return  employeeRepository.findAllByCompanyId(companyId);
     }
+    
+    public String findCeoAvatarUrlByCompanyId(Long companyId) {
+        // Şirketin CEO'sunun id'sini almak için şirket bilgilerini veya direkt olarak şirketId'yi kullanabilirsiniz
+        Long ceoId = employeeRepository.findCeoIdByCompanyId(companyId);
+        
+        // CEO'nun avatarUrl'ini almak için, CEO'nun bilgilerini çekiyoruz
+        Employee ceo = employeeRepository.findById(ceoId)
+                                         .orElseThrow(() -> new RuntimeException("CEO not found"));
+        
+        return ceo.getAvatarUrl();  // CEO'nun avatarUrl'sini döndür
+    }
+    
+    
 }

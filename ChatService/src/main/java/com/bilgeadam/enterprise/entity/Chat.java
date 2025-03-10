@@ -29,5 +29,6 @@ public class Chat {
 	@Builder.Default
 	private boolean isDeleted=false;
 	private String chatImage;
-	
+	@Builder.Default
+	private boolean isSupportChat = false;
 }

@@ -74,7 +74,7 @@ public class ChatController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(BaseResponse.<PrivateChatResponseDto>builder().code(200).success(true)
 		                                                                  .message("Private chat created or retrieved successfully!")
 		                                                                  .data(chatService.createPrivateChat(chatDto
-				                                                                  , userId)).build());
+				                                                                  , userId, false)).build());
 	}
 
 	@PostMapping(CREATE_SUPPORT_CHAT)

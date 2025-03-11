@@ -134,12 +134,14 @@ public class PositionService {
     public PositionTreeResponse getPositionTree(Long companyId) {
         String companyName = "KOÇ HOLDİNG";
         String CEO = employeeService.findCeoNameByCompanyId(companyId);
+        String ceoAvatarUrl = employeeService.findCeoAvatarUrlByCompanyId(companyId);
 
         PositionTreeResponse response = PositionTreeResponse.builder()
                                                             .companyId(companyId)
                                                             .companyName(companyName)
                                                             .CEO(CEO)
                                                             .positions(new ArrayList<>())
+                .avatarUrl(ceoAvatarUrl)
                                                             .build();
         List<VwPosition> rootPositions = positionRepository.findAllVwPositionsByParentPositionId(1L);
         response.getPositions().addAll(rootPositions);

@@ -44,10 +44,10 @@ public interface EmployeeRepository extends JpaRepository<Employee,Long> {
     @Query("SELECT CONCAT(e.firstName,' ',e.lastName) FROM Employee e WHERE e.companyId = ?1 AND e.role = com.bilgeadam.entity.enums.EmployeeRole.COMPANY_OWNER")
     Optional<String> findCEOByCompanyId(Long companyId);
 
-    @Query("SELECT NEW com.bilgeadam.view.VwEmployee(e.id,CONCAT(e.firstName,' ',e.lastName)) FROM Employee e JOIN Position p ON p.id = e.positionId JOIN Department d ON p.departmentId = d.id WHERE d.managerId = e.id AND d.id = ?1")
+    @Query("SELECT NEW com.bilgeadam.view.VwEmployee(e.id,CONCAT(e.firstName,' ',e.lastName),e.avatarUrl,e.email,e.role,e.gender) FROM Employee e JOIN Position p ON p.id = e.positionId JOIN Department d ON p.departmentId = d.id WHERE d.managerId = e.id AND d.id = ?1")
     Optional<VwEmployee> findVwManagerByDepartmentId(Long departmentId);
 
-    @Query("SELECT NEW com.bilgeadam.view.VwEmployee(e.id,CONCAT(e.firstName,' ',e.lastName)) FROM Employee e JOIN Position p ON p.id = e.positionId JOIN Department d ON d.id = p.departmentId " +
+    @Query("SELECT NEW com.bilgeadam.view.VwEmployee(e.id,CONCAT(e.firstName,' ',e.lastName),e.avatarUrl,e.email,e.role,e.gender) FROM Employee e JOIN Position p ON p.id = e.positionId JOIN Department d ON d.id = p.departmentId " +
             "WHERE d.id = ?1 AND e.role = com.bilgeadam.entity.enums.EmployeeRole.EMPLOYEE AND e.state = com.bilgeadam.entity.enums.EState.ACTIVE ORDER BY e.updateAt DESC")
     List<VwEmployee> findAllVwEmployeesByDepartmentId(Long departmentId);
 
@@ -65,7 +65,7 @@ public interface EmployeeRepository extends JpaRepository<Employee,Long> {
             "WHERE d.id IN ?1 AND e.companyId = ?2 AND e.state=?3 ")
     List<Long> findAllEmployeeAuthIdByDepartmentIdListAndCompanyIdAndState(List<Long> idList,Long companyId, EState state);
 
-    @Query("SELECT NEW com.bilgeadam.view.VwEmployee(e.id,CONCAT(e.firstName,' ',e.lastName)) FROM Employee e JOIN Position p ON p.id = e.positionId where e.positionId = ?1")
+    @Query("SELECT NEW com.bilgeadam.view.VwEmployee(e.id,CONCAT(e.firstName,' ',e.lastName),e.avatarUrl,e.email,e.role,e.gender) FROM Employee e JOIN Position p ON p.id = e.positionId where e.positionId = ?1")
     List<VwEmployee> findAllEmployeeByPositionId(Long positionId);
     @Query("SELECT e.authId From Employee e JOIN Position p ON e.positionId = p.id WHERE p.id  IN ?1 AND e.companyId = ?2 AND e.state = ?3")
     List<Long> findAllEmployeeAuthIdByPositionIdAndCompanyIdListAndState(List<Long> idList,Long companyId, EState eState);
@@ -74,6 +74,10 @@ public interface EmployeeRepository extends JpaRepository<Employee,Long> {
     Long findCompanyIdByAuthId(@Param("authId") Long authId);
 
     List<Employee> findAllByCompanyId(Long companyId);
+    
+    @Query("SELECT e.id FROM Employee e WHERE e.companyId = :companyId AND e.role = 'COMPANY_OWNER'")
+    Long findCeoIdByCompanyId(@Param("companyId") Long companyId);
+
+    
+    
 }
-
-

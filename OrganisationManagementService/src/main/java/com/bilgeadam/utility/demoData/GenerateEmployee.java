@@ -16,6 +16,7 @@ public class GenerateEmployee {
                                               .role(EmployeeRole.COMPANY_OWNER)
                                               .gender(EGender.MALE)
                                               .positionId(1L) // CEO
+                    .avatarUrl("https://randomuser.me/api/portraits/men/1.jpg")
                                               .build();
             
             Employee departmentManager1 = Employee.builder()
@@ -25,6 +26,7 @@ public class GenerateEmployee {
                                                   .role(EmployeeRole.DEPARTMENT_MANAGER)
                                                   .gender(EGender.MALE)
                                                   .positionId(2L) // CTO (IT Departmanı)
+                    .avatarUrl("https://randomuser.me/api/portraits/men/2.jpg")
                                                   .build();
             
             Employee departmentManager2 = Employee.builder()
@@ -34,6 +36,7 @@ public class GenerateEmployee {
                                                   .role(EmployeeRole.DEPARTMENT_MANAGER)
                                                   .gender(EGender.FEMALE)
                                                   .positionId(3L) // CFO (HR Departmanı)
+                    .avatarUrl("https://randomuser.me/api/portraits/women/3.jpg")
                                                   .build();
             
             Employee employee1 = Employee.builder()
@@ -43,6 +46,7 @@ public class GenerateEmployee {
                                          .role(EmployeeRole.EMPLOYEE)
                                          .gender(EGender.MALE)
                                          .positionId(4L) // Developer (CTO'ya bağlı)
+                    .avatarUrl("https://randomuser.me/api/portraits/men/5.jpg")
                                          .build();
             
             Employee employee2 = Employee.builder()
@@ -52,6 +56,7 @@ public class GenerateEmployee {
                                          .role(EmployeeRole.EMPLOYEE)
                                          .gender(EGender.FEMALE)
                                          .positionId(5L) // Tester (CTO'ya bağlı)
+                    .avatarUrl("https://randomuser.me/api/portraits/women/4.jpg")
                                          .build();
             
             Employee employee3 = Employee.builder()
@@ -61,6 +66,7 @@ public class GenerateEmployee {
                                          .role(EmployeeRole.EMPLOYEE)
                                          .gender(EGender.MALE)
                                          .positionId(6L) // Accountant (CFO'ya bağlı)
+                    .avatarUrl("https://randomuser.me/api/portraits/men/6.jpg")
                                          .build();
             
             return List.of(companyManager, departmentManager1, departmentManager2, employee1, employee2, employee3);

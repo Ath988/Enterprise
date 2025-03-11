@@ -4,8 +4,8 @@ server:
 spring:
   security:
     user:
-      name: super_admin
-      password: root
+      name: ${SEC_NAME}
+      password: ${SEC_PASSWORD}
   application:
     name: SubscriptionService
   datasource:

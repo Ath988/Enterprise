@@ -1,8 +1,10 @@
 package com.bilgeadam.utility;
 
 import com.bilgeadam.entity.PricingPlan;
+import com.bilgeadam.entity.ServiceEntity;
 import com.bilgeadam.entity.enums.SubscriptionPlan;
 import com.bilgeadam.repository.PricingPlanRepository;
+import com.bilgeadam.repository.ServiceEntityRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -13,6 +15,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class GenerateSubscriptionPlanInitializer implements CommandLineRunner {
 	private final PricingPlanRepository pricingPlanRepository;
+	
 	
 	@Override
 	public void run(String... args) throws Exception {
@@ -37,4 +40,6 @@ public class GenerateSubscriptionPlanInitializer implements CommandLineRunner {
 			pricingPlanRepository.saveAll(plans);
 		}
 	}
+	
+	
 }

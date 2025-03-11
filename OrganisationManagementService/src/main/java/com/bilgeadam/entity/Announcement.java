@@ -6,6 +6,9 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
@@ -23,4 +26,5 @@ public class Announcement extends BaseEntity {
 	LocalDate creationDate;
 	Long companyId;
 	Long employeeId;
+
 }

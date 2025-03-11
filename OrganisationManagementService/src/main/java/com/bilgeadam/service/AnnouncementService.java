@@ -5,12 +5,14 @@ import com.bilgeadam.dto.request.EmailDto;
 import com.bilgeadam.dto.request.NotificationMessageRequestDto;
 import com.bilgeadam.dto.response.AllEmployeeResponse;
 import com.bilgeadam.entity.Announcement;
+import com.bilgeadam.entity.AnnouncementIsRead;
 import com.bilgeadam.entity.Employee;
 import com.bilgeadam.entity.enums.EState;
 import com.bilgeadam.exception.ErrorType;
 import com.bilgeadam.exception.OrganisationManagementException;
 import com.bilgeadam.manager.MailManager;
 import com.bilgeadam.manager.NotificationManager;
+import com.bilgeadam.repository.AnnouncementIsReadRepository;
 import com.bilgeadam.repository.AnnouncementRepository;
 import com.bilgeadam.repository.EmployeeRepository;
 import com.bilgeadam.utility.JwtManager;
@@ -27,9 +29,10 @@ public class AnnouncementService {
 	
 	private final EmployeeService employeeService;
 	private final AnnouncementRepository announcementRepository;
-	private final JwtManager jwtManager;
 	private final NotificationManager notificationManager;
 	private final MailManager mailManager;
+	private final AnnouncementIsReadService announcementIsReadService;
+
 
 
 	public Boolean createAnnouncement(String token, AnnouncementRequestDto dto) {
@@ -61,6 +64,11 @@ public class AnnouncementService {
 					e.getEmail(),
 					dto.title(),
 					dto.content()));
+
+			announcementIsReadService.markAnnouncementIsRead(token, announcement.getId(),e.getId());
+
+
+
 		}
 		return true;
 	}
@@ -85,4 +93,11 @@ public class AnnouncementService {
 		announcementRepository.delete((announcement.get()));
 		return true;
 	}
+
+	public Announcement getAnnouncementById(Long id) {
+		return announcementRepository.findById(id)
+				.orElseThrow(() -> new OrganisationManagementException(ErrorType.NOT_FOUND_ANNOUNCEMENT));
+	}
+
+
 }

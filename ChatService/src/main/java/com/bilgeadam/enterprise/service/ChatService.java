@@ -65,7 +65,7 @@ public class ChatService {
 		                .name(dto.name().isBlank() ? "New Group Chat" : dto.name())
 		                .description(dto.description())
 		                .eChatType(EChatType.GROUP)
-				.chatImage(dto.chatImageUrl())
+						.chatImage(dto.chatImageUrl())
 		                .build();
 		
 		chatRepository.save(chat);
@@ -77,6 +77,7 @@ public class ChatService {
 		                                     .map(userId -> ChatUser.builder()
 		                                                            .chatId(chat.getId())
 		                                                            .userId(userId)
+				                                                    .isDeletedFromUser(false)
 		                                                            .build())
 		                                     .toList();
 		
@@ -140,6 +141,7 @@ public class ChatService {
 		                                  .map(userIdVal -> ChatUser.builder()
 		                                                            .chatId(newChat.getId())
 		                                                            .userId(userIdVal)
+				                                                    .isDeletedFromUser(false)
 		                                                            .build())
 		                                  .toList();
 		chatUserRepository.saveAll(chatUsers);
@@ -184,6 +186,22 @@ public class ChatService {
 		                         .build();
 		
 		messageRepository.save(message);
+		
+		// Grup sohbetinde, mesajı gönderen dışındaki her kullanıcı için MessageUser kaydı oluşturuluyor.
+		List<String> targetUserIdList = chatUserRepository.findUserIdsByChatId(newMessageDto.chatId());
+		for (String recipientId : targetUserIdList) {
+			if (!recipientId.equals(userId)) {  // Doğru string karşılaştırması
+				MessageUser messageUser = MessageUser.builder()
+				                                     .messageId(message.getId())
+				                                     .senderId(userId)      // Mesajı gönderenin ID'si
+				                                     .targetId(recipientId) // Alıcının ID'si
+				                                     .isDeletedFromUser(false)
+				                                     .messageStatus(EMessageStatus.SENT)
+				                                     .build();
+				messageUserRepository.save(messageUser);  // Kaydetmeyi unutmayın
+			}
+		}
+		
 		
 		User sender = userById.get();
 		UserView senderView = new UserView(
@@ -263,7 +281,7 @@ public class ChatService {
 		if (!isParticipant) {
 			throw new EnterpriseException(ErrorType.USER_NOT_PARTICIPANT);
 		}
-
+		chatUserRepository.findByUserIdAndChatId(dto.chatId(),userId);
 		chat.setDeleted(true);
 		chatRepository.save(chat);
 	}
@@ -372,6 +390,7 @@ public class ChatService {
 				                                         message.getChatId()
 		                                         ))
 		                                         .toList();
+		
 		
 		List<UserView> participants = userIds.stream()
 		                                     .map(uid -> new UserView(

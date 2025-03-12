@@ -1,5 +1,6 @@
 package com.bilgeadam.enterprise.view;
 
+import com.bilgeadam.enterprise.entity.EMessageStatus;
 import com.bilgeadam.enterprise.entity.Message;
 
 import java.time.LocalDateTime;

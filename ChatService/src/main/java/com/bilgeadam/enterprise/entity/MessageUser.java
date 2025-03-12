@@ -11,16 +11,19 @@ import lombok.NoArgsConstructor;
 @Builder
 @Data
 @Entity
-@Table(name = "tbl_chat_user")
-public class ChatUser {
+@Table(name = "tbl_message_user")
+public class MessageUser {
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)
 	private String id;
 	@Column(nullable = false)
-	private String chatId;
+	private String messageId;
 	@Column(nullable = false)
-	private String userId;
+	private String senderId;
 	@Column(nullable = false)
+	private String targetId;
 	@Builder.Default
 	private Boolean isDeletedFromUser = false;
+	@Builder.Default
+	private EMessageStatus messageStatus = EMessageStatus.SENT;
 }

@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ChatUserRepository extends JpaRepository<ChatUser, String> {
 	List<ChatUser> findByChatId(String chatId);
@@ -20,5 +21,7 @@ public interface ChatUserRepository extends JpaRepository<ChatUser, String> {
 	
 	@Query("SELECT cu.userId FROM ChatUser cu WHERE cu.chatId = :chatId")
 	List<String> findUserIdsByChatId(@Param("chatId") String chatId);
+	
+	Optional<ChatUser> findChatUserByChatIdAndUserId(String userId, String chatId);
 
 }

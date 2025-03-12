@@ -1,12 +1,9 @@
 package com.projectmanagementservice.controllers;
 
-import com.projectmanagementservice.dto.request.AddTaskToProjectDTO;
-import com.projectmanagementservice.dto.request.PageRequestDTO;
-import com.projectmanagementservice.dto.request.ProjectSaveRequestDTO;
-import com.projectmanagementservice.dto.request.ProjectUpdateRequestDTO;
+import com.projectmanagementservice.dto.request.*;
+import com.projectmanagementservice.dto.response.BaseResponse;
 import com.projectmanagementservice.entities.Project;
 import com.projectmanagementservice.services.ProjectService;
-import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,39 +21,46 @@ public class ProjectController
     private final ProjectService projectService;
 
     @PostMapping(SAVE)
-    public ResponseEntity<Boolean> save(@RequestBody ProjectSaveRequestDTO dto){
-
-        return ResponseEntity.ok(projectService.save(dto));
+    public ResponseEntity<BaseResponse<Boolean>> save(@RequestBody ProjectSaveRequestDTO dto){
+        //TODO: token kontrolu yapilacak!
+        return ResponseEntity.ok(BaseResponse.<Boolean>builder()
+                        .code(200)
+                        .success(true)
+                        .message("Proje basarili bir sekilde kaydedildi!")
+                        .data(projectService.save(dto))
+                .build());
     }
 
     @DeleteMapping(DELETE)
-    public ResponseEntity<Boolean> delete(Long id){
-
-        return ResponseEntity.ok(projectService.delete(id));
+    public ResponseEntity<BaseResponse<Boolean>> delete(@RequestBody ProjectDeleteRequest dto){
+        //TODO: token kontrolu yapilacak!
+        return ResponseEntity.ok(BaseResponse.<Boolean>builder()
+                        .data(projectService.delete(dto))
+                        .code(200)
+                        .success(true)
+                        .message("Proje basarili bir sekilde silindi!")
+                .build());
     }
 
     @PutMapping(UPDATE)
-    public ResponseEntity<Boolean> update(@RequestBody ProjectUpdateRequestDTO dto){
-
-        return ResponseEntity.ok(projectService.update(dto));
+    public ResponseEntity<BaseResponse<Boolean>> updateProjectDetails(@RequestBody ProjectUpdateRequestDTO dto){
+        //TODO: token kontrolu yapilacak!
+        return ResponseEntity.ok(BaseResponse.<Boolean>builder()
+                        .success(true)
+                        .message("Proje bilgileri guncellenmistir!")
+                        .data(projectService.updateProjectDetails(dto))
+                        .code(200)
+                .build());
     }
 
-    @PostMapping(FIND_ALL)
-    public ResponseEntity<List<Project>> findAll(@RequestBody PageRequestDTO dto){
-
-        return ResponseEntity.ok(projectService.findAllByNameContainingIgnoreCaseAndStatusIsNotAndAuthIdOrderByNameAsc(dto));
+    @GetMapping(FIND_ALL)
+    public ResponseEntity<BaseResponse<List<Project>>> findAllProjects(@RequestParam(value = "token") String token){
+        //TODO: token kontrolu yapilacak!
+        return ResponseEntity.ok(BaseResponse.<List<Project>>builder()
+                        .code(200)
+                        .success(true)
+                        .message("Proje listesi getirildi!")
+                        .data(projectService.findAllProjectsByOrganizationId())
+                .build());
     }
-
-    @PostMapping(FIND_BY_ID)
-    public ResponseEntity<Project> findByIdAndAuthId(Long id){
-
-        return ResponseEntity.ok(projectService.findByIdAndAuthId(id));
-    }
-
-    @PostMapping(ADD_TASK_TO_PROJECT)
-    public ResponseEntity<Boolean> addTaskToProject(AddTaskToProjectDTO dto){
-
-        return ResponseEntity.ok(projectService.addTaskToProject(dto));
-    }
-
 }

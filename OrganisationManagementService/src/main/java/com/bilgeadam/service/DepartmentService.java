@@ -8,11 +8,13 @@ import com.bilgeadam.dto.response.DepartmentDetailResponse;
 import com.bilgeadam.dto.response.OrganizationTreeResponse;
 import com.bilgeadam.entity.Department;
 import com.bilgeadam.entity.Employee;
+import com.bilgeadam.entity.enums.EGender;
 import com.bilgeadam.entity.enums.EState;
 import com.bilgeadam.entity.enums.EmployeeRole;
 import com.bilgeadam.exception.ErrorType;
 import com.bilgeadam.exception.OrganisationManagementException;
 import com.bilgeadam.repository.DepartmentRepository;
+import com.bilgeadam.view.VwDepartmendAndPosition;
 import com.bilgeadam.view.VwDepartment;
 import com.bilgeadam.view.VwEmployee;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +29,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class DepartmentService {
+public class    DepartmentService {
     private final DepartmentRepository departmentRepository;
     private final EmployeeService employeeService;
     private final PositionService positionService;
@@ -46,7 +48,7 @@ public class DepartmentService {
         Department department = Department.builder()
                 .name(dto.departmentName())
                 .description(dto.description())
-//                .managerId(manager.getId()) departman yöneticisini sonradan atasın.
+             .managerId(manager.getId())
                 .companyId(manager.getCompanyId())
                 .build();
         if (dto.parentDepartmentId() != null) {
@@ -116,7 +118,7 @@ public class DepartmentService {
 
     public List<AllDepartmentResponse> findAllDepartments(String token) {
         Employee employee = employeeService.getEmployeeByToken(token);
-        return departmentRepository.findAllDepartments(employee.getCompanyId());
+        return departmentRepository.findAllDepartments(employee.getCompanyId(), EState.ACTIVE);
     }
 
 
@@ -186,13 +188,21 @@ public class DepartmentService {
         for (VwDepartment department : vwDepartments) {
             Optional<VwEmployee> vwManagerOpt = employeeService.findVwManagerByDepartmentId(department.getDepartmentId());
             //Departmanın yöneticisi yoksa.
-            VwEmployee vwManager = vwManagerOpt.orElseGet(() -> new VwEmployee(-1L, "-", "-"));
+            VwEmployee vwManager = vwManagerOpt.orElseGet(() -> new VwEmployee(-1L, "-", "avatar", "@",
+                                                                               EmployeeRole.EMPLOYEE, EGender.MALE));
             department.setManager(vwManager);
             List<VwEmployee> vwEmployees = employeeService.findAllVwEmployeesByDepartmentId(department.getDepartmentId());
             department.setEmployees(vwEmployees);
         }
         response.setDepartments(vwDepartments);
         return response;
+    }
+
+    public VwDepartmendAndPosition findDepartmentAndPositionNameByAuthId(String token){
+       Employee employee = employeeService.getEmployeeByToken(token);
+        System.out.println("auth id =  "+employee.getAuthId());
+        return departmentRepository.findVwDepartmentAndPositionNamesByAuthId(employee.getAuthId())
+                .orElseThrow(() -> new OrganisationManagementException(ErrorType.EMPLOYEE_NOT_FOUND));
     }
 
 

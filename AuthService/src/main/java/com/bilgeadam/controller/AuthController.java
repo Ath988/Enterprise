@@ -1,10 +1,8 @@
 package com.bilgeadam.controller;
 
-import com.bilgeadam.dto.request.LoginRequestDto;
-import com.bilgeadam.dto.request.RegisterRequestDto;
-import com.bilgeadam.dto.request.ForgotPasswordRequestDto;
-import com.bilgeadam.dto.request.NewPasswordRequestDto;
+import com.bilgeadam.dto.request.*;
 import com.bilgeadam.dto.response.BaseResponse;
+import com.bilgeadam.entity.Auth;
 import com.bilgeadam.exception.EnterpriseException;
 import com.bilgeadam.exception.ErrorType;
 import com.bilgeadam.service.AuthService;
@@ -25,32 +23,44 @@ import static com.bilgeadam.constant.RestApis.*;
 @RequestMapping(AUTH)
 @CrossOrigin("*")
 public class AuthController {
-    private final AuthService userService;
+    private final AuthService authService;
 
 
     @PostMapping(DOLOGIN)
     public ResponseEntity<BaseResponse<String>> doLogin(@RequestBody @Valid LoginRequestDto dto) {
         return ResponseEntity.ok(BaseResponse.<String>builder()
                         .code(200)
-                        .data(userService.doLogin(dto))
+                        .data(authService.doLogin(dto))
                         .message("Basariyla giris islemi tamamlanmistir!")
                         .success(true)
                 .build());
 
     }
     @PostMapping(DOREGISTER)
-    public ResponseEntity<BaseResponse<Boolean>> doRegister(@RequestBody @Valid RegisterRequestDto dto) {
-        return ResponseEntity.ok(BaseResponse.<Boolean>builder()
+    public ResponseEntity<BaseResponse<Long>> doRegister(@RequestBody @Valid RegisterRequestDto dto) {
+        return ResponseEntity.ok(BaseResponse.<Long>builder()
                         .success(true)
-                        .data(userService.doRegister(dto))
+                        .data(authService.doRegister(dto))
                         .code(200)
                         .message("Kayit olma islemi basariyla tamamlanmistir!\nHesabinizi aktiflestirmek icin e-postanizi kotrol ediniz!")
                 .build());
     }
 
+    @PostMapping("/create-employee")
+    public ResponseEntity<BaseResponse<Long>> registerEmployee(
+            @RequestHeader(value = "Authorization", required = false) String token,
+            @RequestBody @Valid RegisterRequestDto dto) {
+        return ResponseEntity.ok(BaseResponse.<Long>builder()
+                .success(true)
+                .data(authService.registerEmployee(token,dto))
+                .code(200)
+                .message("Kayit olma islemi basariyla tamamlanmistir!\nHesabinizi aktiflestirmek icin e-postanizi kotrol ediniz!")
+                .build());
+    }
+
     @GetMapping(AUTHMAIL)
     public ResponseEntity<BaseResponse<Boolean>> authUser(@RequestParam(name = "auth") String authCode) {
-        userService.authUserRegister(authCode);
+        authService.authUserRegister(authCode);
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(URI.create("http://localhost:5173"));
         return new ResponseEntity<>(headers, HttpStatus.FOUND);
@@ -60,14 +70,14 @@ public class AuthController {
     public ResponseEntity<BaseResponse<Boolean>> forgotPasswordMail(@RequestBody ForgotPasswordRequestDto dto) {
         return ResponseEntity.ok(BaseResponse.<Boolean>builder().success(true)
                 .message("Yeni sifre olusturma linki mail adresine gonderilmistir!")
-                .data(userService.forgotPasswordMail(dto.email()))
+                .data(authService.forgotPasswordMail(dto.email()))
                 .code(200)
                 .build());
     }
 
     @GetMapping(NEW_PASSWORD)
     public RedirectView setNewPassword(@RequestParam(name = "auth") String authCode) {
-        userService.checkAuthUser(authCode);
+        authService.checkAuthUser(authCode);
 
         return new RedirectView("http://localhost:5173/set-new-password" + "?code=" + authCode);
 
@@ -82,9 +92,40 @@ public class AuthController {
         return ResponseEntity.ok(BaseResponse.<Boolean>builder()
                 .success(true)
                 .message("Yeni sifre basiriyla olsuturuldu!")
-                .data(userService.updateUserForgotPassword(dto))
+                .data(authService.updateUserForgotPassword(dto))
                 .code(200)
                 .build());
+    }
+
+    @GetMapping(GETPROFILE)
+    public ResponseEntity<BaseResponse<Auth>> getUserProfile(@RequestParam String token) {
+        return ResponseEntity.ok(BaseResponse.<Auth>builder()
+                .code(200)
+                .success(true)
+                .message("Kullanıcı bilgisi başarıyla getirildi.")
+                .data(authService.getUserProfile(token))
+                .build());
+    }
+
+    @PutMapping(UPDATEPROFILE)
+    public ResponseEntity<BaseResponse<Boolean>> updateProfile(@RequestBody @Valid UpdateProfileRequestDto dto) {
+        return ResponseEntity.ok(BaseResponse.<Boolean>builder()
+                .code(200)
+                .success(true)
+                .message("Güncelleme işlemi başarılı")
+                .data(authService.updateUserProfile(dto))
+                .build());
+    }
+
+    @PutMapping(UPDATEPASSWORD)
+    public ResponseEntity<BaseResponse<Boolean>> updatePasswordProfile(@RequestBody @Valid UpdatePasswordProfileRequestDto dto) {
+        return ResponseEntity.ok(BaseResponse.<Boolean>builder()
+                .code(200)
+                .success(true)
+                .message("Şifre Güncelleme işlemi başarılı!")
+                .data(authService.updateUserPassword(dto))
+                .build());
+
     }
 
 }

@@ -1,0 +1,29 @@
+server:
+  port: 8086
+
+spring:
+  security:
+    user:
+      name: admin
+      password: 1234
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: user
+    password: root
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/inventorydb
+    username: postgres
+    password: root
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+auth:
+  secret:
+    secret-key: ${JAVA_SECRET_KEY}
+    issuer: ${JAVA_ISSUER}

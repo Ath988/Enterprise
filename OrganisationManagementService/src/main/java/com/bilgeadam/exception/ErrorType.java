@@ -16,7 +16,14 @@ public enum ErrorType {
     POSITION_NOT_FOUND(3001,"Pozisyon bulunamadı",HttpStatus.BAD_REQUEST),
     INVALID_TOKEN(9001,"Geçersiz token bilgisi.",HttpStatus.BAD_REQUEST),
     INVALID_PASSWORD(9002,"Kullanıcı adı ya da şifre bilgisi hatalı.",HttpStatus.BAD_REQUEST),
+    NOT_FOUND_ANNOUNCEMENT(4003,"Duyuru bulunamadı.",HttpStatus.BAD_REQUEST),
+    CANNOT_DELETE_ANNOUNCEMENT(4004,"Duyuruyu silme yetkiniz bulunmamaktadır..",HttpStatus.BAD_REQUEST),
+    CANNOT_ISREAD_ANNOUNCEMENT(4005,"Duyuruyu durum değiştirme yetkiniz bulunmamaktadır..",HttpStatus.BAD_REQUEST),
+    CANNOT_ISREADANNOUNCEMENT_LIST(4006,"Duyuruyu durum kayıt listesinde bulunmamaktadır.",HttpStatus.BAD_REQUEST),
+    SHIFT_NOT_FOUND(5000,"Vardiya Bulunamadı",HttpStatus.NOT_FOUND),
 
+    ASSET_NOT_FOUND(4000, "Varlık Bulunamadı...", HttpStatus.NOT_FOUND),
+    MAINTENANCE_NOT_FOUND(4000, "Bakım talebi Bulunamadı...", HttpStatus.NOT_FOUND),
     ;
 
     int code;

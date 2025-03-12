@@ -74,7 +74,16 @@ public class ChatController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(BaseResponse.<PrivateChatResponseDto>builder().code(200).success(true)
 		                                                                  .message("Private chat created or retrieved successfully!")
 		                                                                  .data(chatService.createPrivateChat(chatDto
-				                                                                  , userId)).build());
+				                                                                  , userId, false)).build());
+	}
+
+	@PostMapping(CREATE_SUPPORT_CHAT)
+	public ResponseEntity<BaseResponse<PrivateChatResponseDto>> createSupportChat(HttpServletRequest request){
+		String userId = (String) request.getAttribute("userId");
+		System.out.println("Support chat request userId: " + userId);
+		return ResponseEntity.status(HttpStatus.CREATED).body(BaseResponse.<PrivateChatResponseDto>builder().code(200).success(true)
+				.message("Support chat created or retrieved successfully!")
+				.data(chatService.createSupportChat(userId)).build());
 	}
 	
 	@MessageMapping("/private/{chatId}/sendMessage")
@@ -103,7 +112,6 @@ public class ChatController {
 		
 		String userId = (String) request.getAttribute("userId");
 		List<ChatListViewDto> chatList = chatService.getUsersChats(userId, limit);
-		
 		return ResponseEntity.ok(BaseResponse.<List<ChatListViewDto>>builder()
 		                                     .code(200)
 		                                     .message("Chat list retrieved successfully!")

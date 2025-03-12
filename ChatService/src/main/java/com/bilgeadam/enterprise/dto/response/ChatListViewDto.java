@@ -14,6 +14,7 @@ public record ChatListViewDto(
 		String lastMessage,
 		String chatImage,
 		Boolean isOnline,
+		Boolean isSupportChat,
 		String userId // If chat is private, holds the "other" user's ID, otherwise null
 		
 ) {}

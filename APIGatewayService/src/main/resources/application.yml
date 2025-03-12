@@ -1,0 +1,101 @@
+  server:
+    port: 8080
+
+
+  spring:
+    application:
+      name: api-gateway
+    main:
+      web-application-type: reactive
+    cloud:
+      gateway:
+        globalcors:
+          add-to-simple-url-handler-mapping: true
+          cors-configurations:
+            '[/**]':
+              allowed-origins: "*"
+              allowed-headers: "*"
+              allowed-methods:
+                - GET
+                - POST
+                - PUT
+                - DELETE
+                - OPTIONS
+        routes:
+          - id: auth-service
+            uri: http://localhost:8081
+            predicates:
+              - Path=/v1/dev/auth/**
+
+          - id: chat-service
+            uri: http://localhost:8082
+            predicates:
+              - Path=/v1/dev/chat/**
+
+          - id: crm-service
+            uri: http://localhost:8083
+            predicates:
+              - Path=/v1/dev/campaign/**, /v1/dev/customer/**, /v1/dev/sales-opportunity/**, /v1/dev/support-ticket/**
+
+          - id: hr-service
+            uri: http://localhost:8084
+            predicates:
+              - Path=/v1/dev/employee-record/**, /v1/dev/payroll/**, /v1/dev/performance/** ,/v1/dev/leave/**, /v1/dev/working-hours
+
+          - id: finance-service
+            uri: http://localhost:8085
+            predicates:
+              - Path=/v1/dev/account/**, /v1/dev/transaction/**
+
+          - id: inventory-service
+            uri: http://localhost:8086
+            predicates:
+              - Path=/dev/v1/inventory/**
+
+          - id: organisation-management-service
+            uri: http://localhost:8087
+            predicates:
+              - Path=/v1/dev/department/**, /v1/dev/employee/**, /v1/dev/position/**, /v1/dev/announcement/**,/v1/dev/question/**,/v1/dev/reply/**,  /v1/dev/asset/**, /v1/dev/maintenance/**, /v1/dev/announcement-is-read/**
+
+          - id: project-management-service
+            uri: http://localhost:8088
+            predicates:
+              - Path=/dev/v1/project-management/**
+
+          - id: subscription-service
+            uri: http://localhost:8089
+            predicates:
+              - Path=/v1/dev/subscription/**, /v1/dev/service/**, /v1/dev/image/**, /v1/dev/faq/**, /v1/dev/answer/**
+
+          - id: notification-service
+            uri: http://localhost:8090
+            predicates:
+              - Path=/v1/dev/notification/**
+
+          - id: user-management-service
+            uri: http://localhost:8091
+            predicates:
+              - Path=/v1/dev/user/**
+
+          - id: ticket-service
+            uri: http://localhost:8092
+            predicates:
+              - Path=/v1/dev/ticket/**
+
+          - id: survey-service
+            uri: http://localhost:8094
+            predicates:
+              - Path=/v1/dev/survey/**, /v1/dev/survey-response/**
+
+          - id: file-service
+            uri: http://localhost:8093
+            predicates:
+              - Path=/v1/dev/file/**, /v1/dev/folder/**
+        default-filters:
+          - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials, RETAIN_FIRST
+
+
+  management:
+    health:
+      rabbit:
+        enabled: false

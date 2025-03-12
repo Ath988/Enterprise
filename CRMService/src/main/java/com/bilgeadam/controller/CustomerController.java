@@ -1,17 +1,22 @@
 package com.bilgeadam.controller;
 
 import com.bilgeadam.dto.request.AddCustomerRequestDto;
+import com.bilgeadam.dto.response.ImportResultWithFile;
 import com.bilgeadam.dto.request.UpdateCustomerRequestDto;
 import com.bilgeadam.dto.response.BaseResponse;
 import com.bilgeadam.entity.Customer;
 import com.bilgeadam.service.CustomerService;
+import com.bilgeadam.service.ExcelService;
+import com.bilgeadam.service.PdfService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.Optional;
 
 import static com.bilgeadam.constant.RestApis.*;
 
@@ -21,20 +26,22 @@ import static com.bilgeadam.constant.RestApis.*;
 
 public class CustomerController {
 	private final CustomerService customerService;
+	private final ExcelService excelService;
+	private final PdfService pdfService;
 	
-	@PostMapping(ADDCUSTOMER)
+	@PostMapping(ADD_CUSTOMER)
 	public ResponseEntity<BaseResponse<Boolean>> addCustomer(@RequestBody @Valid AddCustomerRequestDto dto){
 		customerService.addCustomer(dto);
 		return ResponseEntity.ok(BaseResponse.<Boolean>builder()
-				                         .code(200)
-				                         .success(true)
-				                         .data(true)
-				                         .message("Yeni müşteri eklendi.")
-				                         .build()
+		                                     .code(200)
+		                                     .success(true)
+		                                     .data(true)
+		                                     .message("Yeni müşteri eklendi.")
+		                                     .build()
 		);
 	}
 	
-	@GetMapping(GETALLCUSTOMERS)
+	@GetMapping(GET_ALL_CUSTOMERS)
 	public ResponseEntity<BaseResponse<List<Customer>>> getAllCustomers() {
 		List<Customer> customers = customerService.getAllCustomers();
 		return ResponseEntity.ok(BaseResponse.<List<Customer>>builder()
@@ -46,7 +53,93 @@ public class CustomerController {
 		);
 	}
 	
-	@GetMapping(GETCUSTOMERBYEMAIL)
+	@GetMapping(GET_CUSTOMER_ID + "/{customerId}")
+	public ResponseEntity<BaseResponse<Customer>> getCustomerById(@PathVariable Long customerId) {
+		Customer customer = customerService.getCustomerById(customerId);
+		return ResponseEntity.ok(BaseResponse.<Customer>builder()
+		                                     .code(200)
+		                                     .success(true)
+		                                     .data(customer)
+		                                     .message("Müsşteri bilgisi getirildi")
+		                                     .build()
+		);
+	}
+	
+	@PutMapping(UPDATE_CUSTOMER + "/{customerId}")
+	public ResponseEntity<BaseResponse<Boolean>> updateCustomer(@PathVariable Long customerId, @RequestBody @Valid UpdateCustomerRequestDto dto) {
+		customerService.updateCustomer(customerId, dto);
+		return ResponseEntity.ok(BaseResponse.<Boolean>builder()
+		                                     .code(200)
+		                                     .success(true)
+		                                     .data(true)
+		                                     .message("Müşteri bilgileri güncellendi.")
+		                                     .build()
+		);
+	}
+	
+	@DeleteMapping(DELETE_CUSTOMER + "/{customerId}")
+	public ResponseEntity<BaseResponse<Boolean>> deleteCustomer(@PathVariable Long customerId) {
+		customerService.deleteCustomer(customerId);
+		return ResponseEntity.ok(BaseResponse.<Boolean>builder()
+		                                     .code(200)
+		                                     .success(true)
+		                                     .data(true)
+		                                     .message("Müsteri başarıyla silindi")
+		                                     .build()
+		);
+	}
+	
+	@DeleteMapping(DELETE_CUSTOMERS)
+	public ResponseEntity<BaseResponse<Boolean>> deleteCustomers(@RequestBody List<Long> customerIds) {
+		customerService.deleteCustomers(customerIds);
+		return ResponseEntity.ok(BaseResponse.<Boolean>builder()
+		                                     .code(200)
+		                                     .success(true)
+		                                     .data(true)
+		                                     .message("Seçili müşteriler başarıyla silindi.")
+		                                     .build());
+	}
+	
+	@PostMapping(value = IMPORT_EXCEL, consumes = "multipart/form-data")
+	public ResponseEntity<byte[]> importExcel(@RequestParam("file") MultipartFile file) {
+		ImportResultWithFile result = excelService.importCustomersFromExcel(file);
+		
+		if (result.errorFile().length > 0) {
+			return ResponseEntity.ok()
+			                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=Hatalar.xlsx")
+			                     .contentType(MediaType.APPLICATION_OCTET_STREAM)
+			                     .body(result.errorFile());
+		} else {
+			// Bu durumda bile bir boş dosya dönebilirsin
+			return ResponseEntity.ok()
+			                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=Hatalar.xlsx")
+			                     .contentType(MediaType.APPLICATION_OCTET_STREAM)
+			                     .body(new byte[0]);
+		}
+	}
+	
+	
+	@GetMapping(value = EXPORT_EXCEL, produces = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+	public ResponseEntity<byte[]> exportExcel() {
+		byte[] excelBytes = excelService.exportCustomersToExcel();
+		
+		return ResponseEntity.ok()
+		                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=Musteriler.xlsx")
+		                     .contentType(MediaType.APPLICATION_OCTET_STREAM)
+		                     .body(excelBytes);
+	}
+	
+	@GetMapping(value = EXPORT_PDF, produces = "application/pdf")
+	public ResponseEntity<byte[]> exportPdf() {
+		byte[] pdfBytes = pdfService.generateCustomerPdf();
+		
+		return ResponseEntity.ok()
+		                     .contentType(MediaType.APPLICATION_PDF)
+		                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=Musteriler.pdf")
+		                     .body(pdfBytes);
+	}
+	
+	/*@GetMapping(GETCUSTOMERBYEMAIL)
 	public ResponseEntity<BaseResponse<Customer>> getCustomerByEmail(@RequestParam String email) {
 		Customer customer = customerService.getCustomerByEmail(email);
 		return ResponseEntity.ok(BaseResponse.<Customer>builder()
@@ -171,5 +264,5 @@ public class CustomerController {
 		                                     .message("Müşteri başarıyla silindi.")
 		                                     .build()
 		);
-	}
+	}*/
 }

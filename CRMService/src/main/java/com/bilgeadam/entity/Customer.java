@@ -14,12 +14,8 @@ import lombok.experimental.SuperBuilder;
 public class Customer extends BaseEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	Long id;
-	String firstName;
-	String lastName;
-	@Column(unique = true)
-	String email;
-	@Column(unique = true)
-	String phone;
-	String companyName;
+	Long customerId;
+	Long companyId;
+	@Embedded
+	Profile profile;
 }

@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 import static com.bilgeadam.constant.RestApis.*;
 
-@FeignClient(url = "http://localhost:8080/v1/dev/employee", name = "organisationManagementManager")
+@FeignClient(url = "http://localhost:8087/v1/dev/employee", name = "organisationManagementManager")
 public interface OrganisationManagementManager {
 
     @PostMapping(CREATE_COMPANY_MANAGER)

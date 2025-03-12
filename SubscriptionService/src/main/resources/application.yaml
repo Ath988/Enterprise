@@ -1,0 +1,18 @@
+server:
+  port: 8089
+
+spring:
+  security:
+    user:
+      name: ${SEC_NAME}
+      password: ${SEC_PASSWORD}
+  application:
+    name: SubscriptionService
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: ${DB_URL}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:root}
+  jpa:
+    hibernate:
+      ddl-auto: create-drop

@@ -1,7 +1,8 @@
 package com.projectmanagementservice.controllers;
 
 import com.projectmanagementservice.dto.request.*;
-import com.projectmanagementservice.entities.Project;
+import com.projectmanagementservice.dto.response.BaseResponse;
+import com.projectmanagementservice.entities.BaseEntity;
 import com.projectmanagementservice.entities.Task;
 import com.projectmanagementservice.services.TaskService;
 import lombok.RequiredArgsConstructor;
@@ -21,39 +22,59 @@ public class TaskController
     private final TaskService taskService;
 
     @PostMapping(SAVE)
-    public ResponseEntity<Boolean> save(@RequestBody TaskSaveRequestDTO dto){
-
-        return ResponseEntity.ok(taskService.save(dto));
+    public ResponseEntity<BaseResponse<Boolean>> createTask(@RequestBody TaskSaveRequestDTO dto){
+        //TODO: token kontrollu yapilacak!
+        return ResponseEntity.ok(BaseResponse.<Boolean>builder()
+                        .code(200)
+                        .message("Task olusturuldu!")
+                        .success(true)
+                .data(taskService.createTask(dto))
+                .build());
     }
 
     @DeleteMapping(DELETE)
-    public ResponseEntity<Boolean> delete(Long id){
-
-        return ResponseEntity.ok(taskService.delete(id));
+    public ResponseEntity<BaseResponse<Boolean>> deleteTask(@RequestParam Long taskId){
+        //TODO: token kontrollu yapilacak!
+        return ResponseEntity.ok(BaseResponse.<Boolean>builder()
+                        .success(true)
+                        .message("Task silme islemi basariyla gerceklestirilmistir!")
+                        .code(200)
+                        .data(taskService.deleteTask(taskId))
+                .build());
     }
 
     @PutMapping(UPDATE)
-    public ResponseEntity<Boolean> update(@RequestBody TaskUpdateRequestDTO dto){
-
-        return ResponseEntity.ok(taskService.update(dto));
+    public ResponseEntity<BaseResponse<Boolean>> update(@RequestBody TaskUpdateRequestDTO dto){
+        //TODO: token kontrollu yapilacak!
+        return ResponseEntity.ok(BaseResponse.<Boolean>builder()
+                        .code(200)
+                        .success(true)
+                        .message("Task guncellendi!")
+                        .data(taskService.updateTask(dto))
+                .build());
     }
 
-    @PostMapping(FIND_ALL)
-    public ResponseEntity<List<Task>> findAll(@RequestBody PageRequestDTO dto){
-
-        return ResponseEntity.ok(taskService.findAllByNameContainingIgnoreCaseAndStatusIsNotAndAuthIdOrderByNameAsc(dto));
+    @GetMapping(FIND_ALL)
+    public ResponseEntity<BaseResponse<List<Task>>> findAll(@RequestParam Long projectId){
+        //TODO: token kontrollu yapilacak!
+        return ResponseEntity.ok(BaseResponse.<List<Task>>builder()
+                        .data(taskService.findAllTaskByProjectId(projectId))
+                        .code(200)
+                        .message("Tum proje tasklari getirildi!")
+                        .success(true)
+                .build());
     }
 
-    @PostMapping(FIND_BY_ID)
-    public ResponseEntity<Task> findByIdAndAuthId(Long id){
-
-        return ResponseEntity.ok(taskService.findByIdAndAuthId(id));
-    }
 
     @PostMapping(ADD_USER_TO_TASK)
-    public ResponseEntity<Boolean> addUserToTask(AddUserToTaskDTO dto){
-
-        return ResponseEntity.ok(taskService.addUserToTask(dto));
+    public ResponseEntity<BaseResponse<Boolean>> addUserToTask(AddUserToTaskDTO dto){
+        //TODO: token kontrollu yapilacak!
+        return ResponseEntity.ok(BaseResponse.<Boolean>builder()
+                        .message("Kullanici atandi!")
+                        .code(200)
+                        .success(true)
+                        .data(taskService.addUserToTask(dto))
+                .build());
     }
 
 }

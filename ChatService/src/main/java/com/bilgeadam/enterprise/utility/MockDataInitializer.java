@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 import java.util.*;
 
-//@Component
+@Component
 @RequiredArgsConstructor
 public class MockDataInitializer implements ApplicationRunner {
 	
@@ -24,23 +24,48 @@ public class MockDataInitializer implements ApplicationRunner {
 	
 	@Override
 	public void run(ApplicationArguments args) {
-		List<User> users = createMockUsers();
-		userRepository.saveAll(users);
-		
-	//	List<Chat> chats = createMockChats();
-	//	chatRepository.saveAll(chats);
-		
-	//	List<ChatUser> chatUsers = createMockChatUsers(chats, users);
-	//	chatUserRepository.saveAll(chatUsers);
-		
-	//	List<Message> messages = createMockMessages(chats, chatUsers);
-	//	messageRepository.saveAll(messages);
-		
-		System.out.println("Mock data initialized successfully!");
+		if (userRepository.findAll().stream().count() == 0 &&
+		chatRepository.findAll().stream().count() == 0 &&
+		chatUserRepository.findAll().stream().count() == 0 &&
+		messageRepository.findAll().stream().count() == 0) {
+
+			List<User> users = createMockUsers();
+			userRepository.saveAll(users);
+			List<Chat> chats = createMockChats();
+			chatRepository.saveAll(chats);
+
+			List<ChatUser> chatUsers = createMockChatUsers(chats, users);
+			chatUserRepository.saveAll(chatUsers);
+
+			List<Message> messages = createMockMessages(chats, chatUsers);
+			messageRepository.saveAll(messages);
+			System.out.println("Mock data initialized successfully!");
+		}
+
+		else System.out.println("Mock data not initialized!");
 	}
 	
 	private List<User> createMockUsers() {
 		List<User> users = new ArrayList<>();
+		User vehbi = User.builder()
+				.name("Vehbi")
+				.surname("Çok")
+				.email("vehbi@test.com")
+				.isOnline(false)
+				.password("Sifre123**")
+				.build();
+
+		User hasan = User.builder()
+				.name("Hasan")
+				.surname("Sanan")
+				.email("hasan@test.com")
+				.isOnline(true)
+				.password("Sifre123**")
+				.isSupport(true)
+				.build();
+
+		users.add(vehbi);
+		users.add(hasan);
 		for (int i = 1; i <= 5; i++) {
 			users.add(User.builder()
 			              .email("user" + i + "@example.com")
@@ -50,6 +75,8 @@ public class MockDataInitializer implements ApplicationRunner {
 			              .isOnline(i % 2 == 0)
 			              .build());
 		}
+
+
 		return users;
 	}
 	

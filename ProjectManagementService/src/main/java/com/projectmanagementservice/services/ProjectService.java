@@ -1,17 +1,12 @@
 package com.projectmanagementservice.services;
 
-import com.projectmanagementservice.dto.request.AddTaskToProjectDTO;
-import com.projectmanagementservice.dto.request.PageRequestDTO;
-import com.projectmanagementservice.dto.request.ProjectSaveRequestDTO;
-import com.projectmanagementservice.dto.request.ProjectUpdateRequestDTO;
+import com.projectmanagementservice.dto.request.*;
 import com.projectmanagementservice.entities.Project;
-import com.projectmanagementservice.entities.Task;
 import com.projectmanagementservice.entities.enums.EStatus;
 import com.projectmanagementservice.exceptions.ErrorType;
 import com.projectmanagementservice.exceptions.ProjectManagementException;
 import com.projectmanagementservice.repositories.ProjectRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -30,24 +25,24 @@ public class ProjectService
                 .builder()
                 .name(dto.name())
                 .description(dto.description())
-                        .authId(1L)
+                        .organizationId(1L)
                 .startDate(dto.startDate())
                 .endDate(dto.endDate())
                 .build());
         return true;
     }
 
-    public Boolean delete(Long id)
+    public Boolean delete(ProjectDeleteRequest dto)
     {
-        Project project = projectRepository.findByIdAndAuthId(id,1L).orElseThrow(() -> new ProjectManagementException(ErrorType.PROJECT_NOT_FOUND));
+        Project project = projectRepository.findById(dto.projectId()).orElseThrow(() -> new ProjectManagementException(ErrorType.PROJECT_NOT_FOUND));
         project.setStatus(EStatus.DELETED);
         projectRepository.save(project);
         return true;
     }
 
-    public Boolean update(ProjectUpdateRequestDTO dto)
+    public Boolean updateProjectDetails(ProjectUpdateRequestDTO dto)
     {
-        Project project = projectRepository.findByIdAndAuthId(dto.id(),1L).orElseThrow(() -> new ProjectManagementException(ErrorType.PROJECT_NOT_FOUND));
+        Project project = projectRepository.findById(dto.id()).orElseThrow(() -> new ProjectManagementException(ErrorType.PROJECT_NOT_FOUND));
         project.setName(dto.name());
         project.setDescription(dto.description());
         project.setStartDate(dto.startDate());
@@ -55,25 +50,12 @@ public class ProjectService
         projectRepository.save(project);
         return true;
     }
-
-
-    public List<Project> findAllByNameContainingIgnoreCaseAndStatusIsNotAndAuthIdOrderByNameAsc(PageRequestDTO dto)
-    {
-        return projectRepository.findAllByNameContainingIgnoreCaseAndStatusIsNotAndAuthIdOrderByNameAsc(dto.searchText(), EStatus.DELETED,1L, PageRequest.of(dto.page(), dto.size()));
+    //TODO: kullanici authIdsi ile hangi organizasyona bagli oldugu bilgisi getirilmelidir!
+    public List<Project> findAllProjectsByOrganizationId() {
+        Long organizationId = 1L; // organizasyonun bulundugu senaryo
+        return projectRepository.findAllByOrganizationIdAndStatus(organizationId, EStatus.ACTIVE);
     }
 
-    public Project findByIdAndAuthId(Long id)
-    {
-       return  projectRepository.findByIdAndAuthId(id,1L).orElseThrow(() -> new ProjectManagementException(ErrorType.PROJECT_NOT_FOUND));
-    }
 
-    public Boolean addTaskToProject(AddTaskToProjectDTO dto)
-    {
-        Project project = findByIdAndAuthId(dto.projectId());
-        Task task = taskService.findByIdAndAuthId(dto.taskId());
-        project.getTasks().add(task);
-        projectRepository.save(project);
-        return true;
-    }
 }
 

@@ -8,8 +8,10 @@ import com.bilgeadam.dto.response.BaseResponse;
 import com.bilgeadam.dto.response.DepartmentDetailResponse;
 import com.bilgeadam.dto.response.OrganizationTreeResponse;
 import com.bilgeadam.service.DepartmentService;
+import com.bilgeadam.view.VwDepartmendAndPosition;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,11 +21,12 @@ import static com.bilgeadam.constants.RestApis.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(DEPARTMENT)
+@CrossOrigin("*")
 public class DepartmentController {
     private final DepartmentService departmentService;
 
-    //Yeni departman oluşturur.
-    @PostMapping
+    @PreAuthorize("hasAnyRole('MEMBER', 'STAFF') and hasAuthority('ENTERPRISE') and hasAnyAuthority('ACCESS_ALL_MODULES', 'ACCESS_ORGANIZATION_MANAGEMENT')")
+    @PostMapping("/add-department")
     public ResponseEntity<BaseResponse<Boolean>> addDepartment(
             @RequestHeader(value = "Authorization", required = false) String token,
             @RequestBody AddNewDepartmentRequest dto) {
@@ -37,27 +40,27 @@ public class DepartmentController {
     @PatchMapping("/assign-department-manager")
     public ResponseEntity<BaseResponse<Boolean>> assignDepartmentManager(
             @RequestHeader(value = "Authorization", required = false) String token,
-            @RequestBody UpdateDepartmentManagerRequest dto){
+            @RequestBody UpdateDepartmentManagerRequest dto) {
         return ResponseEntity.ok(BaseResponse.<Boolean>builder()
-                        .success(departmentService.updateDepartmentManager(token, dto))
-                        .message("Departmana yeni yönetici atandı.")
+                .success(departmentService.updateDepartmentManager(token, dto))
+                .message("Departmana yeni yönetici atandı.")
                 .build());
     }
 
 
     //Departman bilgilerini günceller.
-    @PutMapping
+    @PutMapping("/update-department")
     public ResponseEntity<BaseResponse<Boolean>> updateDepartment(
             @RequestHeader(value = "Authorization", required = false) String token,
             @RequestBody UpdateDepartmentRequest dto) {
         return ResponseEntity.ok(BaseResponse.<Boolean>builder()
-                .success(departmentService.updateDepartment(token,dto))
+                .success(departmentService.updateDepartment(token, dto))
                 .message("Departman bilgileri güncellendi.")
                 .build());
     }
 
     //Soft delete.
-    @DeleteMapping("{departmentId}")
+    @DeleteMapping("/delete-department/{departmentId}")
     public ResponseEntity<BaseResponse<Boolean>> deleteDepartment(
             @RequestHeader(value = "Authorization", required = false) String token,
             @PathVariable Long departmentId) {
@@ -73,13 +76,13 @@ public class DepartmentController {
             @RequestHeader(value = "Authorization", required = false) String token,
             @PathVariable Long departmentId) {
         return ResponseEntity.ok(BaseResponse.<DepartmentDetailResponse>builder()
-                .data(departmentService.findDepartmentDetail(token,departmentId))
+                .data(departmentService.findDepartmentDetail(token, departmentId))
                 .message("Departman detayı getirildi.")
                 .build());
     }
 
-    //Firmanın tüm departmanlarını listeler.
-    @GetMapping
+    @PreAuthorize("hasAnyRole('MEMBER', 'STAFF') and hasAuthority('ENTERPRISE') and hasAnyAuthority('ACCESS_ALL_MODULES', 'ACCESS_ORGANIZATION_MANAGEMENT')")
+    @GetMapping("/get-all-departments")
     public ResponseEntity<BaseResponse<List<AllDepartmentResponse>>> getAllDepartment(
             @RequestHeader(value = "Authorization", required = false) String token) {
         return ResponseEntity.ok(BaseResponse.<List<AllDepartmentResponse>>builder()
@@ -93,7 +96,7 @@ public class DepartmentController {
     public ResponseEntity<BaseResponse<List<AllDepartmentResponse>>> getAllSubDepartments(
             @RequestHeader(value = "Authorization", required = false) String token,
             @PathVariable Long departmentId) {
-        List<AllDepartmentResponse> subDepartments = departmentService.findAllSubDepartments(token,departmentId);
+        List<AllDepartmentResponse> subDepartments = departmentService.findAllSubDepartments(token, departmentId);
         String message = subDepartments.isEmpty() ?
                 "Bu departmana ait alt departman yoktur."
                 :
@@ -111,7 +114,7 @@ public class DepartmentController {
             @RequestHeader(value = "Authorization", required = false) String token,
             @PathVariable Long managerId) {
         return ResponseEntity.ok(BaseResponse.<List<AllDepartmentResponse>>builder()
-                .data(departmentService.findAllDepartmentsOfManager(token,managerId))
+                .data(departmentService.findAllDepartmentsOfManager(token, managerId))
                 .message("Menajerin yönettiği departmanların listesi.")
                 .build());
     }
@@ -122,7 +125,7 @@ public class DepartmentController {
             @RequestHeader(value = "Authorization", required = false) String token,
             @PathVariable Long departmentId) {
         return ResponseEntity.ok(BaseResponse.<List<AllDepartmentResponse>>builder()
-                .data(departmentService.findDepartmentHierarchy(token,departmentId))
+                .data(departmentService.findDepartmentHierarchy(token, departmentId))
                 .message("Departman üst birimleri getirildi.")
                 .build());
     }
@@ -131,12 +134,19 @@ public class DepartmentController {
     @GetMapping("/{companyId}/organization-tree")
     public ResponseEntity<BaseResponse<OrganizationTreeResponse>> getOrganizationTree(@PathVariable Long companyId) {
         return ResponseEntity.ok(BaseResponse.<OrganizationTreeResponse>builder()
-                        .data(departmentService.getOrganizationTree(companyId))
-                        .message("Şirket organizasyon şeması getirildi.")
+                .data(departmentService.getOrganizationTree(companyId))
+                .message("Şirket organizasyon şeması getirildi.")
                 .build());
     }
 
-    //Todo: Departman istatistikleri için endpoint, frontend ihtiyaçlarına göre oluşturulcak.
+    @GetMapping("/other-services/get-department-and-position")
+    public ResponseEntity<BaseResponse<VwDepartmendAndPosition>> getPositionAndDepartmentName(
+            @RequestHeader(value = "Authorization", required = false) String token){
+        return ResponseEntity.ok(BaseResponse.<VwDepartmendAndPosition>builder()
+                        .data(departmentService.findDepartmentAndPositionNameByAuthId(token))
+                .build());
+    }
+
 
 
 }

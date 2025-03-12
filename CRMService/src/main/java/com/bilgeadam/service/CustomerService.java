@@ -19,8 +19,34 @@ public class CustomerService {
 	private final CustomerRepository customerRepository;
 	
 	public void addCustomer(AddCustomerRequestDto dto){
+		String trimmedFirstName = dto.firstName().trim();
+		String trimmedLastName = dto.lastName().trim();
+		
+		if (trimmedFirstName.length() < 3 || trimmedLastName.length() < 3) {
+			throw new CRMServiceException(ErrorType.INVALID_CUSTOMER_NAME);
+		}
+		
+		customerRepository.findByProfileEmail(dto.email())
+		                  .ifPresent(c -> {
+			                  throw new CRMServiceException(ErrorType.EMAIL_ALREADY_EXISTS);
+		                  });
 		Customer customer = CustomerMapper.INSTANCE.fromAddCustomer(dto);
 		customerRepository.save(customer);
+	}
+	
+	public void importCustomers(List<Customer> customers){
+		if (customers.isEmpty()){
+			throw new CRMServiceException(ErrorType.CUSTOMER_IMPORT_EMPTY);
+		}
+		customerRepository.saveAll(customers);
+	}
+	
+	public boolean isEmailExists(String email) {
+		return customerRepository.findByProfileEmail(email).isPresent();
+	}
+	
+	public boolean isPhoneNumberExists(String phoneNumber) {
+		return customerRepository.findByProfilePhoneNumber(phoneNumber).isPresent();
 	}
 	
 	public List<Customer> getAllCustomers(){
@@ -28,9 +54,35 @@ public class CustomerService {
 		return customerRepository.findAll();
 	}
 	
-	/*public Customer getCustomerById(Long id){
+	public Customer getCustomerById(Long id){
 		return customerRepository.findById(id).orElseThrow(()-> new CRMServiceException(ErrorType.CUSTOMER_NOT_FOUND));
-	}*/
+	}
+	
+	public void updateCustomer(Long customerId, UpdateCustomerRequestDto dto) {
+		Optional<Customer> optionalCustomer = customerRepository.findById(customerId);
+		if (optionalCustomer.isPresent()) {
+			Customer customer = optionalCustomer.get();
+			CustomerMapper.INSTANCE.updateCustomerFromDto(dto, customer);
+			customerRepository.save(customer);
+		} else {
+			throw new CRMServiceException(ErrorType.CUSTOMER_NOT_FOUND);
+		}
+	}
+	
+	public void deleteCustomer(Long customerId) {
+		Customer customer = customerRepository.findById(customerId)
+		                                      .orElseThrow(() -> new CRMServiceException(ErrorType.CUSTOMER_NOT_FOUND));
+		customerRepository.delete(customer);
+	}
+	
+	public void deleteCustomers(List<Long> customerIds) {
+		if (customerIds == null || customerIds.isEmpty()) {
+			throw new CRMServiceException(ErrorType.CUSTOMER_DELETE_LIST_EMPTY);
+		}
+		customerRepository.deleteAllById(customerIds);
+	}
+	
+	/*
 	
 	public Customer getCustomerByEmail(String email) {
 		return customerRepository.findByEmail(email)
@@ -100,7 +152,7 @@ public class CustomerService {
 	
 	public List<Customer> getLatestCustomers() {
 		return customerRepository.findTop10ByOrderByIdDesc();
-	}
+	}*/
 	
 	
 }

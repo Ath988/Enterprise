@@ -24,4 +24,5 @@ public interface ChatUserRepository extends JpaRepository<ChatUser, String> {
 	
 	Optional<ChatUser> findChatUserByChatIdAndUserId(String userId, String chatId);
 
+	List<ChatUser> findAllByChatIdAndUserId(String id, String userId);
 }

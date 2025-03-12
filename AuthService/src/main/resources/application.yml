@@ -1,7 +1,9 @@
 server:
-  port: 9091
+  port: 8081
 
 spring:
+  application:
+    name: auth-service
   security:
     user:
       name: ${SEC_NAME}

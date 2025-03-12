@@ -1,6 +1,7 @@
 package com.bilgeadam.utility.demoData;
 
 import com.bilgeadam.entity.Employee;
+import com.bilgeadam.entity.enums.EGender;
 import com.bilgeadam.entity.enums.EmployeeRole;
 
 import java.util.List;
@@ -8,15 +9,67 @@ import java.util.List;
 public class GenerateEmployee {
 
     public static List<Employee> generateEmployee() {
-        Employee ceo = Employee.builder().companyId(1L).authId(9990L).firstName("Vehbi").lastName("Koç").email("vehbi@gmail.com").role(EmployeeRole.COMPANY_OWNER).positionId(1L).build();
-        Employee mudur1 = Employee.builder().companyId(1L).authId(9991L).firstName("Hasan").lastName("Mezarcı").role(EmployeeRole.DEPARTMENT_MANAGER).positionId(2L).build();
-        Employee mudur2 = Employee.builder().companyId(1L).authId(9992L).firstName("Ali").lastName("Bayram").role(EmployeeRole.DEPARTMENT_MANAGER).positionId(3L).build();
-        Employee personel1  = Employee.builder().companyId(1L).authId(9993L).firstName("Personel 1").lastName("Soyisim").role(EmployeeRole.EMPLOYEE).positionId(2L).build();
-        Employee personel2  = Employee.builder().companyId(1L).authId(9994L).firstName("Personel 2").lastName("Soyisim").role(EmployeeRole.EMPLOYEE).positionId(2L).build();
-        Employee personel3  = Employee.builder().companyId(1L).authId(9995L).firstName("Personel 3").lastName("Soyisim").role(EmployeeRole.EMPLOYEE).positionId(3L).build();
-        Employee personel4  = Employee.builder().companyId(1L).authId(9996L).firstName("Personel 4").lastName("Soyisim").role(EmployeeRole.EMPLOYEE).positionId(3L).build();
-        return List.of(ceo,mudur1,mudur2,personel1,personel2,personel3,personel4);
+            Employee companyManager = Employee.builder()
+                                              .companyId(1L).authId(1L)
+                                              .firstName("Vehbi").lastName("Koç")
+                                              .email("vehbi@test.com")
+                                              .role(EmployeeRole.COMPANY_OWNER)
+                                              .gender(EGender.MALE)
+                                              .positionId(1L) // CEO
+                    .avatarUrl("https://randomuser.me/api/portraits/men/1.jpg")
+                                              .build();
+            
+            Employee departmentManager1 = Employee.builder()
+                                                  .companyId(1L).authId(2L)
+                                                  .firstName("Hasan").lastName("Kayar")
+                                                  .email("hasan@test.com")
+                                                  .role(EmployeeRole.DEPARTMENT_MANAGER)
+                                                  .gender(EGender.MALE)
+                                                  .positionId(2L) // CTO (IT Departmanı)
+                    .avatarUrl("https://randomuser.me/api/portraits/men/2.jpg")
+                                                  .build();
+            
+            Employee departmentManager2 = Employee.builder()
+                                                  .companyId(1L).authId(3L)
+                                                  .firstName("Ayşe").lastName("Kulin")
+                                                  .email("ayse@test.com")
+                                                  .role(EmployeeRole.DEPARTMENT_MANAGER)
+                                                  .gender(EGender.FEMALE)
+                                                  .positionId(3L) // CFO (HR Departmanı)
+                    .avatarUrl("https://randomuser.me/api/portraits/women/3.jpg")
+                                                  .build();
+            
+            Employee employee1 = Employee.builder()
+                                         .companyId(1L).authId(4L)
+                                         .firstName("Mehmet").lastName("Öz")
+                                         .email("mehmet@test.com")
+                                         .role(EmployeeRole.EMPLOYEE)
+                                         .gender(EGender.MALE)
+                                         .positionId(4L) // Developer (CTO'ya bağlı)
+                    .avatarUrl("https://randomuser.me/api/portraits/men/5.jpg")
+                                         .build();
+            
+            Employee employee2 = Employee.builder()
+                                         .companyId(1L).authId(5L)
+                                         .firstName("Hülya").lastName("Pamuk")
+                                         .email("hulya@test.com")
+                                         .role(EmployeeRole.EMPLOYEE)
+                                         .gender(EGender.FEMALE)
+                                         .positionId(5L) // Tester (CTO'ya bağlı)
+                    .avatarUrl("https://randomuser.me/api/portraits/women/4.jpg")
+                                         .build();
+            
+            Employee employee3 = Employee.builder()
+                                         .companyId(1L).authId(6L)
+                                         .firstName("Kemal").lastName("Sunal")
+                                         .email("kemal@test.com")
+                                         .role(EmployeeRole.EMPLOYEE)
+                                         .gender(EGender.MALE)
+                                         .positionId(6L) // Accountant (CFO'ya bağlı)
+                    .avatarUrl("https://randomuser.me/api/portraits/men/6.jpg")
+                                         .build();
+            
+            return List.of(companyManager, departmentManager1, departmentManager2, employee1, employee2, employee3);
+        }
+        
     }
-
-
-}

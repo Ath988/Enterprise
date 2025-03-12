@@ -1,0 +1,1 @@
+Servisi çalıştırmadan önce Notification Service'in çalıştırılması gerekiyor.

@@ -13,9 +13,9 @@ import java.util.Optional;
 
 @Service
 public class JwtManager {
-	@Value("asd123")
+	@Value("secretkey")
 	private String secretKey;
-	@Value("abicav")
+	@Value("EnterpriseApp")
 	private String issuer;
 	private final Long exDate=1000000L*60;
 	
@@ -28,7 +28,7 @@ public class JwtManager {
 		                  .withIssuer(issuer)
 		                  .withIssuedAt(createdDate)
 		                  .withExpiresAt(expirationDate)
-		                  .withClaim("authId", authId)
+		                  .withClaim("id", authId)
 		                  .withClaim("key","JX_15_TJJJ")
 		                  .sign(algorithm);
 		return token;
@@ -41,7 +41,7 @@ public class JwtManager {
 			DecodedJWT decodedJWT = verifier.verify(token);
 			if (Objects.isNull(decodedJWT))
 				return Optional.empty();
-			String authId = decodedJWT.getClaim("authId").asString();
+			String authId = decodedJWT.getClaim("id").asLong().toString();
 			return Optional.of(authId);
 		}
 		catch (Exception exception) {

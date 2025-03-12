@@ -1,20 +1,24 @@
 package com.bilgeadam.service;
 
 import com.bilgeadam.dto.request.AddNewPositionRequest;
+import com.bilgeadam.dto.request.AssignPositionToEmployeeListRequest;
 import com.bilgeadam.dto.request.UpdatePositionRequest;
 import com.bilgeadam.dto.response.PositionDetailResponse;
+import com.bilgeadam.dto.response.PositionTreeResponse;
 import com.bilgeadam.entity.Department;
 import com.bilgeadam.entity.Employee;
 import com.bilgeadam.entity.Position;
 import com.bilgeadam.entity.enums.EState;
 import com.bilgeadam.exception.ErrorType;
 import com.bilgeadam.exception.OrganisationManagementException;
+import com.bilgeadam.repository.EmployeeRepository;
 import com.bilgeadam.repository.PositionRepository;
+import com.bilgeadam.view.VwPosition;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class PositionService {
@@ -22,11 +26,13 @@ public class PositionService {
     private final PositionRepository positionRepository;
     private final EmployeeService employeeService;
     private final DepartmentService departmentService;
-
-    public PositionService(PositionRepository positionRepository, @Lazy EmployeeService employeeService,@Lazy DepartmentService departmentService) {
+    private final EmployeeRepository employeeRepository;
+    
+    public PositionService(PositionRepository positionRepository, @Lazy EmployeeService employeeService, @Lazy DepartmentService departmentService, EmployeeRepository employeeRepository) {
         this.positionRepository = positionRepository;
         this.employeeService = employeeService;
         this.departmentService = departmentService;
+        this.employeeRepository = employeeRepository;
     }
 
     public Boolean addNewPosition(String token, AddNewPositionRequest dto) {
@@ -110,4 +116,59 @@ public class PositionService {
     public void save(Position position) {
         positionRepository.save(position);
     }
+
+    public Boolean assignPositionToEmployeeList(String token, AssignPositionToEmployeeListRequest dto){
+        Employee manager = employeeService.getEmployeeByToken(token);
+        //Pozisyon var mı yok mu kontrol edilebilir.
+        for(Long employeeId : dto.employeeIdList()){
+
+            Employee employee = employeeService.findById(employeeId);
+            checkCompany(manager.getCompanyId(), employee.getCompanyId());
+            employee.setPositionId(dto.positionId());
+            employee.setUpdateAt(LocalDateTime.now());
+            employeeService.save(employee);
+        }
+        return true;
+    }
+    
+    public PositionTreeResponse getPositionTree(Long companyId) {
+        String companyName = "KOÇ HOLDİNG";
+        String CEO = employeeService.findCeoNameByCompanyId(companyId);
+        String ceoAvatarUrl = employeeService.findCeoAvatarUrlByCompanyId(companyId);
+
+        PositionTreeResponse response = PositionTreeResponse.builder()
+                                                            .companyId(companyId)
+                                                            .companyName(companyName)
+                                                            .CEO(CEO)
+                                                            .positions(new ArrayList<>())
+                .avatarUrl(ceoAvatarUrl)
+                                                            .build();
+        List<VwPosition> rootPositions = positionRepository.findAllVwPositionsByParentPositionId(1L);
+        response.getPositions().addAll(rootPositions);
+
+        Queue<VwPosition> positionQueue = new LinkedList<>(rootPositions);
+
+        while (!positionQueue.isEmpty()) {
+            VwPosition currentPosition = positionQueue.poll();
+            
+            currentPosition.setEmployees(employeeRepository.findAllEmployeeByPositionId(currentPosition.getPositionId()));
+
+            //currentPosition.setEmployees(employeeRepository.findAllEmployeeByPositionId(currentPosition.getPositionId()));
+
+
+            List<VwPosition> subPositions = positionRepository.findAllVwPositionsByParentPositionId(currentPosition.getPositionId());
+            if (!subPositions.isEmpty()) {
+                currentPosition.setSubPositions(new ArrayList<>(subPositions));
+                positionQueue.addAll(subPositions);
+                for (VwPosition subPosition : subPositions) {
+                    //subPosition.setEmployees(employeeRepository.findAllEmployeeByPositionId(subPosition.getPositionId()));
+                }
+            }
+        }
+        return response;
+    }
+    
+    
+    
+    
 }

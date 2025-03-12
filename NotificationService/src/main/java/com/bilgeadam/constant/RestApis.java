@@ -12,9 +12,12 @@ public class RestApis{
 
     private static final String ROOT = VERSION + DEVELOPER;
 
-    public static final String USER = ROOT+ "/user";
+    public static final String NOTIFICATION = ROOT+ "/notification";
 
 
     public static final String TOPIC_NOTIFICATIONS = "/topic/notifications";
     public static final String ENDPOINT_WS = "/ws";
+    public static final String ISREAD = "/isread";
+    public static final String NOTIFICATIONSENDER = "/notificationSender";
+    
 }

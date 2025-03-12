@@ -8,7 +8,6 @@ import com.bilgeadam.exception.ErrorType;
 import com.bilgeadam.exception.FileServiceException;
 import com.bilgeadam.repository.FileInfoRepository;
 import io.minio.*;
-import io.minio.errors.*;
 import io.minio.http.Method;
 import io.minio.messages.Item;
 import lombok.RequiredArgsConstructor;
@@ -16,10 +15,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.io.InputStream;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -166,6 +162,9 @@ public class FileService {
 		if (oldFileInfo==null){
 			throw new FileServiceException(ErrorType.FILE_NOT_FOUND);
 		}
+		if(isFileExist(newFileName)){
+			throw new FileServiceException(ErrorType.FILE_ALREADY_EXIST);
+		}
 		minioClient.copyObject(CopyObjectArgs.builder().bucket(bucketName).object(newFileName)
 		                                     .source(CopySource.builder().bucket(bucketName).object(oldFileName)
 		                                                       .build()).build());
@@ -191,8 +190,9 @@ public class FileService {
 			return false;
 		}
 	}
-	
 
-	
-	
+
+	public List<FileInfo> findAllById(List<Long> fileIds) {
+		return fileInfoRepository.findAllById(fileIds);
+	}
 }

@@ -8,6 +8,7 @@ import com.bilgeadam.repository.NotificationRepository;
 import com.bilgeadam.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -23,7 +24,7 @@ public class NotificationService {
         notification.setTitle(message.title());
         notification.setDescription(message.description());
         notification.setDate(LocalDateTime.now());
-        notification.setIsRead(message.isRead());
+        notification.setIsRead(false);
         return notificationRepository.save(notification);
     }
 
@@ -42,4 +43,14 @@ public class NotificationService {
 
         return notificationRepository.findAll();
     }
+    
+    //Bildirimi okundu olarak işaretleyebilmek için yazdım
+    public Notification markAsRead( Long id) {
+        Notification notification = notificationRepository.findById(id)
+                                                          .orElseThrow(() -> new RuntimeException("Notification not found"));
+        
+        notification.setIsRead(true); // Bildirimi okundu olarak işaretle
+        return notificationRepository.save(notification); // Veritabanında güncelle
+    }
+    
 }

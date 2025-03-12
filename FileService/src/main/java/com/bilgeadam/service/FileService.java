@@ -7,6 +7,7 @@ import com.bilgeadam.entity.enums.EState;
 import com.bilgeadam.exception.ErrorType;
 import com.bilgeadam.exception.FileServiceException;
 import com.bilgeadam.repository.FileInfoRepository;
+import com.bilgeadam.view.VwFile;
 import io.minio.*;
 import io.minio.http.Method;
 import io.minio.messages.Item;
@@ -194,5 +195,9 @@ public class FileService {
 
 	public List<FileInfo> findAllById(List<Long> fileIds) {
 		return fileInfoRepository.findAllById(fileIds);
+	}
+
+	public List<VwFile> getFileByMap(List<String> fileIds) {
+		return fileInfoRepository.findAllByIdList(fileIds);
 	}
 }

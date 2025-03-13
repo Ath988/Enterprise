@@ -7,9 +7,5 @@ public record ChatUserInfo(
 		LocalDateTime createdAt,
 		String description,
 		String name,
-		String userId,
-		String userName,
-		String userSurname,
-		Boolean isOnline,
-		String profilePicture
-) { }
+		Long userId
+) {}

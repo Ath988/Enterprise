@@ -3,6 +3,7 @@ package com.bilgeadam.service;
 import com.bilgeadam.dto.request.CreateMemberRequest;
 import com.bilgeadam.dto.request.otherServices.AddSubscriptionRequest;
 import com.bilgeadam.dto.request.otherServices.ManageEmployeePermissionsRequest;
+import com.bilgeadam.dto.response.UserDetailsForChatResponse;
 import com.bilgeadam.dto.response.UserPermissionResponse;
 import com.bilgeadam.dto.response.UserProfileResponse;
 import com.bilgeadam.dto.response.otherServices.VwDepartmendAndPosition;
@@ -166,6 +167,35 @@ public class UserService {
         userRolePermissionService.saveAll(permissionsList);
         return true;
 
+    }
+    
+    //CHATSERVICE-1
+    public UserDetailsForChatResponse getUserDetailForChat(Long userId) {
+        User user = userRepository.findById(userId)
+                                              .orElseThrow(() -> new UserManagementException(ErrorType.USER_NOT_FOUND));
+        
+        return new UserDetailsForChatResponse(
+                userId, user.getCompanyId(), user.getFirstName(), user.getLastName(),
+                user.getAvatarUrl(), user.getIsOnline());
+    }
+    
+    //CHATSERVICE-2
+    public List<UserDetailsForChatResponse> getUsersDetailByCompanyId(Long userId, Long companyId){
+        return userRepository.findAllActiveUsersByCompanyId(companyId,userId);
+    }
+    
+    //CHATSERVICE-3
+    public List<UserDetailsForChatResponse> getUsersDetailByIds(List<Long> ids) {
+        return userRepository.findUsersByIds(ids);
+    }
+    
+    //CHATSERVICE-4
+    public boolean setUserOnlineStatus(Long userId, boolean status) {
+        return userRepository.findById(userId).map(user -> {
+            user.setIsOnline(status);
+            userRepository.save(user);
+            return true;
+        }).orElse(false);
     }
 
 

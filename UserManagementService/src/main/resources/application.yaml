@@ -6,12 +6,10 @@ spring:
     name: user-management-service
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: ${DB_URL}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    url: jdbc:postgresql://192.168.1.106:5432/enterpriseuserdb
+    username: postgres
+    password: root
   jpa:
     show-sql: false
     hibernate:
       ddl-auto: update
-
-

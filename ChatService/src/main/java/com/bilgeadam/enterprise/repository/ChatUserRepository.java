@@ -10,19 +10,16 @@ import java.util.Optional;
 
 public interface ChatUserRepository extends JpaRepository<ChatUser, String> {
 	List<ChatUser> findByChatId(String chatId);
-	List<ChatUser> findByUserId(String userId);
+	List<ChatUser> findByUserId(Long userId);
 	
 	@Query("""
     SELECT COUNT(cu) > 0
     FROM ChatUser cu
     WHERE cu.chatId = :chatId AND cu.userId = :userId
 """)
-	boolean existsByChatIdAndUserId(@Param("chatId") String chatId, @Param("userId") String userId);
+	boolean existsByChatIdAndUserId(@Param("chatId") String chatId, @Param("userId") Long userId);
 	
 	@Query("SELECT cu.userId FROM ChatUser cu WHERE cu.chatId = :chatId")
-	List<String> findUserIdsByChatId(@Param("chatId") String chatId);
+	List<Long> findUserIdsByChatId(@Param("chatId") String chatId);
 	
-	Optional<ChatUser> findChatUserByChatIdAndUserId(String userId, String chatId);
-
-	List<ChatUser> findAllByChatIdAndUserId(String id, String userId);
 }

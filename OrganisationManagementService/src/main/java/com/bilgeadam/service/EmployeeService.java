@@ -4,10 +4,7 @@ import com.bilgeadam.dto.request.AddEmployeeRequest;
 import com.bilgeadam.dto.request.CreateCompanyManagerRequest;
 import com.bilgeadam.dto.request.ManageEmployeePermissionsRequest;
 import com.bilgeadam.dto.request.UpdateEmployeeRequest;
-import com.bilgeadam.dto.response.AllEmployeeResponse;
-import com.bilgeadam.dto.response.BaseResponse;
-import com.bilgeadam.dto.response.EmployeeDetailResponse;
-import com.bilgeadam.dto.response.EmployeeSaveResponse;
+import com.bilgeadam.dto.response.*;
 import com.bilgeadam.entity.Department;
 import com.bilgeadam.entity.Employee;
 import com.bilgeadam.entity.Position;
@@ -40,6 +37,7 @@ public class EmployeeService {
     private final JwtManager jwtManager;
     private final AuthManager authManager;
     private final UserManager userManager;
+
     
     public EmployeeService(EmployeeRepository employeeRepository, @Lazy DepartmentService departmentService, PositionService positionService, JwtManager jwtManager, AuthManager authManager, UserManager userManager) {
         this.employeeRepository = employeeRepository;

@@ -6,14 +6,14 @@ spring:
     name: auth-service
   security:
     user:
-      name: ${SEC_NAME}
-      password: ${SEC_PASSWORD}
+      name: asd
+      password: asd
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: ${DB_URL}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    url: jdbc:postgresql://192.168.1.106:5432/enterpriseauthdb
+    username: postgres
+    password: root
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
     show-sql: true

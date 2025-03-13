@@ -4,15 +4,15 @@ server:
 spring:
   security:
     user:
-      name: ${SEC_NAME}
-      password: ${SEC_PASSWORD}
+      name: asd
+      password: asd
   application:
     name: SubscriptionService
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: ${DB_URL}
-    username: ${DB_USERNAME:postgres}
-    password: ${DB_PASSWORD:root}
+    url: jdbc:postgresql://192.168.1.106:5432/enterprisesubdb
+    username: postgres
+    password: root
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update

@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 public record MessageView(
 		String id,
 		String content,
-		String senderId,
+		Long senderId,
 		String senderName,
 		String senderSurname,
 		LocalDateTime timeStamp,

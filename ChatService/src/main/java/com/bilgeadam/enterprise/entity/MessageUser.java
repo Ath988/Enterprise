@@ -19,9 +19,9 @@ public class MessageUser {
 	@Column(nullable = false)
 	private String messageId;
 	@Column(nullable = false)
-	private String senderId;
+	private Long senderId;
 	@Column(nullable = false)
-	private String targetId;
+	private Long targetId;
 	@Builder.Default
 	private Boolean isDeletedFromUser = false;
 	@Builder.Default

@@ -18,7 +18,10 @@ public enum ErrorType {
 	INVALID_CHAT_TYPE(2006,"Invalid chat type", HttpStatus.BAD_REQUEST),
 	INTERNAL_SERVER_ERROR(5000, "An unexpected error occurred.", HttpStatus.INTERNAL_SERVER_ERROR),
 	VALIDATION_ERROR(4000, "Validation error occurred.", HttpStatus.BAD_REQUEST),
-	SUPPORT_NOT_FOUND(6000,"No support personnel is registered in the system" ,HttpStatus.NOT_FOUND ),;
+	SUPPORT_NOT_FOUND(6000,"No support personnel is registered in the system" ,HttpStatus.NOT_FOUND ),
+	EXTERNAL_SERVICE_ERROR(7000,"External Service Error!",HttpStatus.SERVICE_UNAVAILABLE),
+	DATABASE_ERROR(8000,"Database Error!",HttpStatus.BAD_REQUEST),
+	UNEXPECTED_ERROR(9000,"An unexpected error occurred!",HttpStatus.BAD_REQUEST);
 	
 	
 	private final int code;

@@ -24,7 +24,8 @@ public enum ErrorType {
 	EXCEL_TEMPLATE_ERROR(603, "Excel şablonu oluşturulurken hata oluştu.", HttpStatus.INTERNAL_SERVER_ERROR),
 	PDF_GENERATION_FAILED(601,"An error occurred while reading the Pdf file.",HttpStatus.INTERNAL_SERVER_ERROR),
 	PERFORMER_NOT_FOUND(704, "Performer not found.", HttpStatus.NOT_FOUND),
-	TICKET_INACTIVE_CANNOT_UPDATE(403, "Inactive tickets cannot be updated.", HttpStatus.FORBIDDEN);
+	TICKET_INACTIVE_CANNOT_UPDATE(403, "Inactive tickets cannot be updated.", HttpStatus.FORBIDDEN),
+	FEEDBACK_NOT_ALLOWED(403, "You are not allowed to submit feedback for this ticket.", HttpStatus.FORBIDDEN);
 	
 	int code;
 	String message;

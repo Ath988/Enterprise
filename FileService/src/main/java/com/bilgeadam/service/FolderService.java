@@ -2,11 +2,12 @@ package com.bilgeadam.service;
 
 import com.bilgeadam.dto.request.CreateFolderDto;
 import com.bilgeadam.dto.request.FolderDeleteRequestDto;
+import com.bilgeadam.dto.request.SaveFileRequestDto;
 import com.bilgeadam.dto.request.UpdateFolderNameRequestDto;
-import com.bilgeadam.dto.response.FolderListResponseDto;
 import com.bilgeadam.entity.Folder;
 import com.bilgeadam.exception.ErrorType;
 import com.bilgeadam.exception.FileServiceException;
+import com.bilgeadam.repository.FileInfoRepository;
 import com.bilgeadam.repository.FolderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,7 +21,6 @@ import java.util.stream.Collectors;
 @Service
 public class FolderService {
     private final FolderRepository folderRepository;
-    private final FileService fileService;
 
     public Boolean createFolder(CreateFolderDto dto) {
 
@@ -56,27 +56,6 @@ public class FolderService {
             return folderRepository.findAllByFolderPath("root");
         }
         return folderRepository.findAllByFolderPath(folderPath);
-    }
-
-    public List<FolderListResponseDto> listFoldersDto(String folderPath) {
-        List<Folder> folderList;
-
-        if (folderPath == null || folderPath.isEmpty()) {
-            folderList = folderRepository.findAllByFolderPath("root");
-        } else {
-            folderList = folderRepository.findAllByFolderPath(folderPath);
-        }
-
-        Map<String, List<String>> fileMap = folderList.stream()
-                .collect(Collectors.toMap(Folder::getFolderName, Folder::getFileIdList));
-
-        return folderList.stream()
-                .map(folder -> new FolderListResponseDto(
-                        folder.getFolderName(),
-                        folder.getFolderPath(),
-                        fileService.getFileByMap(fileMap.get(folder.getFolderName()))
-                ))
-                .collect(Collectors.toList());
     }
 
     public Boolean updateFolderName(UpdateFolderNameRequestDto dto) {
@@ -117,5 +96,28 @@ public class FolderService {
             folderRepository.deleteAll(folders);
         }
         return true;
+    }
+
+
+    public void addFileToFolderPath(String fileId, String folderPath) {
+        if (folderPath == null || folderPath.isEmpty()) {
+            throw new FileServiceException(ErrorType.FOLDER_NOT_FOUND);
+        }
+        if (folderPath.equals("root")){
+            return;
+        }
+        folderRepository.findByFolderName(folderPath).ifPresent(f -> {
+            f.getFileIdList().add(fileId);
+            folderRepository.save(f);
+        });
+    }
+
+    public List<String> findFilesIdList(String folderPath) {
+        Optional<Folder> byFolderName = folderRepository.findByFolderName(folderPath);
+        if (byFolderName.isEmpty()) {
+            throw new FileServiceException(ErrorType.FOLDER_NOT_FOUND);
+        }
+        Folder folder = byFolderName.get();
+        return folder.getFileIdList();
     }
 }

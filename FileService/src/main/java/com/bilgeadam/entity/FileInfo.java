@@ -19,4 +19,5 @@ public class FileInfo extends BaseEntity {
 	@Column(length = 2048)
 	String url;
 	Long size;
+	Boolean isInTheRoot;
 }

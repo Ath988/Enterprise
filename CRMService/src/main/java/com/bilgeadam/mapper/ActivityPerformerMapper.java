@@ -3,6 +3,7 @@ package com.bilgeadam.mapper;
 import com.bilgeadam.dto.request.AddTicketRequestDto;
 import com.bilgeadam.dto.request.UpdateTicketRequestDto;
 import com.bilgeadam.entity.ActivityPerformer;
+import com.bilgeadam.entity.Performer;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
@@ -11,15 +12,11 @@ public interface ActivityPerformerMapper {
 	
 	ActivityPerformerMapper INSTANCE = Mappers.getMapper(ActivityPerformerMapper.class);
 	
-	/** 📌 `AddTicketRequestDto` → `ActivityPerformer` */
-	@Mapping(target = "name", source = "performerName")
-	@Mapping(target = "staff", source = "isStaff")
-	@BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-	ActivityPerformer toActivityPerformer(AddTicketRequestDto dto);
-	
-	/** 📌 `UpdateTicketRequestDto` → `ActivityPerformer` */
-	@Mapping(target = "name", source = "performerName")
-	@Mapping(target = "staff", source = "isStaff")
-	@BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-	void updateActivityPerformerFromDto(UpdateTicketRequestDto dto, @MappingTarget ActivityPerformer performer);
+	/** 📌 `Performer` → `ActivityPerformer` dönüşümü */
+	@Mapping(target = "id", source = "id")
+	@Mapping(target = "firstName", source = "firstName")
+	@Mapping(target = "lastName", source = "lastName")
+	@Mapping(target = "email", source = "email")
+	@Mapping(target = "phoneNumber", source = "phoneNumber")
+	ActivityPerformer toActivityPerformer(Performer performer);
 }

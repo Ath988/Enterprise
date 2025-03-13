@@ -1,11 +1,11 @@
 package com.bilgeadam.entity.enums;
 
 public enum TicketStatus {
-	NEW("Yeni"),
-	IN_PROGRESS("Sürüyor"),
-	WAITING("Beklemede"),
-	RESOLVED("Çözüldü"),
-	CLOSED("Kapandı");
+	NEW("YENİ"),
+	IN_PROGRESS("SÜRÜYOR"),
+	WAITING("BEKLEMEDE"),
+	RESOLVED("ÇÖZÜLDÜ"),
+	CLOSED("KAPANDI");
 	
 	private final String description;
 	

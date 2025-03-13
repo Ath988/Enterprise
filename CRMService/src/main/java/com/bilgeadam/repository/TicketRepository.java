@@ -1,11 +1,11 @@
 package com.bilgeadam.repository;
 
 import com.bilgeadam.entity.Ticket;
-import com.bilgeadam.views.VwTicket;
+import com.bilgeadam.entity.enums.TicketStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface TicketRepository extends JpaRepository<Ticket, Long> {
 	
@@ -18,32 +18,8 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
 	/** 📌 Belirli bir önceliğe sahip biletleri getir */
 	List<Ticket> findAllByPriority(com.bilgeadam.entity.enums.TicketPriority priority);
 	
-	@Query("""
-    SELECT new com.bilgeadam.views.VwTicket(
-        t.subject,
-        t.status,
-        t.priority,
-        t.createdAt,
-        CONCAT(c.profile.firstName, ' ', c.profile.lastName),
-        c.profile.email
-    )
-    FROM Ticket t
-    LEFT JOIN Customer c ON t.customerId = c.customerId
-    WHERE t.id = :ticketId
-""")
-	VwTicket findTicketWithCustomerInfoById(Long ticketId);
-	
-	@Query("""
-    SELECT new com.bilgeadam.views.VwTicket(
-        t.subject,
-        t.status,
-        t.priority,
-        t.createdAt,
-        CONCAT(c.profile.firstName, ' ', c.profile.lastName),
-        c.profile.email
-    )
-    FROM Ticket t
-    LEFT JOIN Customer c ON t.customerId = c.customerId
-""")
-	List<VwTicket> findAllTicketsWithCustomerInfo();
+	Optional<Ticket> findByTicketNumber(String ticketNumber);
+	List<Ticket> findByCustomerId(Long customerId);
+	List<Ticket> findByPerformerId(Long performerId);
+	List<Ticket> findByTicketStatus(TicketStatus status);
 }

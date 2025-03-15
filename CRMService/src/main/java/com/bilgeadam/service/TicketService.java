@@ -31,6 +31,8 @@ public class TicketService {
 	private final CustomerRepository customerRepository;
 	private final PerformerRepository performerRepository;
 	private final TicketActivityRepository ticketActivityRepository;
+	private final MailService mailService;
+	private final TicketMessageService ticketMessageService;
 	
 	
 	public void addTicket(AddTicketRequestDto dto){
@@ -56,6 +58,25 @@ public class TicketService {
 			ticketActivity.setTicketId(savedTicket.getId());
 			ticketActivity.setPerformedBy(ActivityPerformerMapper.INSTANCE.toActivityPerformer(performer)); // 🎯 Mapper ile Performer bilgileri eklendi
 			ticketActivityRepository.save(ticketActivity);
+			
+			// 5️⃣ **Müşterinin önceki mesajlarını bu Ticket ile ilişkilendir**
+			ticketMessageService.assignMessagesToTicket(savedTicket.getId(), dto.customerEmail());
+			
+			// 6️⃣ Müşteriye bilgilendirme e-postası gönder ve mesaj olarak kaydet
+			// 📩 **Müşteriye bilgilendirme e-postası gönder**
+			String addMessage = mailService.sendTicketCreationEmail(
+					savedTicket.getTicketNumber(),
+					dto.subject()
+			);
+			
+			// 📝 **Bu mesajı TicketMessage tablosuna kaydet**
+			ticketMessageService.sendSystemResponse(
+					"destek@enterprise.com",
+					dto.customerEmail(),
+					"📌 Destek Kaydınız Oluşturuldu - #" + savedTicket.getTicketNumber(),
+					addMessage,
+					savedTicket.getId()
+			);
 		} catch (Exception e) {
 			throw new CRMServiceException(ErrorType.TICKET_CREATION_FAILED);
 		}
@@ -86,6 +107,13 @@ public class TicketService {
 		return ticket;
 	}
 	
+	private String getCustomerEmail(Long customerId) {
+		return customerRepository.findById(customerId)
+		                         .map(customer -> customer.getProfile().getEmail())
+		                         .orElseThrow(() -> new CRMServiceException(ErrorType.CUSTOMER_NOT_FOUND));
+	}
+	
+	
 	public void updateTicket(Long ticketId, UpdateTicketRequestDto dto) {
 		// 1️⃣ Ticket'ı ID ile bul
 		Ticket ticket = ticketRepository.findById(ticketId)
@@ -109,8 +137,8 @@ public class TicketService {
 		TicketMapper.INSTANCE.updateTicketFromDto(dto, ticket);
 		ticket.setPerformerId(performer.getId());
 		
-		// 6️⃣ Eğer Ticket kapatılıyorsa (CLOSED) → `closedAt` ve `status = INACTIVE`
-		if (dto.ticketStatus() == TicketStatus.CLOSED) {
+		// 6️⃣ Eğer Ticket kapatılıyorsa (CLOSED) veya çözüldüyse (RESOLVED) → `closedAt` ve `status = INACTIVE`
+		if (dto.ticketStatus() == TicketStatus.CLOSED || dto.ticketStatus() == TicketStatus.RESOLVED) {
 			ticket.setClosedAt(LocalDateTime.now());
 			ticket.setStatus(Status.INACTIVE);
 		}
@@ -122,6 +150,28 @@ public class TicketService {
 		TicketActivity ticketActivity = TicketMapper.INSTANCE.toTicketActivity(dto, ticket);
 		ticketActivity.setPerformedBy(ActivityPerformerMapper.INSTANCE.toActivityPerformer(performer));
 		ticketActivityRepository.save(ticketActivity);
+		
+		// 9️⃣ **📩 Ticket Çözüldü / Kapatıldı E-posta Gönderimi**
+		if (dto.ticketStatus() == TicketStatus.RESOLVED || dto.ticketStatus() == TicketStatus.CLOSED) {
+			String customerEmail = getCustomerEmail(ticket.getCustomerId());
+			
+			// 📩 **Müşteriye bilgilendirme e-postası gönder**
+			String resolutionMessage = mailService.sendTicketResolvedEmail(
+					customerEmail,
+					ticket.getTicketNumber(),
+					ticket.getSubject(),
+					dto.ticketStatus()
+			);
+			
+			// 📝 **Bu mesajı TicketMessage tablosuna kaydet**
+			ticketMessageService.sendSystemResponse(
+					"destek@enterprise.com",
+					customerEmail,
+					"🎉 Destek Kaydınız Güncellendi - #" + ticket.getTicketNumber(),
+					resolutionMessage,
+					ticket.getId()
+			);
+		}
 	}
 	
 	/** 📌 ID'ye göre Ticket ve ona ait tüm TicketActivity'leri siler */

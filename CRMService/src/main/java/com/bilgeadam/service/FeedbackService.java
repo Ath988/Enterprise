@@ -38,12 +38,10 @@ public class FeedbackService {
 		// 3️⃣ Geri bildirim kaydediliyor
 		Feedback savedFeedback = feedbackRepository.save(feedback);
 		
+		mailService.sendFeedbackToSupport(feedback.getEmail(), feedback.getSubject(), feedback.getMessage());
+		
 		// 4️⃣ Müşteriye geri bildirim alındı e-postası gönder
-		mailService.sendFeedbackReceivedEmail(
-				feedback.getEmail(),
-				"Geri Bildiriminiz Alındı",
-				"Merhaba, geri bildiriminiz için teşekkür ederiz!"
-		);
+		mailService.sendFeedbackReceivedEmail(feedback.getEmail());
 		
 		return savedFeedback;
 	}

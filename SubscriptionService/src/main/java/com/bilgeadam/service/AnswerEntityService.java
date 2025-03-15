@@ -23,10 +23,7 @@ public class AnswerEntityService {
 	
 	public AnswerEntity updateAnswer(UpdateAnswerDto dto) {
 		AnswerEntity existingAnswer = answerEntityRepository.findById(dto.id()).orElseThrow(()->new RuntimeException("cevap bulunamadı"));
-		Optional<Faq> faq = faqService.findbyId(dto.faqId());
-		if (faq.isEmpty()) {
-			throw new RuntimeException("faq not found");
-		}
+		existingAnswer.setAnswer(dto.answer());
 		return answerEntityRepository.save(existingAnswer);
 	}
 	

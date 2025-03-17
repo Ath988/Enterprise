@@ -56,5 +56,27 @@ public class AnnouncementController {
 				.build());
 
 	}
+
+	@GetMapping(GETREADANNOUNCEMENT)
+	public ResponseEntity<BaseResponse<List<Announcement>>> getReadAnnouncement(@RequestHeader(value = "Authorization",
+			required =
+					false) String token){
+		return  ResponseEntity.ok(BaseResponse.<List<Announcement>>builder().code(200)
+						.data(announcementService.getReadAnnouncements(token))
+						.success(true)
+						.message("Okunan duyurular başarıyla getirildi.")
+				.build());
+	}
+
+	@GetMapping(GETUNREADANNOUNCEMENT)
+	public ResponseEntity<BaseResponse<List<Announcement>>> getUnReadAnnouncement(@RequestHeader(value = "Authorization",
+			required =
+					false) String token){
+		return  ResponseEntity.ok(BaseResponse.<List<Announcement>>builder().code(200)
+				.data(announcementService.getUnreadAnnouncements(token))
+				.success(true)
+				.message("Henüz okunmamış duyurular başarıyla getirildi.")
+				.build());
+	}
 }
 

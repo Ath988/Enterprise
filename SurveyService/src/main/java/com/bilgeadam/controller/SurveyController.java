@@ -33,8 +33,8 @@ public class SurveyController {
 		                                     .build());
 	}
 	
-	@GetMapping(GET_ACTIVE_SURVEYS)
-	public ResponseEntity<BaseResponse<List<SurveyDetailDto>>> getActiveSurveys(@RequestHeader("token") String token) {
+	@GetMapping(GET_ALL_SURVEYS)
+	public ResponseEntity<BaseResponse<List<SurveyDetailDto>>> getAllSurveys(@RequestHeader("token") String token) {
 		return ResponseEntity.ok(BaseResponse.<List<SurveyDetailDto>>builder()
 				                         .code(200)
 				                         .message("Anket listesi getirildi")
@@ -42,7 +42,15 @@ public class SurveyController {
 				                         .data(surveyService.getAllSurveys(token))
 		                                     .build());
 	}
-	
+	@GetMapping(GET_ASSIGNED_SURVEYS)
+	public ResponseEntity<BaseResponse<List<SurveyDetailDto>>> getAssignedSurveys(@RequestHeader("token") String token){
+		return ResponseEntity.ok(BaseResponse.<List<SurveyDetailDto>>builder()
+				                         .code(200)
+				                         .data(surveyService.getAssignedSurveys(token))
+				                         .success(true)
+				                         .message("Anket Listesi getirildi. ")
+		                                     .build());
+	}
 	@GetMapping(GET_SURVEY_DETAILS+"/{surveyId}")
 	public ResponseEntity<BaseResponse<SurveyDetailDto>> getSurveyWithDetails(@RequestHeader("token") String token,@PathVariable String surveyId) {
 		return ResponseEntity.ok(BaseResponse.<SurveyDetailDto>builder()

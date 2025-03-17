@@ -1,10 +1,12 @@
 package com.bilgeadam.controller;
 
 import com.bilgeadam.dto.request.*;
-import com.bilgeadam.dto.response.*;
+import com.bilgeadam.dto.response.AllEmployeeResponse;
+import com.bilgeadam.dto.response.BaseResponse;
+import com.bilgeadam.dto.response.EmployeeDetailResponse;
+import com.bilgeadam.dto.response.EmployeeSaveResponse;
 import com.bilgeadam.entity.Employee;
 import com.bilgeadam.entity.enums.EState;
-import com.bilgeadam.exception.OrganisationManagementException;
 import com.bilgeadam.service.EmployeeService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -189,8 +191,10 @@ public class EmployeeController {
                                              .build());
     }
     
-    
-    
-    
-    
+    @GetMapping("get-employee-id/{authId}")
+    public ResponseEntity<BaseResponse<Long>> getEmployeeIdByAuthId(@PathVariable Long authId){
+        return ResponseEntity.ok(BaseResponse.<Long>builder()
+                                         .data(employeeService.getEmployeeIdByAuthId(authId))
+                                             .build());
+    }
 }

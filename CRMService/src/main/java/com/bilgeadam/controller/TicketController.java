@@ -3,9 +3,8 @@ package com.bilgeadam.controller;
 import com.bilgeadam.dto.request.AddTicketRequestDto;
 import com.bilgeadam.dto.request.UpdateTicketRequestDto;
 import com.bilgeadam.dto.response.BaseResponse;
+import com.bilgeadam.entity.Ticket;
 import com.bilgeadam.service.TicketService;
-import com.bilgeadam.views.TicketDetailView;
-import com.bilgeadam.views.VwTicket;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +18,7 @@ import java.util.List;
 public class TicketController {
 	private final TicketService ticketService;
 	
-	@PostMapping("/add-ticket")
+	@PostMapping("/add")
 	public ResponseEntity<BaseResponse<Boolean>> addTicket(@RequestBody @Valid AddTicketRequestDto dto){
 		ticketService.addTicket(dto);
 		return ResponseEntity.ok(BaseResponse.<Boolean>builder()
@@ -31,42 +30,46 @@ public class TicketController {
 		);
 	}
 	
-	@GetMapping("/all-tickets")
-	public ResponseEntity<BaseResponse<List<VwTicket>>> getAllTickets() {
-		List<VwTicket> tickets = ticketService.getAllTickets();
-		return ResponseEntity.ok(BaseResponse.<List<VwTicket>>builder()
+	/** 📌 ID'ye göre Ticket getirir */
+	@GetMapping("id" + "/{ticketId}")
+	public ResponseEntity<BaseResponse<Ticket>> getTicketById(@PathVariable Long ticketId) {
+		Ticket ticket = ticketService.getTicketById(ticketId);
+		return ResponseEntity.ok(BaseResponse.<Ticket>builder()
+		                                     .code(200)
+		                                     .success(true)
+		                                     .data(ticket)
+		                                     .message("Ticket bilgisi getirildi.")
+		                                     .build()
+		);
+	}
+	
+	/** 📌 Tüm Ticket'ları getirir */
+	@GetMapping("all")
+	public ResponseEntity<BaseResponse<List<Ticket>>> getAllTickets() {
+		List<Ticket> tickets = ticketService.getAllTickets();
+		return ResponseEntity.ok(BaseResponse.<List<Ticket>>builder()
 		                                     .code(200)
 		                                     .success(true)
 		                                     .data(tickets)
-		                                     .message("Tüm biletler başarıyla listelendi.")
-		                                     .build());
+		                                     .message("Tüm ticket'lar listelendi.")
+		                                     .build()
+		);
 	}
 	
-	@GetMapping("/get-ticket-by-id/{ticketId}")
-	public ResponseEntity<BaseResponse<TicketDetailView>> getTicketById(@PathVariable Long ticketId) {
-		TicketDetailView ticketDetail = ticketService.getTicketById(ticketId);
-		return ResponseEntity.ok(BaseResponse.<TicketDetailView>builder()
-		                                     .code(200)
-		                                     .success(true)
-		                                     .data(ticketDetail)
-		                                     .message("Bilet detayları başarıyla getirildi.")
-		                                     .build());
-	}
-	
-	@PutMapping("/update-ticket/{ticketId}")
-	public ResponseEntity<BaseResponse<Boolean>> updateTicket(
-			@PathVariable Long ticketId,
-			@RequestBody @Valid UpdateTicketRequestDto dto) {
-		
+	@PutMapping("update" + "/{ticketId}")
+	public ResponseEntity<BaseResponse<Boolean>> updateTicket(@PathVariable Long ticketId, @RequestBody @Valid UpdateTicketRequestDto dto) {
 		ticketService.updateTicket(ticketId, dto);
 		return ResponseEntity.ok(BaseResponse.<Boolean>builder()
 		                                     .code(200)
 		                                     .success(true)
-		                                     .message("Ticket başarıyla güncellendi ve aktivite kaydedildi.")
-		                                     .build());
+		                                     .data(true)
+		                                     .message("Ticket başarıyla güncellendi.")
+		                                     .build()
+		);
 	}
 	
-	@DeleteMapping("/delete-ticket/{ticketId}")
+	/** 📌 Ticket silme işlemi */
+	@DeleteMapping("delete" + "/{ticketId}")
 	public ResponseEntity<BaseResponse<Boolean>> deleteTicket(@PathVariable Long ticketId) {
 		ticketService.deleteTicket(ticketId);
 		return ResponseEntity.ok(BaseResponse.<Boolean>builder()

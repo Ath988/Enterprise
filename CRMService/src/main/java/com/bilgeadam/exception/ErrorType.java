@@ -14,6 +14,7 @@ public enum ErrorType {
 	CUSTOMER_DELETE_LIST_EMPTY(104, "The customer list to be deleted cannot be empty.", HttpStatus.BAD_REQUEST),
 	CUSTOMER_IMPORT_EMPTY(105,"The customer import file is empty.", HttpStatus.BAD_REQUEST),
 	EMAIL_ALREADY_EXISTS(106,"This email address is already registered.", HttpStatus.CONFLICT),
+	PHONE_ALREADY_EXISTS(107,"This phone number is already registered.", HttpStatus.CONFLICT),
 	OFFER_NOT_FOUND(200,"Offer not found", HttpStatus.NOT_FOUND),
 	TICKET_NOT_FOUND(300,"Ticket not found", HttpStatus.NOT_FOUND),
 	TICKET_UPDATE_FAILED(302,"Ticket update failed", HttpStatus.BAD_REQUEST),
@@ -21,7 +22,10 @@ public enum ErrorType {
 	EXCEL_READ_ERROR(600,"An error occurred while reading the Excel file.", HttpStatus.INTERNAL_SERVER_ERROR),
 	INVALID_EXCEL_HEADERS(602, "Excel başlıkları geçersiz. Lütfen sistemin sağladığı şablonu kullanın.", HttpStatus.BAD_REQUEST),
 	EXCEL_TEMPLATE_ERROR(603, "Excel şablonu oluşturulurken hata oluştu.", HttpStatus.INTERNAL_SERVER_ERROR),
-	PDF_GENERATION_FAILED(601,"An error occurred while reading the Pdf file.",HttpStatus.INTERNAL_SERVER_ERROR);
+	PDF_GENERATION_FAILED(601,"An error occurred while reading the Pdf file.",HttpStatus.INTERNAL_SERVER_ERROR),
+	PERFORMER_NOT_FOUND(704, "Performer not found.", HttpStatus.NOT_FOUND),
+	TICKET_INACTIVE_CANNOT_UPDATE(403, "Inactive tickets cannot be updated.", HttpStatus.FORBIDDEN),
+	FEEDBACK_NOT_ALLOWED(403, "You are not allowed to submit feedback for this ticket.", HttpStatus.FORBIDDEN);
 	
 	int code;
 	String message;

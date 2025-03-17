@@ -10,4 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 public interface OrganisationManager {
 	@GetMapping("get-company-id/{authId}")
 	ResponseEntity<BaseResponse<Long>> getCompanyIdByAuthId(@PathVariable("authId") Long authId);
+	
+	@GetMapping("get-employee-id/{authId}")
+	ResponseEntity<BaseResponse<Long>> getEmployeeIdByAuthId(@PathVariable("authId") Long authId);
 }

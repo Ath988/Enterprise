@@ -316,4 +316,8 @@ public class EmployeeService {
     }
     
     
+    public Long getEmployeeIdByAuthId(Long authId) {
+        Optional<Long> employeeIdOpt = employeeRepository.findIdByAuthId(authId);
+	    return employeeIdOpt.orElse(-1L);
+    }
 }

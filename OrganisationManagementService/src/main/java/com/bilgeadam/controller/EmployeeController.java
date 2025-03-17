@@ -190,5 +190,11 @@ public class EmployeeController {
                                          .data(employeeService.getCompanyIdByAuthId(authId))
                                              .build());
     }
-
+    
+    @GetMapping("get-employee-id/{authId}")
+    public ResponseEntity<BaseResponse<Long>> getEmployeeIdByAuthId(@PathVariable Long authId){
+        return ResponseEntity.ok(BaseResponse.<Long>builder()
+                                         .data(employeeService.getEmployeeIdByAuthId(authId))
+                                             .build());
+    }
 }

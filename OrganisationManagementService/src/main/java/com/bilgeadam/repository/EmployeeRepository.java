@@ -77,7 +77,8 @@ public interface EmployeeRepository extends JpaRepository<Employee,Long> {
     
     @Query("SELECT e.id FROM Employee e WHERE e.companyId = :companyId AND e.role = 'COMPANY_OWNER'")
     Long findCeoIdByCompanyId(@Param("companyId") Long companyId);
-
     
     
+    @Query("SELECT e.id FROM Employee e WHERE e.authId = :authId")
+    Optional<Long> findIdByAuthId(@Param("authId") Long authId);
 }

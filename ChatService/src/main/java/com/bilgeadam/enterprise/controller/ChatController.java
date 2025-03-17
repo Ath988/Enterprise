@@ -232,7 +232,15 @@ public class ChatController {
 				                         .data(chatService.getChatInfo(chatId)).build());
 	}
 
-
+	@PutMapping("/set-message-status")
+	public ResponseEntity<BaseResponse<Boolean>> setMessageStatus(HttpServletRequest request, @RequestParam String messageId){
+		Long userId = (Long) request.getAttribute("userId");
+		System.out.println(messageId+" messageId");
+		return ResponseEntity.ok(BaseResponse.<Boolean>builder()
+		                                     .success(true)
+		                                     .data(chatService.setMessageStatus(userId,messageId))
+		                                     .message("Message status changed successfully!").code(200).build());
+	}
 
 	
 	public String getTokenFromHeader(String headerToken) {

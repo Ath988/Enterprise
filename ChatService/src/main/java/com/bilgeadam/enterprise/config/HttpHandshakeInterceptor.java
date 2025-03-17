@@ -13,7 +13,6 @@ public class HttpHandshakeInterceptor implements HandshakeInterceptor {
 	@Override
 	public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response,
 	                               WebSocketHandler wsHandler, Map<String, Object> attributes) throws Exception {
-		// Eğer HTTP header'da Authorization varsa, attributes içerisine kopyalayın:
 		List<String> authHeader = request.getHeaders().get("Authorization");
 		if (authHeader != null && !authHeader.isEmpty()) {
 			attributes.put("Authorization", authHeader.get(0));
@@ -24,6 +23,5 @@ public class HttpHandshakeInterceptor implements HandshakeInterceptor {
 	@Override
 	public void afterHandshake(ServerHttpRequest request, ServerHttpResponse response,
 	                           WebSocketHandler wsHandler, Exception exception) {
-		// Opsiyonel: Handshake sonrası yapılacak işlemler
 	}
 }

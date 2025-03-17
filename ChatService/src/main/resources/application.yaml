@@ -5,8 +5,7 @@ server:
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
-    # Örneğin DB 192.168.1.106 IP'sinde çalışıyor olsun:
-    url: jdbc:postgresql://192.168.1.106:5432/enterprisechatdb
+    url: jdbc:postgresql://localhost:5432/enterprisechatdb
     username: postgres
     password: root
 
@@ -25,9 +24,7 @@ spring:
       org.springframework.security: DEBUG
 
   rabbitmq:
-    # RabbitMQ de 192.168.1.106 IP'sinde, port 5672
-    host: 192.168.1.106
+    host: localhost
     port: 5672
     username: springuser
     password: springpassword
-    virtual-host: /

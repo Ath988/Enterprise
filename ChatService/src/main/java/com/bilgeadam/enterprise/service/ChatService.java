@@ -674,4 +674,16 @@ public class ChatService {
 			throw new EnterpriseException(ErrorType.USER_NOT_AUTHORIZED);
 		return optionalId.get();
 	}
+	
+	@Transactional
+	public Boolean setMessageStatus(Long userId, String messageId) {
+		Optional<MessageUser> byMessageIdAndTargetId =
+				messageUserRepository.findByMessageIdAndTargetIdAndMessageStatus(messageId, userId,EMessageStatus.SENT);
+		if(byMessageIdAndTargetId.isEmpty())
+			throw new EnterpriseException(ErrorType.MESSAGE_NOT_FOUND);
+		MessageUser messageUser = byMessageIdAndTargetId.get();
+		messageUser.setMessageStatus(EMessageStatus.READ);
+		messageUserRepository.save(messageUser);
+		return true;
+	}
 }

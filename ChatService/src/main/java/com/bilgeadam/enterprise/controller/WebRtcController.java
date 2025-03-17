@@ -17,23 +17,22 @@ public class WebRtcController {
 		this.messagingTemplate = messagingTemplate;
 	}
 	
-	// Offer mesajı gönderimi
 	@MessageMapping("/webrtc/offer")
 	public void handleOffer(@Payload WebRtcOfferMessage offerMessage) {
-		// Örneğin, hedef kullanıcının dinlediği topic: /topic/webrtc/offer/{targetUserId}
+
 		System.out.println("offer metoda girdi????");
 		System.out.println("Offer message: " + offerMessage);
 		messagingTemplate.convertAndSend("/topic/webrtc/offer/" + offerMessage.targetUserId(), offerMessage);
 	}
 	
-	// Answer mesajı gönderimi
+
 	@MessageMapping("/webrtc/answer")
 	public void handleAnswer(@Payload WebRtcAnswerMessage answerMessage) {
 		System.out.println("answer metoda girdi????");
 		messagingTemplate.convertAndSend("/topic/webrtc/answer/" + answerMessage.targetUserId(), answerMessage);
 	}
 	
-	// ICE adayı mesajı gönderimi
+
 	@MessageMapping("/webrtc/ice")
 	public void handleIceCandidate(@Payload WebRtcIceCandidate iceCandidate) {
 		System.out.println("ice metoda girdi????");

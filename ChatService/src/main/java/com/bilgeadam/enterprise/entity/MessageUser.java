@@ -25,5 +25,6 @@ public class MessageUser {
 	@Builder.Default
 	private Boolean isDeletedFromUser = false;
 	@Builder.Default
+	@Enumerated(EnumType.STRING)
 	private EMessageStatus messageStatus = EMessageStatus.SENT;
 }

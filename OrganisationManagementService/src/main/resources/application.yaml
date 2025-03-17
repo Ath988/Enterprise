@@ -6,9 +6,9 @@ spring:
     name: organisation-management-service
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://192.168.1.106:5432/enterpriseorgdb
-    username: postgres
-    password: root
+    url: ${DB_URL}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:root}
   jpa:
     show-sql: false
     hibernate:

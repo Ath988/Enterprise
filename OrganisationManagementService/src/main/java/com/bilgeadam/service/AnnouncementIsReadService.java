@@ -64,4 +64,12 @@ public class AnnouncementIsReadService {
         return true;
     }
 
+    //okunmuş duyuruları listelemek için yazılan metod
+    public List<Announcement> getReadAnnouncements(String token) {
+        Employee employee = employeeService.getEmployeeByToken(token);
+        return announcementIsReadRepository.findReadAnnouncementsByEmployeeId(employee.getId());
+    }
+
+
+
 }

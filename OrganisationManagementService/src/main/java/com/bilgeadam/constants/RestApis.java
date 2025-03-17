@@ -21,6 +21,8 @@ public class RestApis {
     public static final String CREATE_ANNOUNCEMENT = "/create-announcement";
     public static final String DELETE_ANNOUNCEMENT = "/delete-announcement";
     public static final String GETALLANNOUNCEMENT = "/get-all-announcement";
+    public static final String GETREADANNOUNCEMENT = "/get-read-announcement";
+    public static final String GETUNREADANNOUNCEMENT = "/get-unread-announcement";
     public static final String ISREAD_ANNOUNCEMENT = "/is-read-announcement";
 
     public static final String DOREGISTER = "/do-register";

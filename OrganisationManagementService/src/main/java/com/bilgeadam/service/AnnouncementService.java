@@ -99,5 +99,26 @@ public class AnnouncementService {
 				.orElseThrow(() -> new OrganisationManagementException(ErrorType.NOT_FOUND_ANNOUNCEMENT));
 	}
 
+	public List<Announcement> getReadAnnouncements(String token) {
+		// Çalışan bilgisini token üzerinden al
+		Employee employee = employeeService.getEmployeeByToken(token);
+
+		// Çalışan bilgisiyle okunan duyuruları repository'den al
+		return announcementRepository.findReadAnnouncementsByEmployeeId(employee.getId());
+	}
+
+	public List<Announcement> getUnreadAnnouncements(String token) {
+		// Çalışan bilgisini token üzerinden al
+		Employee employee = employeeService.getEmployeeByToken(token);
+		// Çalışan bilgisiyle okunmamış duyuruları repository'den al
+		List<Announcement> unreadAnnouncementsByEmployeeId = announcementRepository.findUnreadAnnouncementsByEmployeeId(employee.getId());
+
+		if (unreadAnnouncementsByEmployeeId.isEmpty()){
+			throw new OrganisationManagementException(ErrorType.NOT_FOUND_UNREAD_ANNOUNCEMENT);
+		}
+
+		return unreadAnnouncementsByEmployeeId;
+	}
+
 
 }

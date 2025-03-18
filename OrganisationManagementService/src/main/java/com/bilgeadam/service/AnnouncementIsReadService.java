@@ -1,5 +1,6 @@
 package com.bilgeadam.service;
 
+import com.bilgeadam.dto.response.EmployeeReadAnnouncementResponseDto;
 import com.bilgeadam.entity.Announcement;
 import com.bilgeadam.entity.AnnouncementIsRead;
 import com.bilgeadam.entity.Employee;
@@ -70,6 +71,11 @@ public class AnnouncementIsReadService {
         return announcementIsReadRepository.findReadAnnouncementsByEmployeeId(employee.getId());
     }
 
+    public List<AnnouncementIsRead> findById(Long announcementId) {
+       return announcementIsReadRepository.findByAnnouncementId(announcementId);
+
+    }
 
 
+    //public List<EmployeeReadAnnouncementResponseDto> getAllReaders(Long announcementId) {}
 }

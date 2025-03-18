@@ -1,6 +1,7 @@
 package com.bilgeadam.controller;
 
 import com.bilgeadam.dto.request.AnnouncementRequestDto;
+import com.bilgeadam.dto.response.AnnouncementReadResponseDto;
 import com.bilgeadam.dto.response.BaseResponse;
 import com.bilgeadam.entity.Announcement;
 import com.bilgeadam.service.AnnouncementService;
@@ -34,12 +35,12 @@ public class AnnouncementController {
 
 
 	@GetMapping(GETALLANNOUNCEMENT)
-	public ResponseEntity<BaseResponse<List<Announcement>>> getAnnouncements(@RequestHeader(value = "Authorization",
+	public ResponseEntity<BaseResponse<List<AnnouncementReadResponseDto>>> getAnnouncements(@RequestHeader(value = "Authorization",
 			required =
 					false) String token) {
 
-		List<Announcement> announcements = announcementService.getAnnouncements(token);
-		return ResponseEntity.ok(BaseResponse.<List<Announcement>>builder().code(200)
+		List<AnnouncementReadResponseDto> announcements = announcementService.getAnnouncements(token);
+		return ResponseEntity.ok(BaseResponse.<List<AnnouncementReadResponseDto>>builder().code(200)
 				.data(announcements)
 				.success(true)
 				.message("Duyurular başarıyla listelendi.")
@@ -58,10 +59,10 @@ public class AnnouncementController {
 	}
 
 	@GetMapping(GETREADANNOUNCEMENT)
-	public ResponseEntity<BaseResponse<List<Announcement>>> getReadAnnouncement(@RequestHeader(value = "Authorization",
+	public ResponseEntity<BaseResponse<List<AnnouncementReadResponseDto>>> getReadAnnouncement(@RequestHeader(value = "Authorization",
 			required =
 					false) String token){
-		return  ResponseEntity.ok(BaseResponse.<List<Announcement>>builder().code(200)
+		return  ResponseEntity.ok(BaseResponse.<List<AnnouncementReadResponseDto>>builder().code(200)
 						.data(announcementService.getReadAnnouncements(token))
 						.success(true)
 						.message("Okunan duyurular başarıyla getirildi.")

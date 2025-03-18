@@ -23,6 +23,7 @@ public class RestApis {
     public static final String GETALLANNOUNCEMENT = "/get-all-announcement";
     public static final String GETREADANNOUNCEMENT = "/get-read-announcement";
     public static final String GETUNREADANNOUNCEMENT = "/get-unread-announcement";
+    public static final String GETALLREADERSANNOUNCEMENT = "/get-all-readers-announcement";
     public static final String ISREAD_ANNOUNCEMENT = "/is-read-announcement";
 
     public static final String DOREGISTER = "/do-register";

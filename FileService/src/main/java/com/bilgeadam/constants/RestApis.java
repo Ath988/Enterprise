@@ -17,6 +17,7 @@ public class RestApis {
 	public static final String GET_ALL_FILES="/get-all-files";
 	public static final String RENAME_FILE="/rename-file";
 	public static final String GET_FILE_URL="/get-file-url";
+	public static final String GET_ALL_FILES_URL="/get-all-files-url";
 
 	public static final String CREATE_FOLDER="/create-folder";
 	public static final String UPDATE_FOLDER="/update-folder";

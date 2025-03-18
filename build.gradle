@@ -71,6 +71,8 @@ allprojects{
 		implementation libs.apachePoi
 		implementation libs.apachePoiOoxml
 		implementation libs.pdfbox
+		implementation libs.springResilience
+		implementation libs.springGatewayMVC
 
 	}
 	dependencyManagement {

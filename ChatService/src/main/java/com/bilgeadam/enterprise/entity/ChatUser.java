@@ -19,5 +19,8 @@ public class ChatUser {
 	@Column(nullable = false)
 	private String chatId;
 	@Column(nullable = false)
-	private String userId;
+	private Long userId;
+	@Column(nullable = false)
+	@Builder.Default
+	private Boolean isDeletedFromUser = false;
 }

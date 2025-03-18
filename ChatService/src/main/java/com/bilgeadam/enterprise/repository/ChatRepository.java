@@ -28,41 +28,26 @@ public interface ChatRepository extends JpaRepository<Chat,String> {
 	
 	@Query("SELECT c FROM Chat AS c WHERE c.id = :chatId AND c.isDeleted = false")
 	Optional<Chat> findChatById(@Param("chatId") String chatId);
-
-
+	
+	
 	@Query("""
     SELECT DISTINCT new com.bilgeadam.enterprise.dto.response.ChatListViewDto(
         c.id,
         c.eChatType,
-        COALESCE(
-            CASE
-                WHEN c.eChatType = 'GROUP' THEN c.name
-                ELSE CONCAT(u2.name, ' ', u2.surname)
-            END, 'Unknown'
-        ),
+        CASE
+            WHEN c.eChatType = 'GROUP' THEN c.name
+            ELSE null
+        END,
         COALESCE(latestMessage.lastMessageDate, c.createDate),
         COALESCE(latestMessage.lastMessage, ''),
-        COALESCE(
-            CASE
-                WHEN c.eChatType = 'GROUP' THEN c.chatImage
-                ELSE u2.profilePicture
-            END, ''
-        ),
-        CASE
-            WHEN c.eChatType = 'GROUP' THEN false
-            ELSE COALESCE(u2.isOnline, false)
-        END,
+        c.chatImage,
+        false,
         c.isSupportChat,
-        CASE
-            WHEN c.eChatType = 'GROUP' THEN null
-            ELSE u2.id
-        END
+        cu2.userId
     )
-    
     FROM Chat c
     JOIN ChatUser cu ON c.id = cu.chatId
     LEFT JOIN ChatUser cu2 ON cu2.chatId = c.id AND cu2.userId <> :userId
-    LEFT JOIN User u2 ON u2.id = cu2.userId
     LEFT JOIN (
         SELECT m2.chatId AS chatId,
                m2.content AS lastMessage,
@@ -77,18 +62,19 @@ public interface ChatRepository extends JpaRepository<Chat,String> {
     ORDER BY COALESCE(latestMessage.lastMessageDate, c.createDate) DESC
     LIMIT :limit
 """)
+	List<ChatListViewDto> findTopChatsByUser(@Param("userId") Long userId, @Param("limit") int limit);
 
-	List<ChatListViewDto> findTopChatsByUser(@Param("userId") String userId, @Param("limit") int limit);
 	
-	@Query("SELECT new com.bilgeadam.enterprise.view.ChatUserInfo(" +
-			"   c.id, c.createDate, c.description, c.name, " +
-			"   u.id, u.name, u.surname, u.isOnline, u.profilePicture" +
-			") " +
-			"FROM Chat c, ChatUser cu, User u " +
-			"WHERE c.id = :chatId " +
-			"  AND cu.chatId = c.id " +
-			"  AND u.id = cu.userId")
+	@Query("""
+    SELECT new com.bilgeadam.enterprise.view.ChatUserInfo(
+        c.id, c.createDate, c.description, c.name, cu.userId
+    )
+    FROM Chat c
+    JOIN ChatUser cu ON cu.chatId = c.id
+    WHERE c.id = :chatId
+""")
 	List<ChatUserInfo> findChatUserInfoByChatId(@Param("chatId") String chatId);
+	
 	
 	
 	
@@ -108,15 +94,16 @@ public interface ChatRepository extends JpaRepository<Chat,String> {
     JOIN ChatUser cu ON cu.chatId = c.id
     WHERE c.isDeleted = false
     AND c.eChatType = :chatType
-    AND (SELECT COUNT(DISTINCT cu2.userId) FROM ChatUser cu2 WHERE cu2.chatId = c.id) = :size
+    AND cu.userId IN (:userIds)
     GROUP BY c.id
     HAVING COUNT(DISTINCT cu.userId) = :size
 """)
 	Optional<Chat> findPrivateChatByUsers(
-			@Param("userIds") Set<String> userIds,
+			@Param("userIds") List<Long> userIds,
 			@Param("size") long size,
 			@Param("chatType") EChatType chatType
 	);
-
-
+	
+	
+	
 }

@@ -21,7 +21,7 @@ public class Message {
 	@Column(nullable = false)
 	private String content;
 	@Column(nullable = false)
-	private String senderId;
+	private Long senderId;
 	@Column(nullable = false)
 	private String chatId;
 	@Column(nullable = false)

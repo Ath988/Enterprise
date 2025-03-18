@@ -1,46 +1,45 @@
 package com.bilgeadam.enterprise.config;
 
-import com.bilgeadam.enterprise.service.ChatService;
+import com.bilgeadam.enterprise.manager.UserManagementManager;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.messaging.SessionConnectEvent;
-import org.springframework.web.socket.messaging.SessionConnectedEvent;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
 import java.util.Map;
 
 @Component
+@RequiredArgsConstructor
 public class WebSocketEventListener {
 	
 	private static final Logger logger = LoggerFactory.getLogger(WebSocketEventListener.class);
-	private final ChatService chatService;
-	@Autowired
-	private SimpMessagingTemplate simpMessagingTemplate;
+	private final SimpMessagingTemplate simpMessagingTemplate;
+	private final UserManagementManager manager;
 	
-	
-	public WebSocketEventListener(ChatService chatService) {
-		this.chatService = chatService;
-	}
 	
 	@EventListener
 	public void handleWebSocketConnectListener(SessionConnectEvent event) {
 		StompHeaderAccessor accessor = StompHeaderAccessor.wrap(event.getMessage());
 		
 		// 1) Read from session attributes instead of getUser()
-		String userId = (String) accessor.getSessionAttributes().get("userId");
+		Long userId = (Long) accessor.getSessionAttributes().get("userId");
 		if (userId == null) {
-			userId = "unknown";
+			userId = 1L;
 		}
 		
 		// 2) Mark the user online
-		chatService.setUserOnlineStatus(userId, true);
-		simpMessagingTemplate.convertAndSend("/topic/online-status",
-		                                     Map.of("userId", userId, "status", true));
+		try {
+			manager.setUsersOnlineStatus(userId, true);
+			simpMessagingTemplate.convertAndSend("/topic/online-status",
+			                                     Map.of("userId", userId, "status", true));
+		} catch (Exception e) {
+			logger.error("Failed to update online status for user {}: {}", userId, e.getMessage());
+		}
 		System.out.println("SessionConnectEvent: sessionId=" + accessor.getSessionId());
 		System.out.println("SessionConnectEvent: userId=" + userId);
 	}
@@ -49,14 +48,17 @@ public class WebSocketEventListener {
 	@EventListener
 	public void handleWebSocketDisconnectListener(SessionDisconnectEvent event) {
 		StompHeaderAccessor accessor = StompHeaderAccessor.wrap(event.getMessage());
-		String userId = (String) accessor.getSessionAttributes().get("userId");
+		Long userId = (Long) accessor.getSessionAttributes().get("userId");
 		if (userId != null) {
-			chatService.setUserOnlineStatus(userId, false);
-			logger.info("User {} disconnected", userId);
-			simpMessagingTemplate.convertAndSend("/topic/online-status",
-			                                     Map.of("userId", userId, "status", false));
+			try {
+				manager.setUsersOnlineStatus(userId, false);
+				simpMessagingTemplate.convertAndSend("/topic/online-status",
+				                                     Map.of("userId", userId, "status", false));
+			} catch (Exception e) {
+				logger.error("Failed to update online status for user {}: {}", userId, e.getMessage());
+			}
 		} else {
-			logger.warn("User id not found in session attributes on disconnect");
+			logger.debug("User ID not found in session attributes on disconnect.");
 		}
 	}
 	

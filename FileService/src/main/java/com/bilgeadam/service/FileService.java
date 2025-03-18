@@ -151,9 +151,13 @@ public class FileService {
 	public void deleteFile(String fileName) throws Exception {
 		
 		minioClient.removeObject(RemoveObjectArgs.builder().bucket(bucketName).object(fileName).build());
-		FileInfo fileInfo = getFileInfo(fileName);
+		FileInfo fileInfo = getFileInfoUrl(fileName);
 		fileInfo.setState(EState.PASSIVE);
 		fileInfoRepository.save(fileInfo);
+	}
+	
+	private FileInfo getFileInfoUrl(String fileName) {
+		return fileInfoRepository.findByFileNameIgnoreCase(fileName);
 	}
 	
 	
@@ -211,6 +215,7 @@ public class FileService {
 		return fileInfoRepository.findByFileNameAndState(fileName,EState.ACTIVE);
 	}
 	
+
 	
 	/**
 	 * Bucket'taki dosyanın ismini değiştiren metot.
@@ -256,7 +261,9 @@ public class FileService {
 			return false;
 		}
 	}
-
-
-
+	
+	
+	public List<String> getAllFilesUrl() {
+		return fileInfoRepository.findActiveFileUrls();
+	}
 }

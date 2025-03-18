@@ -62,7 +62,9 @@ public class FileController {
 	}
 	
 	@DeleteMapping(DELETE_FILE+"/{fileName}")
+	
 	public ResponseEntity<BaseResponse<String>> deleteFile(@PathVariable("fileName") String fileName) {
+		System.out.println("Deleting file: " + fileName);
 		try {
 			fileService.deleteFile(fileName);
 			return ResponseEntity.ok(BaseResponse.<String>builder()
@@ -82,6 +84,8 @@ public class FileController {
 		
 	}
 	
+	
+	
 	@GetMapping(GET_ALL_FILES)
 	public ResponseEntity<BaseResponse<List<String>>> getAllFiles() throws MinioException, IOException {
 		return ResponseEntity.ok(BaseResponse.<List<String>>builder()
@@ -100,6 +104,16 @@ public class FileController {
 				.message("All files were successfully fetched.")
 				.data(fileService.getAllFilesInBucketWithFolderManagement(folderPath))
 				.build());
+	}
+	
+	@GetMapping(GET_ALL_FILES_URL)
+	public ResponseEntity<BaseResponse<List<String>>> getAllFilesUrl(){
+		return ResponseEntity.ok(BaseResponse.<List<String>>builder()
+				                         .code(200)
+				                         .success(true)
+				                         .message("All files were successfully fetched.")
+				                         .data(fileService.getAllFilesUrl())
+		                                     .build());
 	}
 	
 	@PutMapping(RENAME_FILE+"/{oldFileName}")

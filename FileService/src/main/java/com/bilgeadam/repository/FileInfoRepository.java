@@ -19,5 +19,13 @@ public interface FileInfoRepository extends JpaRepository<FileInfo, Long> {
 
 	@Query(value = "SELECT f.fileName FROM FileInfo f WHERE f.id IN :ids")
 	List<String> findFileNamesByIdIn(@Param("ids") List<String> ids);
+	
+	
+	@Query("SELECT f.url FROM FileInfo f WHERE f.state = 'ACTIVE'")
+	List<String> findActiveFileUrls();
 
+	
+	@Query("SELECT f FROM FileInfo f WHERE LOWER(f.fileName) = LOWER(:fileName)")
+	FileInfo findByFileNameIgnoreCase(@Param("fileName") String fileName);
+	
 }

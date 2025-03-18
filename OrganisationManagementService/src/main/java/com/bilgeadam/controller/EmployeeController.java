@@ -190,5 +190,15 @@ public class EmployeeController {
                                          .data(employeeService.getCompanyIdByAuthId(authId))
                                              .build());
     }
+    
+    //CompanyId ile Çalışanları getirir.
+    @GetMapping("get-all-employees-by-company-id/{companyId}")
+    public ResponseEntity<BaseResponse<List<AllEmployeeResponse>>> getAllEmployeesByCompanyId(@PathVariable Long companyId){
+        return ResponseEntity.ok(BaseResponse.<List<AllEmployeeResponse>>builder()
+                                         .data(employeeService.findAllEmployeesByCompanyId(companyId))
+                                             .build());
+    }
+   
+    
 
 }

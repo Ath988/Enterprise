@@ -127,5 +127,14 @@ public class AuthController {
                 .build());
 
     }
+    @GetMapping(AUTD_ID)
+    public ResponseEntity<BaseResponse<Long>> authUserId(@RequestParam String token) {
+        return ResponseEntity.ok(BaseResponse.<Long>builder()
+                .code(200)
+                .success(true)
+                .data(authService.authUserId(token))
+                .build());
+    }
+    
 
 }

@@ -1,6 +1,7 @@
 package com.projectmanagementservice.controllers;
 
 import com.projectmanagementservice.dto.request.*;
+import com.projectmanagementservice.dto.response.AllEmployeeResponse;
 import com.projectmanagementservice.dto.response.BaseResponse;
 import com.projectmanagementservice.entities.BaseEntity;
 import com.projectmanagementservice.entities.Task;
@@ -75,6 +76,25 @@ public class TaskController
                         .success(true)
                         .data(taskService.addUserToTask(dto))
                 .build());
+    }
+    
+    @PutMapping(UPDATE_STATUS)
+    public ResponseEntity<BaseResponse<Boolean>> updateStatus(@RequestBody TaskUpdateStatus dto){
+        //TODO: token kontrollu yapilacak!
+        return ResponseEntity.ok(BaseResponse.<Boolean>builder()
+                        .message("Task statusu guncellendi!")
+                        .code(200)
+                        .success(true)
+                        .data(taskService.updateStatus(dto))
+                .build());
+    }
+    @GetMapping(GET_EMPLOYEES)
+    public ResponseEntity<BaseResponse<List<AllEmployeeResponse>>> getEmployees(@RequestParam String token){
+        return ResponseEntity.ok(BaseResponse.<List<AllEmployeeResponse>>builder()
+                        .code(200)
+                        .success(true)
+                        .data(taskService.getEmployees(token))
+                        .build());
     }
 
 }

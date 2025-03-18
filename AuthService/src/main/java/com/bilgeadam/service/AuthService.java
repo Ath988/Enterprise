@@ -206,9 +206,13 @@ public class AuthService {
             throw new EnterpriseException(ErrorType.INVALID_PASSWORD);
         }
     }
-
-
-
-
-
+    
+    
+    public Long authUserId(String token) {
+        Optional<Long> optionalAuthId = jwtManager.validateToken(token);
+        if (optionalAuthId.isEmpty()) {
+            throw new EnterpriseException(ErrorType.INVALID_TOKEN);
+        }
+        return optionalAuthId.get();
+    }
 }

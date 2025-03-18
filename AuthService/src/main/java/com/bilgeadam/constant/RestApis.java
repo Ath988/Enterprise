@@ -31,4 +31,6 @@ public class RestApis {
     
     
     public static final String REQUEST = "/request";
+    
+    public static final String AUTD_ID = "/autd-id";
 }

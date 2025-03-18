@@ -26,9 +26,14 @@ public class Endpoints
     public static final String DELETE = "/delete";
     public static final String UPDATE = "/update";
     public static final String FIND_ALL = "/find-all";
+    public static final String UPDATE_STATUS = "/update-status";
     public static final String FIND_BY_ID = "/find-by-id";
 
 
     public static final String ADD_USER_TO_TASK = "/add-user-to-task";
     public static final String ADD_TASK_TO_PROJECT = "/add-task-to-project";
+    
+    public static final String AUTD_ID = "/autd-id";
+    
+    public static final String GET_EMPLOYEES = "/get-employees";
 }

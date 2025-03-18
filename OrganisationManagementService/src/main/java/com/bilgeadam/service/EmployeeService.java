@@ -314,6 +314,9 @@ public class EmployeeService {
         
         return ceo.getAvatarUrl();  // CEO'nun avatarUrl'sini döndür
     }
-    
-    
+	
+	
+	public List<AllEmployeeResponse> findAllEmployeesByCompanyId(Long companyId) {
+        return employeeRepository.findAllEmployeesByCompanyId(companyId);
+	}
 }

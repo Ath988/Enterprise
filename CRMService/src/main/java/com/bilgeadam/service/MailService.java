@@ -1,9 +1,12 @@
 package com.bilgeadam.service;
 
 import com.bilgeadam.entity.enums.TicketStatus;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -20,6 +23,75 @@ public class MailService {
 		message.setSubject(subject);
 		message.setText(content);
 		mailSender.send(message);
+	}
+	
+	private void offerSendEmail(String to, String subject, String body) {
+		try {
+			MimeMessage message = mailSender.createMimeMessage();
+			MimeMessageHelper helper = new MimeMessageHelper(message, true);
+			helper.setFrom("destek@enterprise.com");
+			helper.setTo(to);
+			helper.setSubject(subject);
+			helper.setText(body, true); // HTML olarak gönder
+			mailSender.send(message);
+		} catch (MessagingException e) {
+			throw new RuntimeException("⚠️ E-posta gönderilemedi", e);
+		}
+	}
+	
+	/** 📌 Müşteriye teklif e-postası gönder */
+	public void sendOfferEmail(Long offerId, String email, String title) {
+		String subject = "📌 Teklifiniz: " + title;
+		String acceptUrl = "http://localhost:8083/v1/dev/offer/accept-offer/" + offerId;
+		String rejectUrl = "http://localhost:8083/v1/dev/offer/reject-offer/" + offerId;
+		
+		String message = """
+                <h3>Merhaba,</h3>
+                <p>Size yeni bir teklif sunuldu: <b>%s</b></p>
+                <p>Bu teklifi kabul etmek veya reddetmek için aşağıdaki butonları kullanabilirsiniz:</p>
+                <a href="%s" style="display:inline-block;padding:10px 20px;color:white;background-color:green;text-decoration:none;">✅ Kabul Et</a>
+                <a href="%s" style="display:inline-block;padding:10px 20px;color:white;background-color:red;text-decoration:none;">❌ Reddet</a>
+                """.formatted(title, acceptUrl, rejectUrl);
+		
+		offerSendEmail(email, subject, message);
+	}
+	
+	/** 📌 Teklif kabul edildiğinde müşteriye bilgilendirme e-postası gönder */
+	public void sendOfferAcceptedEmail(String customerEmail, String offerTitle) {
+		String subject = "✅ Teklifiniz Kabul Edildi!";
+		String message = """
+                Merhaba,
+                
+                🎉 **Tebrikler!** Aşağıdaki teklifinizi kabul ettiniz:
+                
+                📌 **Teklif Başlığı:** %s
+                
+                Teklifiniz onaylandı ve işlemler başlatıldı.
+                
+                📩 Eğer ek bilgi almak isterseniz, bizimle iletişime geçebilirsiniz.
+                
+                **Enterprise Destek Ekibi**
+                """.formatted(offerTitle);
+		
+		sendEmail(customerEmail, subject, message);
+	}
+	
+	/** 📌 Teklif reddedildiğinde müşteriye bilgilendirme e-postası gönder */
+	public void sendOfferRejectedEmail(String customerEmail, String offerTitle) {
+		String subject = "❌ Teklifiniz Reddedildi!";
+		String message = """
+                Merhaba,
+                
+                ❌ Aşağıdaki teklifi reddettiniz:
+                
+                📌 **Teklif Başlığı:** %s
+                
+                Eğer fikrinizi değiştirirseniz, bizimle tekrar iletişime geçebilirsiniz.
+                
+                **Enterprise Destek Ekibi**
+                """.formatted(offerTitle);
+		
+		sendEmail(customerEmail, subject, message);
 	}
 	
 	public void sendFeedbackReceivedEmail(String toEmail) {

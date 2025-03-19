@@ -3,6 +3,7 @@ package com.bilgeadam.controller;
 import com.bilgeadam.dto.request.AddOfferRequestDto;
 import com.bilgeadam.dto.request.UpdateOfferRequestDto;
 import com.bilgeadam.dto.response.BaseResponse;
+import com.bilgeadam.entity.Offer;
 import com.bilgeadam.service.OfferService;
 import com.bilgeadam.views.VwOffer;
 import jakarta.validation.Valid;
@@ -23,7 +24,7 @@ public class OfferController {
 	 */
 	@PostMapping("/add-offer")
 	public ResponseEntity<BaseResponse<Boolean>> createOffer(@RequestBody @Valid AddOfferRequestDto dto) {
-		offerService.createOffer(dto);
+		offerService.addOffer(dto);
 		return ResponseEntity.ok(BaseResponse.<Boolean>builder()
 		                                     .code(200)
 		                                     .success(true)
@@ -34,12 +35,42 @@ public class OfferController {
 	}
 	
 	/**
+	 * 📌 Teklifi kabul etme.
+	 */
+	@GetMapping("/accept-offer/{offerId}")
+	public ResponseEntity<BaseResponse<Boolean>> acceptOffer(@PathVariable Long offerId) {
+		offerService.acceptOffer(offerId);
+		return ResponseEntity.ok(BaseResponse.<Boolean>builder()
+		                                     .code(200)
+		                                     .success(true)
+		                                     .data(true)
+		                                     .message("Teklif başarıyla kabul edildi ve müşteriye e-posta gönderildi.")
+		                                     .build()
+		);
+	}
+	
+	/**
+	 * 📌 Teklifi reddetme.
+	 */
+	@GetMapping("/reject-offer/{offerId}")
+	public ResponseEntity<BaseResponse<Boolean>> rejectOffer(@PathVariable Long offerId) {
+		offerService.rejectOffer(offerId);
+		return ResponseEntity.ok(BaseResponse.<Boolean>builder()
+		                                     .code(200)
+		                                     .success(true)
+		                                     .data(true)
+		                                     .message("Teklif başarıyla reddedildi ve müşteriye bilgilendirme e-postası gönderildi.")
+		                                     .build()
+		);
+	}
+	
+	/**
 	 * 📌 Tüm teklifleri getirir.
 	 */
 	@GetMapping("/get-all-offers")
-	public ResponseEntity<BaseResponse<List<VwOffer>>> getAllOffers() {
-		List<VwOffer> allOffer = offerService.getAllOffers();
-		return ResponseEntity.ok(BaseResponse.<List<VwOffer>>builder()
+	public ResponseEntity<BaseResponse<List<Offer>>> getAllOffers() {
+		List<Offer> allOffer = offerService.getAllOffers();
+		return ResponseEntity.ok(BaseResponse.<List<Offer>>builder()
 		                                     .code(200)
 		                                     .success(true)
 		                                     .data(allOffer)
@@ -52,9 +83,9 @@ public class OfferController {
 	 * 📌 Belirli bir teklifin detaylarını getirir.
 	 */
 	@GetMapping("/get-offer-by-id/{offerId}")
-	public ResponseEntity<BaseResponse<List<VwOffer>>> getOfferById(@PathVariable Long offerId) {
-		List<VwOffer> response = offerService.getOfferById(offerId);
-		return ResponseEntity.ok(BaseResponse.<List<VwOffer>>builder()
+	public ResponseEntity<BaseResponse<Offer>> getOfferById(@PathVariable Long offerId) {
+		Offer response = offerService.getOfferById(offerId);
+		return ResponseEntity.ok(BaseResponse.<Offer>builder()
 		                                     .code(200)
 		                                     .success(true)
 		                                     .data(response)
@@ -91,6 +122,18 @@ public class OfferController {
 		                                     .success(true)
 		                                     .data(true)
 		                                     .message("Teklif başarıyla silindi.")
+		                                     .build()
+		);
+	}
+	
+	@DeleteMapping("/delete-offers")
+	public ResponseEntity<BaseResponse<Boolean>> deleteOffers(@RequestBody List<Long> offerIds) {
+		offerService.deleteOffers(offerIds);
+		return ResponseEntity.ok(BaseResponse.<Boolean>builder()
+		                                     .code(200)
+		                                     .success(true)
+		                                     .data(true)
+		                                     .message("Seçili teklifler başarıyla silindi.")
 		                                     .build()
 		);
 	}

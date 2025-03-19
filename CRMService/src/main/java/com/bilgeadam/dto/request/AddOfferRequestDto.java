@@ -17,9 +17,6 @@ public record AddOfferRequestDto(
 		@NotNull
 		LocalDate expirationDate,
 		
-		@NotNull
-		LocalDate createdAt,
-		
-		Long customerId
+		String customerEmail
 ) {
 }

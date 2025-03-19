@@ -7,8 +7,11 @@ import com.inventoryservice.dto.response.StockMovementResponseDTO;
 import com.inventoryservice.entities.BuyOrder;
 import com.inventoryservice.entities.StockMovement;
 import com.inventoryservice.services.BuyOrderService;
+import com.inventoryservice.services.PdfService;
 import com.inventoryservice.services.StockMovementService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,6 +26,7 @@ import static com.inventoryservice.constants.Endpoints.*;
 public class StockMovementController
 {
     private final StockMovementService stockMovementService;
+    private final PdfService pdfService;
 
     @PostMapping(SAVE)
     public ResponseEntity<Boolean> save(@RequestBody StockMovementSaveRequestDTO dto){
@@ -53,6 +57,16 @@ public class StockMovementController
     public ResponseEntity<StockMovement> findById(Long id){
 
         return ResponseEntity.ok(stockMovementService.findByIdAndAuthId(id));
+    }
+
+    @GetMapping(value = EXPORT_PDF, produces = "application/pdf")
+    public ResponseEntity<byte[]> exportPdf() {
+        byte[] pdfBytes = pdfService.generateCustomerPdf();
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_PDF)
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=StokHareketleri.pdf")
+                .body(pdfBytes);
     }
 
 

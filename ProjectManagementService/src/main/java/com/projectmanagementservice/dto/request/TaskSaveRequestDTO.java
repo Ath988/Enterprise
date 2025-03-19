@@ -1,12 +1,15 @@
 package com.projectmanagementservice.dto.request;
 
-import java.time.LocalDate;
+import com.projectmanagementservice.utility.ETaskPriorityStatus;
+import com.projectmanagementservice.utility.ETaskStatus;
 
 public record TaskSaveRequestDTO(
-        String token,
-        Long projectId,
+		String token,
+		Long projectId,
         String name,
         String description,
-        String taskStatus)
+		ETaskStatus taskStatus,
+		ETaskPriorityStatus taskPriorityStatus
+)
 {
 }

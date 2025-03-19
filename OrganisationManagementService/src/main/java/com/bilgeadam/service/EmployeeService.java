@@ -38,7 +38,7 @@ public class EmployeeService {
     private final AuthManager authManager;
     private final UserManager userManager;
 
-    
+
     public EmployeeService(EmployeeRepository employeeRepository, @Lazy DepartmentService departmentService, PositionService positionService, JwtManager jwtManager, AuthManager authManager, UserManager userManager) {
         this.employeeRepository = employeeRepository;
         this.departmentService = departmentService;
@@ -313,9 +313,14 @@ public class EmployeeService {
         return ceo.getAvatarUrl();  // CEO'nun avatarUrl'sini döndür
     }
     
-    
+
     public Long getEmployeeIdByAuthId(Long authId) {
         Optional<Long> employeeIdOpt = employeeRepository.findIdByAuthId(authId);
 	    return employeeIdOpt.orElse(-1L);
     }
+
+
+	public List<AllEmployeeResponse> findAllEmployeesByCompanyId(Long companyId) {
+        return employeeRepository.findAllEmployeesByCompanyId(companyId);
+	}
 }

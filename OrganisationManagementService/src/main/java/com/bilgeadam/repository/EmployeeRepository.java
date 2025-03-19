@@ -77,8 +77,13 @@ public interface EmployeeRepository extends JpaRepository<Employee,Long> {
     
     @Query("SELECT e.id FROM Employee e WHERE e.companyId = :companyId AND e.role = 'COMPANY_OWNER'")
     Long findCeoIdByCompanyId(@Param("companyId") Long companyId);
-    
-    
+
     @Query("SELECT e.id FROM Employee e WHERE e.authId = :authId")
     Optional<Long> findIdByAuthId(@Param("authId") Long authId);
+
+    @Query("SELECT NEW com.bilgeadam.dto.response.AllEmployeeResponse(e.id,e.firstName,e.lastName,p.title,d.name,e" +
+            ".gender,e.state) FROM Employee e JOIN Position p ON p.id = e.positionId JOIN Department d ON p.companyId=d.id " +
+            "WHERE d.id = ?1 AND e.state = com.bilgeadam.entity.enums.EState.ACTIVE ORDER BY e.updateAt DESC")
+    List<AllEmployeeResponse> findAllEmployeesByCompanyId(Long companyId);
+
 }

@@ -85,4 +85,11 @@ public class PerformerService {
 		
 		performerRepository.delete(performer);
 	}
+	
+	public void deletePerformers(List<Long> performerIds) {
+		if (performerIds == null || performerIds.isEmpty()) {
+			throw new CRMServiceException(ErrorType.PERFORMER_NOT_FOUND);
+		}
+		performerRepository.deleteAllById(performerIds);
+	}
 }

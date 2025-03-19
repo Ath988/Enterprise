@@ -96,4 +96,15 @@ public class PerformerController {
 		                                     .build()
 		);
 	}
+	
+	@DeleteMapping("delete-performers")
+	public ResponseEntity<BaseResponse<Boolean>> deleteCustomers(@RequestBody List<Long> performerIds) {
+		performerService.deletePerformers(performerIds);
+		return ResponseEntity.ok(BaseResponse.<Boolean>builder()
+		                                     .code(200)
+		                                     .success(true)
+		                                     .data(true)
+		                                     .message("Seçili personeller başarıyla silindi.")
+		                                     .build());
+	}
 }

@@ -13,7 +13,8 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class OfferDetail {
 	String title;
+	
 	String description;
+	
 	LocalDate expirationDate;
-	LocalDate createdAt;
 }

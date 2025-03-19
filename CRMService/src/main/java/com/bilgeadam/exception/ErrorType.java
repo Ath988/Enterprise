@@ -21,10 +21,12 @@ public enum ErrorType {
 	TICKET_CREATION_FAILED(304,"Ticket creation failed", HttpStatus.CONFLICT),
 	EXCEL_READ_ERROR(600,"An error occurred while reading the Excel file.", HttpStatus.INTERNAL_SERVER_ERROR),
 	INVALID_EXCEL_HEADERS(602, "Excel başlıkları geçersiz. Lütfen sistemin sağladığı şablonu kullanın.", HttpStatus.BAD_REQUEST),
+	INVALID_OFFER_STATUS_CHANGE(202,"Geçersiz Offer durumu", HttpStatus.BAD_REQUEST),
 	EXCEL_TEMPLATE_ERROR(603, "Excel şablonu oluşturulurken hata oluştu.", HttpStatus.INTERNAL_SERVER_ERROR),
 	PDF_GENERATION_FAILED(601,"An error occurred while reading the Pdf file.",HttpStatus.INTERNAL_SERVER_ERROR),
 	PERFORMER_NOT_FOUND(704, "Performer not found.", HttpStatus.NOT_FOUND),
 	TICKET_INACTIVE_CANNOT_UPDATE(403, "Inactive tickets cannot be updated.", HttpStatus.FORBIDDEN),
+	OFFER_INACTIVE_CANNOT_UPDATE(201, "Inactive offers cannot be updated.", HttpStatus.FORBIDDEN),
 	FEEDBACK_NOT_ALLOWED(403, "You are not allowed to submit feedback for this ticket.", HttpStatus.FORBIDDEN);
 	
 	int code;

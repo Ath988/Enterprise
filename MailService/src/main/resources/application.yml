@@ -4,16 +4,16 @@ server:
 spring:
   security:
     user:
-      name: asd
-      password: asd
+      name: ${SEC_NAME}
+      password: ${SEC_PASSWORD}
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://192.168.1.106:5432/enterprisemaildb
-    username: postgres
-    password: root
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
     show-sql: true
 
   mail:
@@ -22,3 +22,4 @@ spring:
     username: ''
     password: ''
     protocol: smtp
+

@@ -44,4 +44,5 @@ public class Endpoints
     public static final String UPDATE_BUY_ORDER = "/update-buy-order";
     public static final String SAVE_FROM_ORDER_ID = "/save-from-order-id";
 
+    public static final String EXPORT_PDF =  "/export-pdf";
 }

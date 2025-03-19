@@ -2,24 +2,29 @@ package com.bilgeadam.entity;
 
 import com.bilgeadam.entity.enums.OfferStatus;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
+@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Data
 @Entity
 @Table(name = "offers")
-public class Offer {
+public class Offer extends BaseEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	Long id;
+	
 	@Embedded
 	OfferDetail offerDetail;
+	
 	@Enumerated(EnumType.STRING)
-	OfferStatus status;
+	@Builder.Default
+	OfferStatus offerStatus = OfferStatus.PENDING;
+	
 	Long customerId;
+	
+	@Builder.Default
+	Boolean isAccepted = false;
 }

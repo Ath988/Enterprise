@@ -15,8 +15,8 @@ public class SecurityConfig {
 		http
 				.csrf(csrf -> csrf.disable())
 				.authorizeHttpRequests(auth -> auth
-						.requestMatchers("/ws/**", "/app/**").permitAll() // WebSocket izin ver
-						.requestMatchers("/**").permitAll() // Login ve Register'a izin ver
+						.requestMatchers("/ws/**", "/app/**").permitAll()
+						.requestMatchers("/**").permitAll()
 						.anyRequest().authenticated()
 				)
 				.formLogin(form -> form.disable())

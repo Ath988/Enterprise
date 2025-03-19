@@ -13,19 +13,17 @@ import java.util.Optional;
 
 @Service
 public class JwtManager {
-	@Value("secretkey")
-	private String secretKey;
-	@Value("EnterpriseApp")
-	private String issuer;
+	private final String SECRETKEY ="secretkey";
+	private final String ISSUER ="EnterpriseApp";
 	private final Long exDate=1000000L*60;
 	
 	public String createToken(String authId){
 		Date createdDate=new Date(System.currentTimeMillis());
 		Date expirationDate=new Date(System.currentTimeMillis()+exDate);
-		Algorithm algorithm= Algorithm.HMAC512(secretKey);
+		Algorithm algorithm= Algorithm.HMAC512(SECRETKEY);
 		String token = JWT.create()
 		                  .withAudience()
-		                  .withIssuer(issuer)
+		                  .withIssuer(ISSUER)
 		                  .withIssuedAt(createdDate)
 		                  .withExpiresAt(expirationDate)
 		                  .withClaim("id", authId)
@@ -34,14 +32,14 @@ public class JwtManager {
 		return token;
 	}
 	
-	public Optional<String> validateToken(String token){
+	public Optional<Long> validateToken(String token){
 		try{
-			Algorithm algorithm=Algorithm.HMAC512(secretKey);
+			Algorithm algorithm=Algorithm.HMAC512(SECRETKEY);
 			JWTVerifier verifier=JWT.require(algorithm).build();
 			DecodedJWT decodedJWT = verifier.verify(token);
 			if (Objects.isNull(decodedJWT))
 				return Optional.empty();
-			String authId = decodedJWT.getClaim("id").asLong().toString();
+			Long authId = decodedJWT.getClaim("id").asLong();
 			return Optional.of(authId);
 		}
 		catch (Exception exception) {

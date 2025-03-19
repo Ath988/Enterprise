@@ -11,5 +11,7 @@ public interface SurveyRepository extends JpaRepository<Survey, String> {
 	
 	List<Survey> findAllByState(EState state);
 	
-	List<Survey> findAllByCompanyIdAndState(Long companyId, EState eState);
+	List<Survey> findAllByCompanyIdAndStateOrderByExpirationDateAsc(Long companyId, EState eState);
+	
+	List<Survey> findByAssignedEmployeeIdsContaining(Long authId);
 }

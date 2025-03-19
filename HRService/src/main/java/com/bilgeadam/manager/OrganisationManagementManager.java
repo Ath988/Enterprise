@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-@FeignClient(url = "http://localhost:8080/v1/dev/employee", name = "organisationManager")
+@FeignClient(url = "http://localhost:8087/v1/dev/employee", name = "organisationManager")
 public interface OrganisationManagementManager {
 
     @PostMapping

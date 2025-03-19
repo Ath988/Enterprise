@@ -1,6 +1,7 @@
 package com.bilgeadam.service;
 
 import com.bilgeadam.dto.request.CreateSurveyRequestDto;
+import com.bilgeadam.dto.response.BaseResponse;
 import com.bilgeadam.dto.response.QuestionDetailDto;
 import com.bilgeadam.dto.response.SurveyDetailDto;
 import com.bilgeadam.entity.Option;
@@ -14,9 +15,12 @@ import com.bilgeadam.repository.SurveyRepository;
 import com.bilgeadam.utility.JwtManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -49,6 +53,9 @@ public class SurveyService {
     @Transactional
     public Boolean createSurvey(String token, CreateSurveyRequestDto dto) {
         try {
+            if (dto.getExpirationDate().isBefore(LocalDateTime.now())){
+                throw new SurveyServiceException(ErrorType.EXPIRATION_DATE_INVALID);
+            }
             // Sadece MEMBER rolü anket oluşturabilir
             Long authId = validateTokenAndCheckRole(token, "MEMBER");
             
@@ -64,6 +71,7 @@ public class SurveyService {
                                   .createdBy(authId)
                                   .state(EState.ACTIVE)
                                   .companyId(companyId)
+                    .assignedEmployeeIds(dto.getAssignedEmployeeIds())
                                   .build();
             
             surveyRepository.save(survey);
@@ -125,23 +133,28 @@ public class SurveyService {
                               .questions(questionDetails)
                               .build();
     }
-    
+    public List<SurveyDetailDto> getAssignedSurveys(String token){
+        Long authId = validateTokenAndCheckRole(token,  "STAFF");
+        Long employeeId = organisationManager.getEmployeeIdByAuthId(authId).getBody().getData();
+        System.out.println("AUTH ID : "+authId);
+        return surveyRepository.findByAssignedEmployeeIdsContaining(employeeId)
+                               .stream()
+                               .map(survey -> getSurveyDetail(token, survey.getId()))
+                               .collect(Collectors.toList());
+    }
     public List<SurveyDetailDto> getAllSurveys(String token) {
-        // Token'ı doğrula ve rolleri kontrol et
-        Long authId = validateTokenAndCheckRole(token, "MEMBER", "STAFF");
-        
+        // Token'ı doğrula ve kullanıcının kimliğini ve rolünü al
+        Long authId = validateTokenAndCheckRole(token, "MEMBER");
         
         Long companyId = organisationManager.getCompanyIdByAuthId(authId)
                                             .getBody().getData();
         if (companyId == null) {
             throw new SurveyServiceException(ErrorType.COMPANY_ID_NOT_FOUND);
         }
-        
-        // Şirkete ait aktif anketleri getir
-        return surveyRepository.findAllByCompanyIdAndState(companyId, EState.ACTIVE)
-                .stream()
-                .map(survey -> getSurveyDetail(token, survey.getId()))
-                .collect(Collectors.toList());
+   
+        return surveyRepository.findAllByCompanyIdAndStateOrderByExpirationDateAsc(companyId, EState.ACTIVE).stream()
+                      .map(survey -> getSurveyDetail(token, survey.getId()))
+                      .collect(Collectors.toList());
     }
     
 

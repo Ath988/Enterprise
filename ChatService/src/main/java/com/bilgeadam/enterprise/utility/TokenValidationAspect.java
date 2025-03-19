@@ -20,10 +20,9 @@ public class TokenValidationAspect {
 		this.httpServletRequest = httpServletRequest;
 	}
 	
-	@Before("execution(* com.bilgeadam.enterprise.controller.*.*(..)) && !execution(* com.bilgeadam.enterprise" +
-			".controller.ChatController.login(..)) && !execution(* com.bilgeadam.enterprise.controller" +
+	@Before("execution(* com.bilgeadam.enterprise.controller.*.*(..)) && !execution(* com.bilgeadam.enterprise.controller" +
 			".ChatController.sendPrivateMessage(..)) && !execution(* com.bilgeadam.enterprise.controller" +
-			".ChatController.sendGroupMessage(..))")
+			".ChatController.sendGroupMessage(..)) && !execution(* com.bilgeadam.enterprise.controller.WebRtcController.*(..))")
 	public void validateToken() {
 		String headerToken = httpServletRequest.getHeader("Authorization");
 		
@@ -33,7 +32,7 @@ public class TokenValidationAspect {
 		}
 		
 		String token = headerToken.replace("Bearer ", "");
-		Optional<String> userId = jwtManager.validateToken(token);
+		Optional<Long> userId = jwtManager.validateToken(token);
 		
 		if (userId.isEmpty()) {
 			System.out.println("Aspect: Token doğrulama başarısız!");

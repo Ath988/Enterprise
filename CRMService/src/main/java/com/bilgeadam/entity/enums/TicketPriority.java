@@ -1,10 +1,10 @@
 package com.bilgeadam.entity.enums;
 
 public enum TicketPriority {
-	LOW("Düşük"),
-	MEDIUM("Orta"),
-	HIGH("Yüksek"),
-	CRITICAL("Kritik");
+	LOW("DÜŞÜK"),
+	MEDIUM("ORTA"),
+	HIGH("YÜKSEK"),
+	CRITICAL("KRİTİK");
 	
 	private final String description;
 	

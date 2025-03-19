@@ -17,7 +17,9 @@ public enum ErrorType {
     SURVEY_ALREADY_SUBMITTED(104,"Anket zaten çözülmüş.", HttpStatus.BAD_REQUEST),
     SURVEY_CREATE_ERROR(105,"Anket oluşturulamıyor.", HttpStatus.BAD_REQUEST),
     SURVEY_SUBMIT_ERROR(106,"Anket gönderilemedi!" ,HttpStatus.BAD_REQUEST ),
-    COMPANY_ID_NOT_FOUND(107,"Şirket ID'si bulunamadı!" , HttpStatus.NOT_FOUND );
+    COMPANY_ID_NOT_FOUND(107,"Şirket ID'si bulunamadı!" , HttpStatus.NOT_FOUND ),
+    EXPIRATION_DATE_INVALID(108,"Anketin tarihi bulunulan günden önce olamaz" , HttpStatus.BAD_REQUEST );
+    
    
 
 

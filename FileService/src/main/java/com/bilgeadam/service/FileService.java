@@ -1,6 +1,7 @@
 package com.bilgeadam.service;
 
 
+import com.bilgeadam.dto.request.SaveFileRequestDto;
 import com.bilgeadam.entity.FileInfo;
 
 import com.bilgeadam.entity.enums.EState;
@@ -24,7 +25,8 @@ import java.util.List;
 public class FileService {
 	private final MinioClient minioClient;
 	private final FileInfoRepository fileInfoRepository;
-	
+	private final FolderService folderService;
+
 	@Value("${minio.bucket-name}")
 	private String bucketName;
 	
@@ -59,6 +61,40 @@ public class FileService {
 		FileInfo fileInfo = FileInfo.builder().url(url).fileName(fileName).size(file.getSize()).build();
 		fileInfoRepository.save(fileInfo);
 		
+		return url;
+	}
+
+	public String uploadFileWithFolderManagement(SaveFileRequestDto dto) throws Exception {
+		String fileName = dto.file().getOriginalFilename();
+
+		if (isFileExist(fileName)) {
+			throw new FileServiceException(ErrorType.FILE_ALREADY_EXIST);
+		}
+
+		if (!isBucketExist(bucketName)) {
+			minioClient.makeBucket(MakeBucketArgs.builder().bucket(bucketName).build());
+		}
+
+		// Dosyayı MinIO'ya yükleme işlemi
+		minioClient.putObject(PutObjectArgs.builder().bucket(bucketName).object(fileName)
+				.stream(dto.file().getInputStream(), dto.file().getSize(), -1)
+				.contentType(dto.file().getContentType()).build());
+
+		// Dosyanın presigned URL'sini döndüren kısım
+		String url = getFileUrl(fileName);
+
+		// Dosyanın bazı bilgilerini veritabanına kaydeden kısım
+		boolean isRoot= !dto.folderPath().isEmpty() && dto.folderPath().equals("root");
+
+        FileInfo fileInfo = FileInfo.builder()
+				.url(url)
+				.fileName(fileName)
+				.size(dto.file().getSize())
+				.isInTheRoot(isRoot).build();
+		String fileId = fileInfoRepository.save(fileInfo).getId();
+
+		folderService.addFileToFolderPath(fileId, dto.folderPath());
+
 		return url;
 	}
 	
@@ -115,9 +151,13 @@ public class FileService {
 	public void deleteFile(String fileName) throws Exception {
 		
 		minioClient.removeObject(RemoveObjectArgs.builder().bucket(bucketName).object(fileName).build());
-		FileInfo fileInfo = getFileInfo(fileName);
+		FileInfo fileInfo = getFileInfoUrl(fileName);
 		fileInfo.setState(EState.PASSIVE);
 		fileInfoRepository.save(fileInfo);
+	}
+	
+	private FileInfo getFileInfoUrl(String fileName) {
+		return fileInfoRepository.findByFileNameIgnoreCase(fileName);
 	}
 	
 	
@@ -140,11 +180,42 @@ public class FileService {
 		}
 		return fileNames;
 	}
-	
+
+	public List<String> getAllFilesInBucketWithFolderManagement(String folderPath) {
+		List<String> filesIdList = new ArrayList<>();
+
+		if ("root".equals(folderPath)) {
+			filesIdList.addAll(fileInfoRepository.findAllIdByIsInTheRoot(true));
+		} else {
+			filesIdList.addAll(folderService.findFilesIdList(folderPath));
+		}
+
+		// Fetch file names from DB using file IDs
+		List<String> fileNamesFromDb = fileInfoRepository.findFileNamesByIdIn(filesIdList);
+
+		// Retrieve object names from MinIO
+		List<String> fileNames = new ArrayList<>();
+		Iterable<Result<Item>> objects = minioClient.listObjects(ListObjectsArgs.builder().bucket(bucketName).build());
+
+		for (Result<Item> result : objects) {
+			try {
+				Item item = result.get();
+				if (fileNamesFromDb.contains(item.objectName())) { // Filter using file names
+					fileNames.add(item.objectName());
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return fileNames;
+	}
+
+
 	private FileInfo getFileInfo(String fileName) {
 		return fileInfoRepository.findByFileNameAndState(fileName,EState.ACTIVE);
 	}
 	
+
 	
 	/**
 	 * Bucket'taki dosyanın ismini değiştiren metot.
@@ -190,9 +261,9 @@ public class FileService {
 			return false;
 		}
 	}
-
-
-	public List<FileInfo> findAllById(List<Long> fileIds) {
-		return fileInfoRepository.findAllById(fileIds);
+	
+	
+	public List<String> getAllFilesUrl() {
+		return fileInfoRepository.findActiveFileUrls();
 	}
 }

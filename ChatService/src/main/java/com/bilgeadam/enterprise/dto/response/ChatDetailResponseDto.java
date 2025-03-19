@@ -15,7 +15,7 @@ public record ChatDetailResponseDto(
 		List<UserView> participants,
 		List<MessageView> messages,
 		String chatImageUrl,
-		String currentUserId,
+		Long currentUserId,
 		EChatType chatType
 ) {
 }

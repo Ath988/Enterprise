@@ -1,6 +1,7 @@
 package com.bilgeadam.controller;
 
 import com.bilgeadam.constants.RestApis;
+import com.bilgeadam.dto.request.SaveFileRequestDto;
 import com.bilgeadam.dto.response.BaseResponse;
 import com.bilgeadam.entity.FileInfo;
 import com.bilgeadam.service.FileService;
@@ -32,7 +33,23 @@ public class FileController {
 				                         .success(true)
 		                                     .build());
 	}
-	
+
+	@PostMapping(UPLOAD_FILE_ + "/{folderPath}")
+	public ResponseEntity<BaseResponse<String>> uploadFileWithFolderManagement(
+			@RequestParam("file") MultipartFile file,
+			@PathVariable("folderPath") String folderPath) throws Exception {
+		SaveFileRequestDto dto = new SaveFileRequestDto(file, folderPath);
+		return ResponseEntity.ok(BaseResponse.<String>builder()
+				.code(200)
+				.message("File uploaded succesfully")
+				.data(fileService.uploadFileWithFolderManagement(dto))
+				.success(true)
+				.build());
+	}
+
+
+
+
 	@GetMapping(DOWNLOAD_FILE+"/{fileName}")
 	public ResponseEntity<byte[]> downloadFile(@PathVariable("fileName") String fileName)  {
 		try(InputStream stream = fileService.downloadFile(fileName)){
@@ -45,7 +62,9 @@ public class FileController {
 	}
 	
 	@DeleteMapping(DELETE_FILE+"/{fileName}")
+	
 	public ResponseEntity<BaseResponse<String>> deleteFile(@PathVariable("fileName") String fileName) {
+		System.out.println("Deleting file: " + fileName);
 		try {
 			fileService.deleteFile(fileName);
 			return ResponseEntity.ok(BaseResponse.<String>builder()
@@ -65,6 +84,8 @@ public class FileController {
 		
 	}
 	
+	
+	
 	@GetMapping(GET_ALL_FILES)
 	public ResponseEntity<BaseResponse<List<String>>> getAllFiles() throws MinioException, IOException {
 		return ResponseEntity.ok(BaseResponse.<List<String>>builder()
@@ -72,6 +93,26 @@ public class FileController {
 				                         .success(true)
 				                         .message("All files were successfully fetched.")
 				                         .data(fileService.getAllFilesInBucket())
+		                                     .build());
+	}
+
+	@GetMapping(GET_ALL_FILES+"/{folderPath}")
+	public ResponseEntity<BaseResponse<List<String>>> getAllFilesWithFolderManagement(@PathVariable("folderPath") String folderPath) throws MinioException, IOException {
+		return ResponseEntity.ok(BaseResponse.<List<String>>builder()
+				.code(200)
+				.success(true)
+				.message("All files were successfully fetched.")
+				.data(fileService.getAllFilesInBucketWithFolderManagement(folderPath))
+				.build());
+	}
+	
+	@GetMapping(GET_ALL_FILES_URL)
+	public ResponseEntity<BaseResponse<List<String>>> getAllFilesUrl(){
+		return ResponseEntity.ok(BaseResponse.<List<String>>builder()
+				                         .code(200)
+				                         .success(true)
+				                         .message("All files were successfully fetched.")
+				                         .data(fileService.getAllFilesUrl())
 		                                     .build());
 	}
 	

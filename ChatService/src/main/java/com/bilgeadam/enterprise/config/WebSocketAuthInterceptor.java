@@ -44,7 +44,7 @@ public class WebSocketAuthInterceptor implements ChannelInterceptor {
 				throw new EnterpriseException(ErrorType.USER_NOT_AUTHORIZED, "Authorization header is missing or invalid!");
 			}
 			
-			String userId = jwtManager.validateToken(token.replace("Bearer ", ""))
+			Long userId = jwtManager.validateToken(token.replace("Bearer ", ""))
 			                          .orElseThrow(() -> new EnterpriseException(ErrorType.USER_NOT_AUTHORIZED));
 			System.out.println("METODA GIRIYOR MU KONTROLU!");
 			System.out.println("USER ID:" + userId);

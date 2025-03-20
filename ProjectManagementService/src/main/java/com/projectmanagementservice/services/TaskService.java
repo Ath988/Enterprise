@@ -26,11 +26,10 @@ public class TaskService
     private final AuthManager authManager;
     private final OrganisationManager organisationManager;
     public Boolean createTask(TaskSaveRequestDTO dto) {
-        ResponseEntity<BaseResponse<Long>> authUserId = authManager.authUserId(dto.token());
-        Long authId = authUserId.getBody().getData();
+       
         taskRepository.save(Task
                 .builder()
-                .authId(authId)
+                .authId(dto.authId())
                 .projectId(dto.projectId())
                 .name(dto.name())
                 .taskPriorityStatus(dto.taskPriorityStatus())

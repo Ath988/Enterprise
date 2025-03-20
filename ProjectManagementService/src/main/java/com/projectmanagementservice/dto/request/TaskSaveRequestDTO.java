@@ -9,7 +9,8 @@ public record TaskSaveRequestDTO(
         String name,
         String description,
 		ETaskStatus taskStatus,
-		ETaskPriorityStatus taskPriorityStatus
+		ETaskPriorityStatus taskPriorityStatus,
+		Long authId
 )
 {
 }

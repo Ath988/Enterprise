@@ -27,7 +27,11 @@ public enum ErrorType {
 	PERFORMER_NOT_FOUND(704, "Performer not found.", HttpStatus.NOT_FOUND),
 	TICKET_INACTIVE_CANNOT_UPDATE(403, "Inactive tickets cannot be updated.", HttpStatus.FORBIDDEN),
 	OFFER_INACTIVE_CANNOT_UPDATE(201, "Inactive offers cannot be updated.", HttpStatus.FORBIDDEN),
-	FEEDBACK_NOT_ALLOWED(403, "You are not allowed to submit feedback for this ticket.", HttpStatus.FORBIDDEN);
+	FEEDBACK_NOT_ALLOWED(403, "You are not allowed to submit feedback for this ticket.", HttpStatus.FORBIDDEN),
+	OFFER_ALREADY_PROCESSED(408,"Bu teklif zaten işleme alınmış. Tekrar değiştirilemez.", HttpStatus.CONFLICT),
+	OFFER_CANNOT_ACCEPT_INACTIVE(409,"aktif değil kabul edilmez", HttpStatus.CONFLICT),
+	OFFER_CANNOT_REJECT_INACTIVE(410,"aktif değil reddedilemez", HttpStatus.CONFLICT),
+	OFFER_MUST_HAVE_EXPIRATION_DATE(411,"Bitiş tarihi yok", HttpStatus.CONFLICT),;
 	
 	int code;
 	String message;

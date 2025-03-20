@@ -4,6 +4,7 @@ import com.bilgeadam.dto.request.AddOfferRequestDto;
 import com.bilgeadam.dto.request.UpdateOfferRequestDto;
 import com.bilgeadam.entity.Customer;
 import com.bilgeadam.entity.Offer;
+import com.bilgeadam.entity.OfferDetail;
 import com.bilgeadam.entity.enums.OfferStatus;
 import com.bilgeadam.entity.enums.Status;
 import com.bilgeadam.exception.CRMServiceException;
@@ -47,6 +48,16 @@ public class OfferService {
 		Offer offer = offerRepository.findById(offerId)
 		                             .orElseThrow(() -> new CRMServiceException(ErrorType.OFFER_NOT_FOUND));
 		
+		// ❌ Eğer teklif INACTIVE ise, kabul edilemez
+		if (offer.getStatus() == Status.INACTIVE) {
+			throw new CRMServiceException(ErrorType.OFFER_CANNOT_ACCEPT_INACTIVE);
+		}
+		
+		// Eğer teklif zaten kabul edilmiş veya reddedilmişse işlem engellenir
+		if (offer.getOfferStatus() == OfferStatus.ACCEPTED || offer.getOfferStatus() == OfferStatus.DECLINED) {
+			throw new CRMServiceException(ErrorType.OFFER_ALREADY_PROCESSED);
+		}
+		
 		offer.setIsAccepted(true);
 		offer.setOfferStatus(OfferStatus.ACCEPTED);
 		offerRepository.save(offer);
@@ -60,6 +71,16 @@ public class OfferService {
 	public void rejectOffer(Long offerId) {
 		Offer offer = offerRepository.findById(offerId)
 		                             .orElseThrow(() -> new CRMServiceException(ErrorType.OFFER_NOT_FOUND));
+		
+		// ❌ Eğer teklif INACTIVE ise, reddedilemez
+		if (offer.getStatus() == Status.INACTIVE) {
+			throw new CRMServiceException(ErrorType.OFFER_CANNOT_REJECT_INACTIVE);
+		}
+		
+		// Eğer teklif zaten kabul edilmiş veya reddedilmişse işlem engellenir
+		if (offer.getOfferStatus() == OfferStatus.ACCEPTED || offer.getOfferStatus() == OfferStatus.DECLINED) {
+			throw new CRMServiceException(ErrorType.OFFER_ALREADY_PROCESSED);
+		}
 		
 		offer.setIsAccepted(false);
 		offer.setOfferStatus(OfferStatus.DECLINED);
@@ -96,7 +117,51 @@ public class OfferService {
 	public void updateOffer(Long offerId, UpdateOfferRequestDto dto) {
 		Offer offer = offerRepository.findById(offerId)
 		                             .orElseThrow(() -> new CRMServiceException(ErrorType.OFFER_NOT_FOUND));
-		if (offer.getStatus() == Status.INACTIVE && dto.status() != Status.ACTIVE){
+		
+		// ❌ Eğer teklif `INACTIVE` yapılıyorsa ve müşteri henüz kabul/reddetmediyse:
+		if (dto.status() == Status.INACTIVE && offer.getOfferStatus() == OfferStatus.PENDING) {
+			offer.setOfferStatus(OfferStatus.EXPIRED);
+			OfferDetail updatedOfferDetail = new OfferDetail(
+					offer.getOfferDetail().getTitle(),
+					offer.getOfferDetail().getDescription(),
+					null
+			);
+			offer.setOfferDetail(updatedOfferDetail);
+			offer.setStatus(Status.INACTIVE);
+			offerRepository.save(offer);
+			return;
+		}
+		
+		// ❗ Eğer teklif tekrar `ACTIVE` yapılıyorsa:
+		if (dto.status() == Status.ACTIVE && offer.getStatus() == Status.INACTIVE) {
+			// ❗❗ Eğer teklif EXPIRED durumundaysa, tekrar PENDING hale getirelim
+			if (offer.getOfferStatus() == OfferStatus.EXPIRED) {
+				offer.setOfferStatus(OfferStatus.PENDING);
+			}
+			
+			// 📌 Eğer yeni bir bitiş tarihi girilmediyse hata ver
+			if (dto.expirationDate() == null) {
+				throw new CRMServiceException(ErrorType.OFFER_MUST_HAVE_EXPIRATION_DATE);
+			}
+			
+			OfferDetail updatedOfferDetail = new OfferDetail(
+					offer.getOfferDetail().getTitle(),
+					offer.getOfferDetail().getDescription(),
+					dto.expirationDate()
+			);
+			offer.setOfferDetail(updatedOfferDetail);
+			
+			offer.setStatus(Status.ACTIVE);
+			offerRepository.save(offer);
+			
+			// 📧 Müşteriye yeni teklif e-postası gönder
+			mailService.sendOfferReactivationEmail(offer.getId(), offer.getCustomerEmail(), offer.getOfferDetail().getTitle());
+			
+			return;
+		}
+		
+		// ❌ Eğer teklif `INACTIVE` durumda ve tekrar `ACTIVE` yapılmıyorsa, güncelleme engellenir
+		if (offer.getStatus() == Status.INACTIVE && dto.status() != Status.ACTIVE) {
 			throw new CRMServiceException(ErrorType.OFFER_INACTIVE_CANNOT_UPDATE);
 		}
 		
@@ -109,22 +174,23 @@ public class OfferService {
 			throw new CRMServiceException(ErrorType.INVALID_OFFER_STATUS_CHANGE);
 		}
 		
-		OfferMapper.INSTANCE.updateOfferFromDto(dto, offer); // DTO verileri mevcut entity'ye aktarılıyor.
-		
+		OfferMapper.INSTANCE.updateOfferFromDto(dto, offer);
 		offerRepository.save(offer);
 	}
+	
 	
 	/**
 	 * 📌 OfferStatus için geçerli geçiş kurallarını belirleyen yardımcı metot
 	 */
 	private boolean isValidStatusChange(OfferStatus currentStatus, OfferStatus newStatus) {
 		return switch (currentStatus) {
-			case PENDING -> newStatus == OfferStatus.ACCEPTED || newStatus == OfferStatus.DECLINED || newStatus == OfferStatus.PENDING;
+			case PENDING -> newStatus == OfferStatus.ACCEPTED || newStatus == OfferStatus.DECLINED || newStatus == OfferStatus.PENDING || newStatus == OfferStatus.EXPIRED;
 			case ACCEPTED -> newStatus == OfferStatus.EXPIRED || newStatus == OfferStatus.ACCEPTED; // Kabul edilen teklif sadece EXPIRED olabilir
 			case DECLINED -> false; // Reddedilen teklif başka statüye çevrilemez
-			case EXPIRED -> false; // Süresi dolmuş teklif güncellenemez
+			case EXPIRED -> newStatus == OfferStatus.PENDING; // Süresi dolmuş bir teklif sadece tekrar aktif yapılabilir
 		};
 	}
+	
 	
 	/**
 	 * 📌 Teklifi `id`'ye göre siler.

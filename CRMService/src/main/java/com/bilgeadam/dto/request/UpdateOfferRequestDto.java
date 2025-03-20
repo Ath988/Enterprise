@@ -19,7 +19,6 @@ public record UpdateOfferRequestDto(
 		@Size(min = 3, max = 500, message = "Açıklama en az 3, en fazla 500 karakter olmalıdır.")
 		String description,
 		
-		@NotNull(message = "Son geçerlilik tarihi belirtilmelidir.")
 		@FutureOrPresent(message = "Son geçerlilik tarihi bugünden önce olamaz.")
 		@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
 		LocalDate expirationDate,

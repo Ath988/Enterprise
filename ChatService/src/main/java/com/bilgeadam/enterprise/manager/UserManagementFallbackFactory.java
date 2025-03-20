@@ -1,5 +1,6 @@
 package com.bilgeadam.enterprise.manager;
 
+import com.bilgeadam.enterprise.dto.response.AdminDetailsForChatResponse;
 import com.bilgeadam.enterprise.dto.response.BaseResponse;
 import com.bilgeadam.enterprise.dto.response.UserDetailForChatResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -48,6 +49,15 @@ public class UserManagementFallbackFactory implements FallbackFactory<UserManage
 				                                     .message("Fallback: Unable to set User's online status")
 				                                     .success(false)
 				                                     .build());
+			}
+
+			@Override
+			public ResponseEntity<BaseResponse<List<AdminDetailsForChatResponse>>> getAdminsForChat() {
+				return ResponseEntity.ok(BaseResponse.<List<AdminDetailsForChatResponse>>builder()
+								.code(200)
+						.message("Fallback: Unable to set User's online status")
+						.success(false)
+						.build());
 			}
 		};
 	}

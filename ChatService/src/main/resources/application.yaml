@@ -5,9 +5,9 @@ server:
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/enterprisechatdb
-    username: postgres
-    password: root
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
 
   jpa:
     hibernate:
@@ -26,5 +26,5 @@ spring:
   rabbitmq:
     host: localhost
     port: 5672
-    username: springuser
-    password: springpassword
+    username: ${RABBITMQ_USERNAME}
+    password: ${RABBITMQ_PASSWORD}

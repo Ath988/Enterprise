@@ -2,16 +2,14 @@ package com.bilgeadam.controller;
 
 import com.bilgeadam.dto.request.CreateMemberRequest;
 import com.bilgeadam.dto.request.otherServices.ManageEmployeePermissionsRequest;
-import com.bilgeadam.dto.response.UserDetailsForChatResponse;
+import com.bilgeadam.dto.response.*;
 import com.bilgeadam.exception.UserManagementException;
 import com.bilgeadam.utility.AuthUtil;
-import com.bilgeadam.dto.response.BaseResponse;
-import com.bilgeadam.dto.response.UserPermissionResponse;
-import com.bilgeadam.dto.response.UserProfileResponse;
 import com.bilgeadam.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -96,7 +94,14 @@ public class UserController {
                                                                .build());
         }
     }
-    
+
+    @GetMapping(GET_ADMINS_FOR_CHAT)
+    public ResponseEntity<BaseResponse<List<AdminDetailsForChatResponse>>> getAdminsForChat(){
+        return ResponseEntity.ok(BaseResponse.<List<AdminDetailsForChatResponse>>builder()
+                        .code(200).message("Admins retrieved successfully").success(true)
+                        .data(userService.getAdminsForChat())
+                .build());
+    }
     
     @GetMapping("/get-users-by-company/{companyId}/{employeeId}")
     public ResponseEntity<BaseResponse<List<UserDetailsForChatResponse>>> getEmployeesDetailByCompanyId(@PathVariable Long companyId, @PathVariable Long employeeId) {

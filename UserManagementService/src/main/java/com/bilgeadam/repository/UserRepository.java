@@ -1,7 +1,9 @@
 package com.bilgeadam.repository;
 
+import com.bilgeadam.dto.response.AdminDetailsForChatResponse;
 import com.bilgeadam.dto.response.UserDetailsForChatResponse;
 import com.bilgeadam.dto.response.UserProfileResponse;
+import com.bilgeadam.entity.Role;
 import com.bilgeadam.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -9,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface UserRepository extends JpaRepository<User, Long> {
 
@@ -37,4 +40,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
             "FROM User e " +
             "WHERE e.id IN (:ids) AND e.state = com.bilgeadam.entity.enums.EState.ACTIVE")
     List<UserDetailsForChatResponse> findUsersByIds(@Param("ids") List<Long> ids);
+
+
+    List<AdminDetailsForChatResponse> findTop10ByRolesIn(List<Role> adminRole);
+
+
 }

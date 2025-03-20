@@ -652,22 +652,49 @@ public class ChatService {
 
 	
 
-/*	@Transactional
-	public PrivateChatResponseDto createSupportChat(String userId) {
-		List<User> allSupport = userRepository.findAllByIsSupport(true);
-
+	@Transactional
+	public PrivateChatResponseDto createSupportChat(Long userId) {
+		List<AdminDetailsForChatResponse> allSupport = getAdminsFromUserService();
 		if (allSupport.isEmpty()) {
 			throw new EnterpriseException(ErrorType.SUPPORT_NOT_FOUND);
 		}
 
 		// get a random support from the list
 		int randomNumber = (int) Math.random()*allSupport.size();
-		User randomSupport = allSupport.get(randomNumber);
-		CreatePrivateChatRqDto createPrivateChatRqDto = new CreatePrivateChatRqDto(randomSupport.getId());
+		AdminDetailsForChatResponse randomSupport = allSupport.get(randomNumber);
+		CreatePrivateChatRqDto createPrivateChatRqDto = new CreatePrivateChatRqDto(randomSupport.id());
 
 		return createPrivateChat(createPrivateChatRqDto, userId, true);
-	} */
-	
+	}
+
+	private List<AdminDetailsForChatResponse> getAdminsFromUserService() {
+		ResponseEntity<BaseResponse<List<AdminDetailsForChatResponse>>> adminsForChat = manager.getAdminsForChat();
+		BaseResponse<List<AdminDetailsForChatResponse>> body = adminsForChat.getBody();
+		if (body == null) {
+			throw new EnterpriseException(ErrorType.EXTERNAL_SERVICE_ERROR,
+					"An error occured (body is null) while fetching admins for chat service from user management service");
+		}
+		else if (body.getData() == null) {
+			throw new EnterpriseException(ErrorType.EXTERNAL_SERVICE_ERROR,
+					"An error occured (body data is null) while fetching admins for chat service from user management service");
+		}
+		else if (!body.getSuccess()){
+			throw new EnterpriseException(ErrorType.EXTERNAL_SERVICE_ERROR,
+					"An error occured (success is false) while fetching admins for chat service from user management service");
+		}
+		else if (body.getCode() != 200){
+			throw new EnterpriseException(ErrorType.EXTERNAL_SERVICE_ERROR,
+					"An error occured (code is not 200) while fetching admins for chat service from user management service");
+		}
+		else if (body.getData().size() == 0) {
+			throw new EnterpriseException(ErrorType.SUPPORT_NOT_FOUND);
+		}
+		else{
+			return body.getData();
+		}
+	}
+
+
 	public Long getIdFromTokenValidation(String token){
 		Optional<Long> optionalId = jwtManager.validateToken(token);
 		if(optionalId.isEmpty())

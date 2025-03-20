@@ -3,6 +3,7 @@ package com.bilgeadam.service;
 import com.bilgeadam.dto.request.CreateMemberRequest;
 import com.bilgeadam.dto.request.otherServices.AddSubscriptionRequest;
 import com.bilgeadam.dto.request.otherServices.ManageEmployeePermissionsRequest;
+import com.bilgeadam.dto.response.AdminDetailsForChatResponse;
 import com.bilgeadam.dto.response.UserDetailsForChatResponse;
 import com.bilgeadam.dto.response.UserPermissionResponse;
 import com.bilgeadam.dto.response.UserProfileResponse;
@@ -25,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import static com.bilgeadam.dto.response.BaseResponse.*;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -199,4 +201,8 @@ public class UserService {
     }
 
 
+    public List<AdminDetailsForChatResponse> getAdminsForChat() {
+        Role adminRole = roleService.findByName("SYSTEM_ADMIN");
+        return userRepository.findTop10ByRolesIn(List.of(adminRole));
+    }
 }

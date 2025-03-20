@@ -1,7 +1,7 @@
 package com.bilgeadam.enterprise.constant;
 
 public class RestApis {
-	private static final String VERSION = "/v1";
+    private static final String VERSION = "/v1";
 	private static final String API = "/api";
 	private static final String DEVELOPER = "/dev";
 	private static final String TEST = "/test";
@@ -30,5 +30,7 @@ public class RestApis {
 	public static final String GET_CHAT_DETAILS = "/get-chat-details";
 
 	public static final String DO_LOGIN = "/do-login";
-	
+
+	public static final String GET_ADMINS_FOR_CHAT = "/get-admins-for-chat";
+
 }

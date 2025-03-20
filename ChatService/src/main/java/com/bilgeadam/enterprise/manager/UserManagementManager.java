@@ -1,10 +1,12 @@
 package com.bilgeadam.enterprise.manager;
 
+import com.bilgeadam.enterprise.dto.response.AdminDetailsForChatResponse;
 import com.bilgeadam.enterprise.dto.response.BaseResponse;
 import com.bilgeadam.enterprise.dto.response.UserDetailForChatResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import static com.bilgeadam.enterprise.constant.RestApis.*;
 
 import java.util.List;
 
@@ -26,4 +28,7 @@ public interface UserManagementManager {
 	
 	@PostMapping("/set-users-online-status/{employeeId}")
 	ResponseEntity<BaseResponse<Boolean>> setUsersOnlineStatus(@PathVariable Long employeeId, @RequestParam boolean status);
+
+	@GetMapping(GET_ADMINS_FOR_CHAT)
+	ResponseEntity<BaseResponse<List<AdminDetailsForChatResponse>>> getAdminsForChat();
 }

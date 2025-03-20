@@ -2,6 +2,7 @@ package com.bilgeadam.service;
 
 import com.bilgeadam.dto.request.AddOfferRequestDto;
 import com.bilgeadam.dto.request.UpdateOfferRequestDto;
+import com.bilgeadam.entity.Customer;
 import com.bilgeadam.entity.Offer;
 import com.bilgeadam.entity.enums.OfferStatus;
 import com.bilgeadam.entity.enums.Status;
@@ -27,11 +28,15 @@ public class OfferService {
 	 * 📌 Yeni bir teklif (Offer) oluşturur ve veritabanına kaydeder.
 	 */
 	public void addOffer(AddOfferRequestDto dto) {
-		Long customerId = customerRepository.findByProfileEmail(dto.customerEmail())
-		                                    .orElseThrow(() -> new CRMServiceException(ErrorType.CUSTOMER_NOT_FOUND))
-		                                    .getCustomerId();
+		
+		Customer customer = customerRepository.findByProfileEmail(dto.customerEmail())
+		                                      .orElseThrow(() -> new CRMServiceException(ErrorType.CUSTOMER_NOT_FOUND));
+		
 		Offer offer = OfferMapper.INSTANCE.toEntity(dto);
-		offer.setCustomerId(customerId);
+		offer.setCustomerId(customer.getCustomerId());
+		offer.setCustomerName(customer.getProfile().getFirstName() + " " + customer.getProfile().getLastName());
+		offer.setCustomerEmail(customer.getProfile().getEmail()); // 📌 Email set ediliyor
+		
 		offerRepository.save(offer);
 		
 		mailService.sendOfferEmail(offer.getId(), dto.customerEmail(), dto.title());

@@ -19,6 +19,8 @@ public interface OfferMapper {
 	@Mapping(target = "isAccepted", constant = "false")
 	@Mapping(target = "customerId", ignore = true)
 	@Mapping(target = "offerDetail", source = ".")
+	@Mapping(target = "customerName", ignore = true)
+	@Mapping(target = "customerEmail", source = "customerEmail")
 	Offer toEntity(AddOfferRequestDto dto);
 	
 	/** 📌 `AddOfferRequestDto` içinde OfferDetail mapleme */
@@ -32,5 +34,6 @@ public interface OfferMapper {
 	@Mapping(target = "offerDetail.expirationDate", source = "expirationDate")
 	@Mapping(target = "offerStatus", source = "offerStatus")
 	@Mapping(target = "status", source = "status")
+	@Mapping(target = "customerEmail", ignore = true)
 	void updateOfferFromDto(UpdateOfferRequestDto dto, @MappingTarget Offer offer);
 }

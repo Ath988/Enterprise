@@ -21,9 +21,17 @@ public class Offer extends BaseEntity {
 	
 	@Enumerated(EnumType.STRING)
 	@Builder.Default
+	@Column(nullable = false)
 	OfferStatus offerStatus = OfferStatus.PENDING;
 	
+	@Column(nullable = false)
 	Long customerId;
+	
+	@Column(nullable = false)
+	String customerName;
+	
+	@Column(nullable = false)
+	String customerEmail;
 	
 	@Builder.Default
 	Boolean isAccepted = false;

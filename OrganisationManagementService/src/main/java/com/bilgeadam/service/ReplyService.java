@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -35,5 +36,11 @@ public class ReplyService {
 
     public List<Reply> findByQuestionId(Long questionId) {
         return replyRepository.findByQuestionId(questionId);
+    }
+
+    public List<Reply> getAllReplies() {
+        List<Reply> all = replyRepository.findAll();
+        all.sort(Comparator.comparing(Reply::getDate).reversed());
+        return all;
     }
 }

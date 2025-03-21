@@ -2,14 +2,16 @@ package com.bilgeadam.controller;
 
 import com.bilgeadam.dto.request.ReplyRequestDto;
 import com.bilgeadam.dto.response.BaseResponse;
+import com.bilgeadam.entity.Reply;
 import com.bilgeadam.service.EmployeeService;
 import com.bilgeadam.service.ReplyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import static com.bilgeadam.constants.RestApis.ADD_REPLY;
-import static com.bilgeadam.constants.RestApis.REPLY;
+import java.util.List;
+
+import static com.bilgeadam.constants.RestApis.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -54,5 +56,12 @@ public class ReplyController {
                     .message("Failed to create reply.")
                     .build());
         }
+    }
+    @GetMapping(GET_ALL_REPLY)
+    public ResponseEntity<BaseResponse<List<Reply>>> getAllReplies() {
+        return ResponseEntity.ok(BaseResponse.<List<Reply>>builder()
+                .message("Tüm yanıtlar başarıyla getirildi.")
+                .data(replyService.getAllReplies())
+                .build());
     }
 }

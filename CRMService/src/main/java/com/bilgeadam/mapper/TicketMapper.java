@@ -16,6 +16,8 @@ public interface TicketMapper {
 	@Mapping(target = "ticketStatus", expression = "java(com.bilgeadam.entity.enums.TicketStatus.NEW)")
 	@Mapping(target = "activities", ignore = true) // Activities liste olarak eklenmeyecek
 	@Mapping(target = "ticketNumber", ignore = true) // UUID, entity içinde otomatik oluşturulacak.
+	@Mapping(target = "customerId", ignore = true)
+	@Mapping(target = "customerEmail", source = "customerEmail")
 	Ticket toTicket(AddTicketRequestDto dto);
 	
 	/** 📌 `AddTicketRequestDto` → `TicketActivity` dönüşümü */

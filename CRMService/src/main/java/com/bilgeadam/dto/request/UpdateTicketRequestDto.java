@@ -4,6 +4,8 @@ import com.bilgeadam.entity.enums.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
+import java.util.List;
+
 public record UpdateTicketRequestDto(
 		@NotBlank(message = "Başlık boş olamaz!")
 		String subject,
@@ -23,8 +25,10 @@ public record UpdateTicketRequestDto(
 		@NotBlank(message = "İçerik boş olamaz!")
 		String content,
 		
-		@NotNull(message = "Personel ID boş olamaz!")
+		@NotNull(message = "Performer ID boş olamaz!")
 		Long performerId,
+		
+		List<String> attachmentUrls, // Opsiyonel dosya yolları
 		
 		Status status
 ) {}

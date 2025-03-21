@@ -150,21 +150,45 @@ public class MailService {
 	
 	/** 📌 Ticket çözüldüğünde/kapatıldığında müşteriye bilgilendirme gönder */
 	public String sendTicketResolvedEmail(String toEmail, String ticketNumber, String subject, TicketStatus status) {
+		String feedbackLink = "http://localhost:8083/feedback.html?ticketId=" + ticketNumber;
+		
 		return """
-                    Merhaba,
+        Merhaba,
 
-                    📌 **Ticket Konusu:** %s
-                    🆔 **Ticket Numarası:** %s
-                    
-                    Destek talebiniz **%s** olarak işaretlenmiştir.
-                    
-                    Eğer sorununuz tamamen çözülmediyse veya ek bir yardıma ihtiyacınız varsa, lütfen bu e-postaya yanıt vererek bizimle iletişime geçin.
-                    
-                    **İyi günler dileriz!**
-                    **Enterprise Destek Ekibi**
-                    """.formatted(subject, ticketNumber, status.getDescription());
-//			sendEmail(toEmail, "🎉 Destek Kaydınız " + (status == TicketStatus.RESOLVED ? "Çözüldü" : "Kapatıldı") + " - #" + ticketNumber, messageContent);
+        📌 **Ticket Konusu:** %s
+        🆔 **Ticket Numarası:** %s
+        
+        Destek talebiniz **%s** olarak işaretlenmiştir.
+        
+        Eğer sorununuz tamamen çözülmediyse veya ek bir yardıma ihtiyacınız varsa, lütfen bu e-postaya yanıt vererek bizimle iletişime geçin.
+
+        ✨ **Hizmetimizi değerlendirmek ister misiniz?**
+        [Geri Bildirim Formu](%s)
+        
+        **İyi günler dileriz!**
+        **Enterprise Destek Ekibi**
+        """.formatted(subject, ticketNumber, status, feedbackLink);
 	}
+	
+	public String sendFeedbackRequestEmail(String toEmail, Long ticketId) {
+		String feedbackLink = "http://localhost:8083/feedback.html?ticketId=" + ticketId;
+		
+		return """
+        Merhaba,
+
+        Destek talebinizle ilgili geri bildirimde bulunmak ister misiniz?
+
+        📌 **Ticket ID:** %s
+
+        Görüşleriniz bizim için değerli! Lütfen aşağıdaki linkten geri bildirim formunu doldurun:
+        
+        📝 **[Geri Bildirim Formu](%s)**
+
+        **Teşekkürler!**
+        **Enterprise Destek Ekibi**
+        """.formatted(ticketId, feedbackLink);
+	}
+	
 	
 	/** 📌 Destek ekibine müşterinin mesajını içeren e-posta gönderir */
 	public void sendSupportTeamNotificationEmail(String senderEmail, String recipientEmail, String subject,

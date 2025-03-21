@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geri Bildirim Gönder</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            width: 400px;
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .input-group {
+            text-align: left;
+            margin-bottom: 15px;
+        }
+
+        label {
+            font-size: 14px;
+            color: #555;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        textarea {
+            resize: none;
+            height: 80px;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+        }
+
+        .cancel-btn {
+            background: none;
+            border: none;
+            color: #9C27B0;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .send-btn {
+            background-color: #007BFF;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .send-btn:hover {
+            background-color: #0056b3;
+        }
+
+        .response-message {
+            margin-top: 15px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Geri Bildirim Gönder</h2>
+
+    <div class="input-group">
+        <label for="subject">Konu:</label>
+        <input type="text" id="subject" placeholder="Geri bildirim konusu...">
+    </div>
+
+    <div class="input-group">
+        <label for="email">E-posta:</label>
+        <input type="email" id="email" placeholder="E-posta adresiniz...">
+    </div>
+
+    <div class="input-group">
+        <label for="message">Mesaj:</label>
+        <textarea id="message" placeholder="Geri bildiriminizi yazın..."></textarea>
+    </div>
+
+    <div class="buttons">
+        <button class="cancel-btn" onclick="resetForm()">VAZGEÇ</button>
+        <button class="send-btn" onclick="submitFeedback()">GÖNDER</button>
+    </div>
+
+    <p id="responseMessage" class="response-message"></p>
+</div>
+
+<script>
+    function resetForm() {
+        document.getElementById("subject").value = "";
+        document.getElementById("email").value = "";
+        document.getElementById("message").value = "";
+        document.getElementById("responseMessage").innerText = "";
+    }
+
+    function submitFeedback() {
+        const subject = document.getElementById("subject").value;
+        const email = document.getElementById("email").value;
+        const message = document.getElementById("message").value;
+
+        if (!subject || !email || !message) {
+            document.getElementById("responseMessage").innerText = "Lütfen tüm alanları doldurun!";
+            document.getElementById("responseMessage").style.color = "red";
+            return;
+        }
+
+        const ticketId = new URLSearchParams(window.location.search).get("ticketId") || 6; // Varsayılan ticketId = 6
+        const feedbackData = { subject, email, message };
+
+        fetch(`http://localhost:8083/api/feedback/submit/${ticketId}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(feedbackData),
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById("responseMessage").innerText = "Geri bildiriminiz başarıyla gönderildi!";
+                    document.getElementById("responseMessage").style.color = "green";
+                    resetForm();
+                } else {
+                    document.getElementById("responseMessage").innerText = "Hata: " + data.message;
+                    document.getElementById("responseMessage").style.color = "red";
+                }
+            })
+            .catch(error => {
+                console.error("API Hatası:", error);
+                document.getElementById("responseMessage").innerText = "Sunucuya bağlanılamadı!";
+                document.getElementById("responseMessage").style.color = "red";
+            });
+    }
+</script>
+
+</body>
+</html>

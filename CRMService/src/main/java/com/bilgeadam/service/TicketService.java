@@ -49,6 +49,7 @@ public class TicketService {
 			// 3️⃣ Ticket oluştur
 			Ticket ticket = TicketMapper.INSTANCE.toTicket(dto);
 			ticket.setCustomerId(customer.getCustomerId());
+			ticket.setCustomerEmail(customer.getProfile().getEmail());
 			ticket.setPerformerId(performer.getId());
 			
 			Ticket savedTicket = ticketRepository.save(ticket);
@@ -78,6 +79,7 @@ public class TicketService {
 					savedTicket.getId()
 			);
 		} catch (Exception e) {
+			e.printStackTrace();
 			throw new CRMServiceException(ErrorType.TICKET_CREATION_FAILED);
 		}
 	}
@@ -171,6 +173,11 @@ public class TicketService {
 					resolutionMessage,
 					ticket.getId()
 			);
+			
+			String feedbackEmailContent = mailService.sendFeedbackRequestEmail(customerEmail, ticket.getId());
+			mailService.sendEmail(customerEmail, "Geri Bildirim Talebi", feedbackEmailContent);
+			
+			
 		}
 	}
 	
@@ -183,8 +190,13 @@ public class TicketService {
 		ticketRepository.delete(ticket);
 		// Sonra ticket'a bağlı tüm aktiviteleri sil
 		ticketActivityRepository.deleteByTicketId(ticketId);
-		
-		
-		
+	}
+	
+	public void deleteTickets(List<Long> ticketIds) {
+		if (ticketIds == null || ticketIds.isEmpty()) {
+			throw new CRMServiceException(ErrorType.TICKET_NOT_FOUND);
+		}
+		ticketRepository.deleteAllById(ticketIds);
+		ticketActivityRepository.deleteAllById(ticketIds);
 	}
 }

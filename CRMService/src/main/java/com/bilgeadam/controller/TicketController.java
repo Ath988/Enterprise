@@ -80,4 +80,16 @@ public class TicketController {
 		                                     .build()
 		);
 	}
+	
+	@DeleteMapping("/delete-tickets")
+	public ResponseEntity<BaseResponse<Boolean>> deleteTickets(@RequestBody List<Long> ticketIds) {
+		ticketService.deleteTickets(ticketIds);
+		return ResponseEntity.ok(BaseResponse.<Boolean>builder()
+		                                     .code(200)
+		                                     .success(true)
+		                                     .data(true)
+		                                     .message("Seçili ticketlar ve aktiviteleri başarıyla silindi.")
+		                                     .build()
+		);
+	}
 }

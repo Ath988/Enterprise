@@ -3,6 +3,7 @@ package com.bilgeadam.entity;
 import com.bilgeadam.entity.enums.TicketCategory;
 import com.bilgeadam.entity.enums.TicketPriority;
 import com.bilgeadam.entity.enums.TicketStatus;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -33,6 +34,7 @@ public class Ticket extends BaseEntity{
 	@Enumerated(EnumType.STRING)
 	TicketCategory category;
 	
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy HH:mm")
 	LocalDateTime closedAt; // Kapatılma tarihi
 	
 	@ElementCollection // Dosya yollarını tutan bir liste
@@ -43,6 +45,8 @@ public class Ticket extends BaseEntity{
 	@Transient // DB de tutma , sadece DTO için
 	List<TicketActivity> activities;
 	
+	String customerEmail;
+	
 	Long customerId;
 	
 	Long performerId;
@@ -52,6 +56,11 @@ public class Ticket extends BaseEntity{
 	
 	@PrePersist
 	public void generateTicketNumber() {
-		this.ticketNumber = UUID.randomUUID().toString();
+		this.ticketNumber = String.valueOf(generateRandom5DigitNumber());
+	}
+	
+	/** 📌 **5 haneli rastgele bir sayı üretir (10000 ile 99999 arasında) **/
+	private int generateRandom5DigitNumber() {
+		return (int) (Math.random() * 90000) + 10000;
 	}
 }

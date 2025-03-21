@@ -112,4 +112,10 @@ public class TicketMessageService {
 		}
 	}
 	
+	/** 📌 Tüm destek mesajlarını döndürür */
+	public List<TicketMessage> getAllMessages() {
+		return ticketMessageRepository.findAll();
+	}
+	
+	
 }

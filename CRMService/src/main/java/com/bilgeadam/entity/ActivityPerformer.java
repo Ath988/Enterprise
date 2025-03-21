@@ -12,11 +12,17 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ActivityPerformer {
 	@Column(name = "performer_id")
-	private Long id;
+	Long id;
 	
-	@Column(name = "performer_name")
-	private String name;
+	@Column(name = "performer_first_name")
+	String firstName;
 	
-	@Column(name = "is_staff")
-	private Boolean staff;
+	@Column(name = "performer_last_name")
+	String lastName;
+	
+	@Column(name = "performer_email")
+	String email;
+	
+	@Column(name = "performer_phone_number")
+	String phoneNumber;
 }

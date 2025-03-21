@@ -1,11 +1,17 @@
 package com.bilgeadam.repository;
 
+import com.bilgeadam.dto.response.AdminDetailsForChatResponse;
+import com.bilgeadam.dto.response.UserDetailsForChatResponse;
 import com.bilgeadam.dto.response.UserProfileResponse;
+import com.bilgeadam.entity.Role;
 import com.bilgeadam.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface UserRepository extends JpaRepository<User, Long> {
 
@@ -19,5 +25,24 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("SELECT NEW com.bilgeadam.dto.response.UserProfileResponse(u.id,u.authId,u.firstName,u.lastName,u.phoneNo,u.tcNo,u.email,u.birthDate,u.avatarUrl) FROM User u WHERe u.id = ?1")
     UserProfileResponse findUserProfileById(Long id);
+    
+    @Query("SELECT new com.bilgeadam.dto.response.UserDetailsForChatResponse(e.id, e.companyId, e.firstName, e" +
+            ".lastName, e.avatarUrl,e.isOnline) " +
+            "FROM User e " +
+            "WHERE e.companyId = :companyId " +
+            "AND e.id != :employeeId " +
+            "AND e.state = com.bilgeadam.entity.enums.EState.ACTIVE")
+    List<UserDetailsForChatResponse> findAllActiveUsersByCompanyId(@Param("companyId") Long companyId,
+                                                                       @Param("employeeId") Long employeeId);
+    
+    @Query("SELECT new com.bilgeadam.dto.response.UserDetailsForChatResponse(e.id, e.companyId, e.firstName, e" +
+            ".lastName, e.avatarUrl,e.isOnline) " +
+            "FROM User e " +
+            "WHERE e.id IN (:ids) AND e.state = com.bilgeadam.entity.enums.EState.ACTIVE")
+    List<UserDetailsForChatResponse> findUsersByIds(@Param("ids") List<Long> ids);
+
+
+    List<AdminDetailsForChatResponse> findTop10ByRolesIn(List<Role> adminRole);
+
 
 }

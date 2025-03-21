@@ -2,12 +2,7 @@ package com.bilgeadam.entity;
 
 import com.bilgeadam.entity.enums.ActivityType;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
+import lombok.*;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -18,18 +13,15 @@ import java.time.LocalDateTime;
 public class TicketActivity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+	Long id;
 	
 	@Enumerated(EnumType.STRING)
-	private ActivityType type;
-	
-	private LocalDateTime timestamp;
+	ActivityType type;
 	
 	@Embedded
-	private ActivityPerformer performedBy;
+	ActivityPerformer performedBy;
 	
-	private String content;
+	String content;
 	
-	@Column(name = "ticket_id")
-	private Long ticketId; // Ticket ID'sini doğrudan ID ile takip ediyoruz
+	Long ticketId;
 }

@@ -11,19 +11,20 @@ import lombok.NoArgsConstructor;
 @Builder
 @Data
 @Entity
-@Table(name = "tbluser")
-public class User {
+@Table(name = "tbl_message_user")
+public class MessageUser {
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)
 	private String id;
-	@Column(unique = true, nullable = false)
-	private String email;
-	private String password;
-	private String name;
-	private String surname;
+	@Column(nullable = false)
+	private String messageId;
+	@Column(nullable = false)
+	private Long senderId;
+	@Column(nullable = false)
+	private Long targetId;
 	@Builder.Default
-	private Boolean isOnline = false;
+	private Boolean isDeletedFromUser = false;
 	@Builder.Default
-	private Boolean isSupport = false;
-	private String profilePicture;
+	@Enumerated(EnumType.STRING)
+	private EMessageStatus messageStatus = EMessageStatus.SENT;
 }

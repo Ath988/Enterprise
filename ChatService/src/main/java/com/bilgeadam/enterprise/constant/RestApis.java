@@ -1,9 +1,6 @@
 package com.bilgeadam.enterprise.constant;
 
 public class RestApis {
-	public static final String DOMAIN = "http://localhost:9090";
-
-
     private static final String VERSION = "/v1";
 	private static final String API = "/api";
 	private static final String DEVELOPER = "/dev";
@@ -18,6 +15,7 @@ public class RestApis {
 	public static final String CREATE_PRIVATE_CHAT = "/create-private-chat";
 	public static final String CREATE_SUPPORT_CHAT = "/create-support-chat";
 
+	
 	public static final String SEND_PRIVATE_MESSAGE = "private/{chatId}/sendMessage";
 	public static final String SEND_GROUP_MESSAGE = "/group/{chatId}/sendMessage";
 
@@ -32,5 +30,7 @@ public class RestApis {
 	public static final String GET_CHAT_DETAILS = "/get-chat-details";
 
 	public static final String DO_LOGIN = "/do-login";
-	
+
+	public static final String GET_ADMINS_FOR_CHAT = "/get-admins-for-chat";
+
 }

@@ -130,4 +130,9 @@ public class StockMovementService
     {
         return stockMovementRepository.findByIdAndAuthId(id, 1L).orElseThrow(() -> new InventoryServiceException(ErrorType.STOCK_MOVEMENT_NOT_FOUND));
     }
+
+    public List<StockMovement> findAllByStatusAndAuthIdOrderByProduct_NameAsc()
+    {
+        return stockMovementRepository.findAllByStatusAndAuthIdOrderByProduct_NameAsc(EStatus.ACTIVE, 1L);
+    }
 }

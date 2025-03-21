@@ -5,7 +5,6 @@ import com.bilgeadam.enterprise.entity.EChatType;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
-
 public record ChatListViewDto(
 		String chatId,
 		EChatType chatType,
@@ -15,6 +14,5 @@ public record ChatListViewDto(
 		String chatImage,
 		Boolean isOnline,
 		Boolean isSupportChat,
-		String userId // If chat is private, holds the "other" user's ID, otherwise null
-		
+		Long userId // If chat is private, holds the "other" user's ID, otherwise null
 ) {}

@@ -13,24 +13,28 @@ public interface TicketMapper {
 	
 	/** 📌 `AddTicketRequestDto` → `Ticket` dönüşümü */
 	@Mapping(target = "id", ignore = true)
-	@Mapping(target = "status", expression = "java(com.bilgeadam.entity.enums.TicketStatus.NEW)")
-	@Mapping(target = "createdAt", expression = "java(java.time.LocalDateTime.now())")
-	@Mapping(target = "activities", ignore = true)
+	@Mapping(target = "ticketStatus", expression = "java(com.bilgeadam.entity.enums.TicketStatus.NEW)")
+	@Mapping(target = "activities", ignore = true) // Activities liste olarak eklenmeyecek
+	@Mapping(target = "ticketNumber", ignore = true) // UUID, entity içinde otomatik oluşturulacak.
 	Ticket toTicket(AddTicketRequestDto dto);
 	
 	/** 📌 `AddTicketRequestDto` → `TicketActivity` dönüşümü */
 	@Mapping(target = "id", ignore = true)
-	@Mapping(target = "type", expression = "java(com.bilgeadam.entity.enums.ActivityType.CREATION)")
+	@Mapping(target = "type", expression = "java(com.bilgeadam.entity.enums.ActivityType.CREATION)") // İlk aktivite oluşturuldu
 	@Mapping(target = "ticketId", ignore = true) // Ticket ID sonradan set edilecek
-	@Mapping(target = "timestamp", expression = "java(java.time.LocalDateTime.now())")
-	@Mapping(target = "performedBy.name", source = "performerName", defaultValue = "Bilinmiyor")
-	@Mapping(target = "performedBy.staff", source = "isStaff", defaultValue = "false")
+	@Mapping(target = "performedBy", ignore = true) // ActivityPerformer DTO üzerinden oluşturulacak
 	TicketActivity toTicketActivity(AddTicketRequestDto dto);
 	
-	/** 📌 `UpdateTicketRequestDto` → Varolan `Ticket` güncellemesi */
-	@Mapping(target = "id", ignore = true)
-	@Mapping(target = "createdAt", ignore = true)
-	@Mapping(target = "activities", ignore = true)
+	/** 📌 `UpdateTicketRequestDto` → `Ticket` güncellemesi */
 	@BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+	@Mapping(target = "ticketStatus", source = "ticketStatus")
 	void updateTicketFromDto(UpdateTicketRequestDto dto, @MappingTarget Ticket ticket);
+	
+	/** 📌 `UpdateTicketRequestDto` → `TicketActivity` dönüşümü (Güncelleme işlemi için) */
+	@Mapping(target = "id", ignore = true)
+	@Mapping(target = "ticketId", source = "ticket.id")
+	@Mapping(target = "type", source = "dto.type") // Güncelleme aktivite türü
+	@Mapping(target = "performedBy", ignore = true) // `ActivityPerformerMapper` ile set edilecek
+	@Mapping(target = "content", source = "dto.content")
+	TicketActivity toTicketActivity(UpdateTicketRequestDto dto, Ticket ticket);
 }

@@ -6,6 +6,7 @@ import com.inventoryservice.entities.StockMovement;
 import com.inventoryservice.entities.enums.EStatus;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 import java.util.Optional;
@@ -15,4 +16,8 @@ public interface StockMovementRepository extends JpaRepository<StockMovement, Lo
 
     Optional<StockMovement> findByIdAndAuthId(Long id, Long authId);
     List<StockMovement> findAllByProduct_NameContainingIgnoreCaseAndStatusIsNotAndAuthIdOrderByProduct_NameAsc(String name, EStatus status, Long memberId, PageRequest pageRequest);
+
+    List<StockMovement> findAllByStatusAndAuthIdOrderByProduct_NameAsc(EStatus status, Long authId);
+
+
 }

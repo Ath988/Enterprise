@@ -191,4 +191,21 @@ public class EmployeeController {
                                              .build());
     }
 
+    @GetMapping("get-employee-id/{authId}")
+    public ResponseEntity<BaseResponse<Long>> getEmployeeIdByAuthId(@PathVariable Long authId){
+        return ResponseEntity.ok(BaseResponse.<Long>builder()
+                                         .data(employeeService.getEmployeeIdByAuthId(authId))
+                                             .build());
+    }
+
+    //CompanyId ile Çalışanları getirir.
+    @GetMapping("get-all-employees-by-company-id/{companyId}")
+    public ResponseEntity<BaseResponse<List<AllEmployeeResponse>>> getAllEmployeesByCompanyId(@PathVariable Long companyId){
+        return ResponseEntity.ok(BaseResponse.<List<AllEmployeeResponse>>builder()
+                                         .data(employeeService.findAllEmployeesByCompanyId(companyId))
+                                             .build());
+    }
+
+
+
 }

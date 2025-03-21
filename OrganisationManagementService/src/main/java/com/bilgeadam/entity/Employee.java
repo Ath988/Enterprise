@@ -32,6 +32,8 @@ public class Employee extends BaseEntity {
     @Enumerated(EnumType.STRING)
     EGender gender;
     String avatarUrl;
+    @Builder.Default
+    Boolean isOnline = false;
 
 
 }

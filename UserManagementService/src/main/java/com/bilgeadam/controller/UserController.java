@@ -2,15 +2,17 @@ package com.bilgeadam.controller;
 
 import com.bilgeadam.dto.request.CreateMemberRequest;
 import com.bilgeadam.dto.request.otherServices.ManageEmployeePermissionsRequest;
+import com.bilgeadam.dto.response.*;
+import com.bilgeadam.exception.UserManagementException;
 import com.bilgeadam.utility.AuthUtil;
-import com.bilgeadam.dto.response.BaseResponse;
-import com.bilgeadam.dto.response.UserPermissionResponse;
-import com.bilgeadam.dto.response.UserProfileResponse;
 import com.bilgeadam.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 import static com.bilgeadam.constants.RestApis.*;
 
@@ -72,6 +74,71 @@ public class UserController {
         return ResponseEntity.ok(BaseResponse.<AuthUtil>builder()
                         .data(authUtil)
                 .build());
+    }
+    
+    @GetMapping("/get-user-detail-for-chat/{employeeId}")
+    public ResponseEntity<BaseResponse<UserDetailsForChatResponse>> getEmployeeDetailForChat(@PathVariable Long employeeId) {
+        try {
+            UserDetailsForChatResponse employeeDetail = userService.getUserDetailForChat(employeeId);
+            return ResponseEntity.ok(BaseResponse.<UserDetailsForChatResponse>builder()
+                                                 .code(200)
+                                                 .message("Employee detail retrieved successfully!")
+                                                 .success(true)
+                                                 .data(employeeDetail)
+                                                 .build());
+        } catch (UserManagementException e) {
+            return ResponseEntity.status(404).body(BaseResponse.<UserDetailsForChatResponse>builder()
+                                                               .code(404)
+                                                               .message(e.getMessage())
+                                                               .success(false)
+                                                               .build());
+        }
+    }
+
+    @GetMapping(GET_ADMINS_FOR_CHAT)
+    public ResponseEntity<BaseResponse<List<AdminDetailsForChatResponse>>> getAdminsForChat(){
+        return ResponseEntity.ok(BaseResponse.<List<AdminDetailsForChatResponse>>builder()
+                        .code(200).message("Admins retrieved successfully").success(true)
+                        .data(userService.getAdminsForChat())
+                .build());
+    }
+    
+    @GetMapping("/get-users-by-company/{companyId}/{employeeId}")
+    public ResponseEntity<BaseResponse<List<UserDetailsForChatResponse>>> getEmployeesDetailByCompanyId(@PathVariable Long companyId, @PathVariable Long employeeId) {
+        List<UserDetailsForChatResponse> employees = userService.getUsersDetailByCompanyId(companyId, employeeId);
+        
+        return ResponseEntity.ok(BaseResponse.<List<UserDetailsForChatResponse>>builder()
+                                             .code(200)
+                                             .message(employees.isEmpty() ? "No employees found for the given company." : "Employees retrieved successfully!")
+                                             .success(!employees.isEmpty())
+                                             .data(employees)
+                                             .build());
+    }
+    
+    
+    @GetMapping("/get-users-by-ids")
+    public ResponseEntity<BaseResponse<List<UserDetailsForChatResponse>>> getEmployeesDetailByIds(@RequestParam List<Long> ids) {
+        List<UserDetailsForChatResponse> employees = userService.getUsersDetailByIds(ids);
+        
+        return ResponseEntity.ok(BaseResponse.<List<UserDetailsForChatResponse>>builder()
+                                             .code(200)
+                                             .message(employees.isEmpty() ? "No employees found for the given IDs." : "Employees retrieved successfully!")
+                                             .success(!employees.isEmpty())
+                                             .data(employees)
+                                             .build());
+    }
+    
+    @PostMapping("/set-users-online-status/{employeeId}")
+    public ResponseEntity<BaseResponse<Boolean>> setUsersOnlineStatus(@PathVariable Long employeeId,
+                                                                      @RequestParam boolean status) {
+        System.out.println(employeeId+" online status degisiyor mu?");
+        boolean updated = userService.setUserOnlineStatus(employeeId, status);
+        return ResponseEntity.ok(BaseResponse.<Boolean>builder()
+                                             .code(updated ? 200 : 404)
+                                             .message(updated ? "User status updated successfully" : "User not found")
+                                             .success(updated)
+                                             .data(updated)
+                                             .build());
     }
 
 

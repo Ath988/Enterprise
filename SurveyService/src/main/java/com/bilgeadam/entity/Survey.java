@@ -1,8 +1,6 @@
 package com.bilgeadam.entity;
 
-import jakarta.persistence.ElementCollection;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
@@ -25,4 +23,9 @@ public class Survey extends BaseEntity{
 	@ElementCollection
 	List<String> questionIds;
 	Long companyId;
+	@ElementCollection
+	@CollectionTable(name = "survey_assigned_employee_ids"
+			,joinColumns = @JoinColumn(name = "survey_id"))
+	@Column(name = "employee_id")
+	List<Long> assignedEmployeeIds;
 }

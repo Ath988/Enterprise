@@ -102,12 +102,14 @@ public class ExcelService {
 	private ParseResult parseRowToCustomer(Row row) {
 		DataFormatter formatter = new DataFormatter();
 		
-		String firstName = formatter.formatCellValue(row.getCell(0)).trim();
-		String lastName = formatter.formatCellValue(row.getCell(1)).trim();
-		String email = formatter.formatCellValue(row.getCell(2)).trim();
-		String phoneNumber = formatter.formatCellValue(row.getCell(3)).trim();
-		String address = formatter.formatCellValue(row.getCell(4)).trim();
-		String companyIdStr = formatter.formatCellValue(row.getCell(5)).trim();
+		int columnCount = Math.min(row.getPhysicalNumberOfCells(), 6);
+		
+		String firstName = columnCount > 0 ? formatter.formatCellValue(row.getCell(0)).trim() : "";
+		String lastName = columnCount > 1 ? formatter.formatCellValue(row.getCell(1)).trim() : "";
+		String email = columnCount > 2 ? formatter.formatCellValue(row.getCell(2)).trim() : "";
+		String phoneNumber = columnCount > 3 ? formatter.formatCellValue(row.getCell(3)).trim() : "";
+		String address = columnCount > 4 ? formatter.formatCellValue(row.getCell(4)).trim() : "";
+		String companyIdStr = columnCount > 5 ? formatter.formatCellValue(row.getCell(5)).trim() : "";
 		
 		List<String> errors = new ArrayList<>();
 		
@@ -257,16 +259,25 @@ public class ExcelService {
 		
 		try (Workbook workbook = new XSSFWorkbook()) {
 			Sheet sheet = workbook.createSheet("Hatalı Satırlar");
-			createHeaderRow(sheet);
 			
+			// Başlıkları ekle
+			Row headerRow = sheet.createRow(0);
+			for (int i = 0; i < REQUIRED_HEADERS.size(); i++) {
+				headerRow.createCell(i).setCellValue(REQUIRED_HEADERS.get(i));
+			}
+			headerRow.createCell(REQUIRED_HEADERS.size()).setCellValue("Hata Mesajı");
+			
+			// Hatalı satırları ekle
 			int rowNum = 1;
 			DataFormatter formatter = new DataFormatter();
 			
 			for (RowDataWithError rowData : errorRows) {
 				Row errorRow = sheet.createRow(rowNum++);
-				copyRow(rowData.row(), errorRow, formatter);
+				for (int i = 0; i < REQUIRED_HEADERS.size(); i++) {
+					errorRow.createCell(i).setCellValue(formatter.formatCellValue(rowData.row().getCell(i)));
+				}
 				String combinedErrors = String.join(", ", rowData.errorMessages());
-				errorRow.createCell(6).setCellValue(combinedErrors);  // Tüm hataları tek hücreye yaz
+				errorRow.createCell(REQUIRED_HEADERS.size()).setCellValue(combinedErrors);
 			}
 			
 			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -275,9 +286,10 @@ public class ExcelService {
 		}
 	}
 	
+	
 	private void createHeaderRow(Sheet sheet) {
 		Row headerRow = sheet.createRow(0);
-		String[] headers = {"Ad", "Soyad", "Email", "Telefon", "Adres", "ŞirketID", "Hata Mesajı"};
+		String[] headers = {"Ad", "Soyad", "EPosta", "Telefon", "Adres", "Şirket Id", "Hata Mesajı"};
 		
 		for (int i = 0; i < headers.length; i++) {
 			headerRow.createCell(i).setCellValue(headers[i]);
@@ -292,10 +304,20 @@ public class ExcelService {
 	}
 	
 	private boolean isHeaderValid(Row headerRow) {
-		if (headerRow == null || headerRow.getPhysicalNumberOfCells() != REQUIRED_HEADERS.size()) {
+		if (headerRow == null) {
 			return false;
 		}
-		for (int i = 0; i < REQUIRED_HEADERS.size(); i++) {
+		
+		int actualSize = headerRow.getPhysicalNumberOfCells();
+		int requiredSize = REQUIRED_HEADERS.size();
+		
+		// Eğer Hata Mesajı sütunu varsa, başlık sayısı bir fazla olabilir
+		if (actualSize < requiredSize || actualSize > requiredSize + 1) {
+			return false;
+		}
+		
+		// Sadece ilk 6 başlığı kontrol et
+		for (int i = 0; i < requiredSize; i++) {
 			String cellValue = headerRow.getCell(i, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK).getStringCellValue().trim();
 			if (!REQUIRED_HEADERS.get(i).equalsIgnoreCase(cellValue)) {
 				return false;
@@ -303,6 +325,7 @@ public class ExcelService {
 		}
 		return true;
 	}
+	
 	
 	private byte[] generateTemplateExcel() {
 		return exportTemplateExcel();  // Sadece başlıklarla boş excel üretir.

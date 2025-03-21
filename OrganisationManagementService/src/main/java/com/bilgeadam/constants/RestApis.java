@@ -15,6 +15,7 @@ public class RestApis {
     public static final String REPLY = ROOT + "/reply";
     public static final String ASSET = ROOT + "/asset";
     public static final String MAINTENANCE = ROOT + "/maintenance";
+    public static final String VOTE = ROOT + "/vote";
 
     public static final String CREATE_COMPANY_MANAGER = "/create-company-manager";
     public static final String CREATE_ANNOUNCEMENT = "/create-announcement";
@@ -35,7 +36,13 @@ public class RestApis {
     public static final String ADD_QUESTION = "/add-question";
 
     public static final String ADD_REPLY = "/add-reply";
+    public static final String GET_ALL_REPLY= "/get-all-replys";
+    public static final String GET_ALL_VOTE_LIKE = "/get-all-vote-like";
+    public static final String GET_ALL_VOTE_DISLIKE = "/get-all-vote-dislike";
 
     public static final String NOTIFICATIONSENDER = "/notificationSender";
     public static final String SEND_MAIL = "/send-mail";
+    public static final String ADD_VOTE_LIKE = "/add-vote-like";
+    public static final String ADD_VOTE_DISLIKE = "/add-vote-dislike";
+
 }

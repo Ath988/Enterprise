@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -47,6 +48,7 @@ public class QuestionService {
                             question.getDate()
                     );
                 })
+                .sorted(Comparator.comparing(GetAllQuestionResponseDto::date).reversed())
                 .collect(Collectors.toList());
     }
 
@@ -98,5 +100,9 @@ public class QuestionService {
 
         // Kaydetme işlemi başarılıysa true döndür
         return true;
+    }
+
+    public Optional<Question> findById(Long questionId) {
+        return questionRepository.findById(questionId);
     }
 }

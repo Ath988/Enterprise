@@ -56,6 +56,22 @@ public class MailService {
 		offerSendEmail(email, subject, message);
 	}
 	
+	public void sendOfferReactivationEmail(Long offerId, String email, String title) {
+		String subject = "📌 Teklifiniz Yeniden Aktif Edildi: " + title;
+		String acceptUrl = "http://localhost:8083/v1/dev/offer/accept-offer/" + offerId;
+		String rejectUrl = "http://localhost:8083/v1/dev/offer/reject-offer/" + offerId;
+		
+		String message = """
+            <h3>Merhaba,</h3>
+            <p>Teklifiniz tekrar aktif hale getirildi: <b>%s</b></p>
+            <p>Bu teklifi kabul etmek veya reddetmek için aşağıdaki butonları kullanabilirsiniz:</p>
+            <a href="%s" style="display:inline-block;padding:10px 20px;color:white;background-color:green;text-decoration:none;">✅ Kabul Et</a>
+            <a href="%s" style="display:inline-block;padding:10px 20px;color:white;background-color:red;text-decoration:none;">❌ Reddet</a>
+            """.formatted(title, acceptUrl, rejectUrl);
+		
+		offerSendEmail(email, subject, message);
+	}
+	
 	/** 📌 Teklif kabul edildiğinde müşteriye bilgilendirme e-postası gönder */
 	public void sendOfferAcceptedEmail(String customerEmail, String offerTitle) {
 		String subject = "✅ Teklifiniz Kabul Edildi!";
